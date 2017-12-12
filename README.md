@@ -1,6 +1,6 @@
 # BaconPlugs
 
-BaconPlugs are the set (maybe) of EuroRack style plugins for 
+BaconPlugs are my set (currently of size 1) of EuroRack style plugins for 
 [VCVRack](http://www.vcvrack.com). The modules are mostly just me noodling around.
 All the source is here, releases under an Apache 2.0 license. You are free to use
 these modules as you see fit. If you happen to use them to make music, please
