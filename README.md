@@ -6,7 +6,7 @@ All the source is here, releases under an Apache 2.0 license. You are free to us
 these modules as you see fit. If you happen to use them to make music, please
 do let me know, either here or by tagging me on twitter (@baconpaul).
 
-I've only ever built them on MacOS but they should build on other platforms.
+I build regularly on MacOS and check that it builds on Linux from time to time.
 
 ## HarMoNee
 
