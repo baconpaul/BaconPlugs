@@ -35,6 +35,10 @@ struct AddOne : Module {
     MAJOR_THIRD_LIGHT,
     FIFTH_LIGHT,
     OCTAVE_LIGHT,
+
+    DIGIT_LIGHT_ONES,
+    DIGIT_LIGHT_TENS,
+    
     NUM_LIGHTS
   };
   
@@ -98,6 +102,9 @@ void AddOne::step() {
           lights[ i + ld ].value = 0.0;
         }
     }
+  lights[ DIGIT_LIGHT_ONES ].value = (int)offsetI % 10;
+  lights[ DIGIT_LIGHT_TENS ].value = (int)( offsetI / 10 );
+  
   offsetI = uod * offsetI / 12.0;
 
   int shift_time = 44000 / 5;
@@ -181,7 +188,16 @@ AddOneWidget::AddOneWidget()
   addParam( createParam< NKK >( Vec( 80, 16 ), module, AddOne::UP_OR_DOWN, 0, 1, 1 ) );
   addChild( createLight< MediumLight< GreenLight >>( Vec( 70, 16 + 22 - 4 - 5 ), module, AddOne::UP_LIGHT ) );
   addChild( createLight< MediumLight< RedLight >>( Vec( 70, 16 + 22 - 4 + 5 ), module, AddOne::DOWN_LIGHT ) );
-  
+
+
+  addChild( createLight< SevenSegmentLight >( Vec( 10, 18 ),
+                                             module,
+                                             AddOne::DIGIT_LIGHT_TENS ) );
+
+  addChild( createLight< SevenSegmentLight >( Vec( 36, 18 ),
+                                             module,
+                                             AddOne::DIGIT_LIGHT_ONES ) );
+
   int x = 80; int y = 16 + 45; float v = -1;
   int ld = AddOne::HALF_STEP_LIGHT - AddOne::HALF_STEP;
 
