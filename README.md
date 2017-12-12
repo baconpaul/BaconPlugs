@@ -15,9 +15,7 @@ one which is the original, and the second which is modified by a musical amount,
 like a minor 3rd. It spans plus or minus one octave, and is controlled by toggles.
 
 The toggles are additive. So if you want a fourth, choose a major third and a half step 
-both. You get the idea. Here's the sample patch I use for testing. If you are actually
-seeing it, the artwork may have improved. Or maybe not. Perhaps I'll keep the crappy
-inkscape pig as a "theme"
+both. You get the idea. Here's the sample patch I use for testing in the current version.
 
 ![Example HarMoNee patch](doc/HarMoNee.png)
 
