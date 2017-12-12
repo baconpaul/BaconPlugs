@@ -80,22 +80,22 @@ AddOneWidget::AddOneWidget()
   addChild( createScrew<ScrewSilver>( Vec( SCREW_WIDTH, RACK_HEIGHT - SCREW_WIDTH ) ) );
   addChild( createScrew<ScrewSilver>( Vec( box.size.x - 2 * SCREW_WIDTH, RACK_HEIGHT - SCREW_WIDTH ) ) );
 
-  addInput( createInput< PJ301MPort >( Vec( 15, 15 ), module, AddOne::SOURCE_INPUT ) );
-  addOutput( createOutput<PJ301MPort>(Vec ( 10, 320 ), module, AddOne::ECHO_OUTPUT ) );
-  addOutput( createOutput<PJ301MPort>(Vec ( 30, 320 ), module, AddOne::INCREASED_OUTPUT ) );
+  addInput( createInput< PJ301MPort >( Vec( 87, 47 ), module, AddOne::SOURCE_INPUT ) );
+  addOutput( createOutput<PJ301MPort>(Vec ( 87, 262 ), module, AddOne::ECHO_OUTPUT ) );
+  addOutput( createOutput<PJ301MPort>(Vec ( 87, 302 ), module, AddOne::INCREASED_OUTPUT ) );
 
-  addParam( createParam< NKK >( Vec( 15, 50 ), module, AddOne::UP_OR_DOWN, 0, 1, 1 ) );
+  addParam( createParam< NKK >( Vec( 83, 80 ), module, AddOne::UP_OR_DOWN, 0, 1, 1 ) );
   
-  int x = 15; int y = 90; float v = -1;
+  int x = 25; int y = 120; float v = -1;
   for( int i = AddOne::HALF_STEP; i <= AddOne::OCTAVE; ++i )
     {
       if( i == AddOne::OCTAVE ) { v = 1; } { v = -1; }
       addParam( createParam<NKK>( Vec( x, y ), module, i, 0, 1, v ) );
-      x += 40;
-      if( x + 55 > box.size.x )
+      x += 50;
+      if( x > 75 )
         {
-          x = 15;
-          y += 40;
+          x = 25;
+          y += 45;
         }
     }
 }
