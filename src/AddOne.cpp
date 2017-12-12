@@ -40,6 +40,7 @@ struct AddOne : Module {
   
   std::vector< float > offsets;
   float priorOffset;
+  float targetOffset;
   int offsetCount;
   
   AddOne() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ) {
@@ -52,6 +53,7 @@ struct AddOne : Module {
     offsets[ FIFTH ] = 7;
     offsets[ OCTAVE ] = 12;
     priorOffset = 0;
+    targetOffset = 0;
     offsetCount = 0;
   }
 
@@ -63,8 +65,8 @@ int pct = 0;
 void AddOne::step() {
   /* TODO
      
-     Fix the "fast toggle" situation by adding an "in transition" state and doing that state management
-     Didsplay the shift 
+     Display the shift 
+     Tests
   */
 
   float in = inputs[ SOURCE_INPUT ].value;
@@ -98,19 +100,54 @@ void AddOne::step() {
     }
   offsetI = uod * offsetI / 12.0;
 
-  int shift_time = 44000/20;
-  if( offsetCount == 0 && offsetI != priorOffset )
+  int shift_time = 44000 / 5;
+  /* Glissando state management
+     - priorOffset is the place we are starting the glide from
+     - targetOffset is where we are headed
+     - offsetI is where the switches are set
+     - offsetCount is how far we are in.
+
+     when we aren't in a glissando offsetCount will be 0 and
+     all three will be the same. offsetCount being
+     non-zero is the same as in-gliss.
+   */
+  bool inGliss = offsetCount != 0;
+  if( ! inGliss )
     {
-      offsetCount = 1;
+      // We are not sliding. Should we be?
+      if( offsetI != priorOffset )
+        {
+          targetOffset = offsetI;
+          offsetCount = 1;
+          inGliss = true;
+        }
     }
+
+  if( inGliss )
+    {
+      // If the target == the offset we haven't changed anything so
+      // just march along linear time
+      if( offsetI != targetOffset )
+        {
+          float lastKnown = ( ( shift_time - offsetCount ) * priorOffset +
+                              offsetCount * targetOffset ) / shift_time;
+          targetOffset = offsetI;
+          priorOffset = lastKnown;
+          offsetCount = 0;
+        }
+      
+      offsetI = ( ( shift_time - offsetCount ) * priorOffset +
+                  offsetCount * offsetI ) / shift_time;
+      
+      offsetCount ++;
+    }
+
+  // Finally if we are done, reset it all to zero
   if( offsetCount == shift_time )
     {
-      priorOffset = offsetI; offsetCount = 0;
-    }
-  if( offsetCount > 0 )
-    {
-      offsetI = ( ( shift_time - offsetCount ) * priorOffset + offsetCount * offsetI ) / shift_time;
-      offsetCount ++;
+      offsetCount = 0;
+      priorOffset = offsetI;
+      targetOffset = offsetI;
     }
   
   float increased = in + offsetI;
