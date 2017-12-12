@@ -11,5 +11,5 @@ void init(rack::Plugin *p) {
 #endif
 	p->website = "https://github.com/baconpaul/BaconPlugs";
 
-	p->addModel(createModel<AddOneWidget>("BaconPlugs", "AddOne", "AddOne", AMPLIFIER_TAG));
+	p->addModel(createModel<AddOneWidget>("BaconPlugs", "HarMoNee", "HarMoNee", AMPLIFIER_TAG));
 }
