@@ -38,7 +38,4 @@ void SevenSegmentLight::draw( NVGcontext *vg )
 
 }
 
-void SevenSegmentLight::step()
-{
-}
 

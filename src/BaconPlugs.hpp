@@ -45,6 +45,5 @@ struct SevenSegmentLight : virtual ModuleLightWidget {
     
   }
   void draw( NVGcontext *vg ) override;
-  void step() override;
 };
 
