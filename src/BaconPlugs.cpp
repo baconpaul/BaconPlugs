@@ -12,4 +12,5 @@ void init(rack::Plugin *p) {
 	p->website = "https://github.com/baconpaul/BaconPlugs";
 
 	p->addModel(createModel<AddOneWidget>("BaconPlugs", "HarMoNee", "HarMoNee", AMPLIFIER_TAG));
+        p->addModel(createModel<GlissinatorWidget>("BaconPlugs", "Glissinator", "Glissinator", AMPLIFIER_TAG)); // TODO: Fix that tag
 }

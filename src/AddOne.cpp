@@ -1,10 +1,5 @@
 #include "BaconPlugs.hpp"
 
-#include "dsp/samplerate.hpp"
-#include "dsp/ringbuffer.hpp"
-#include "dsp/filter.hpp"
-
-
 
 struct AddOne : Module {
   enum ParamIds {
@@ -64,8 +59,6 @@ struct AddOne : Module {
   void step() override;
 };
 
-int pct = 0;
-
 void AddOne::step() {
   /* TODO
      
@@ -75,8 +68,6 @@ void AddOne::step() {
 
   float in = inputs[ SOURCE_INPUT ].value;
   float echo = in;
-
-  pct ++;
 
   float offsetI = 0;
   float uod = ( params[ UP_OR_DOWN ].value > 0 ) ? 1.0 : -1.0;
@@ -190,11 +181,11 @@ AddOneWidget::AddOneWidget()
   addChild( createLight< MediumLight< RedLight >>( Vec( 70, 16 + 22 - 4 + 5 ), module, AddOne::DOWN_LIGHT ) );
 
 
-  addChild( createLight< SevenSegmentLight >( Vec( 10, 18 ),
+  addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 10, 18 ),
                                              module,
                                              AddOne::DIGIT_LIGHT_TENS ) );
 
-  addChild( createLight< SevenSegmentLight >( Vec( 36, 18 ),
+  addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 36, 18 ),
                                              module,
                                              AddOne::DIGIT_LIGHT_ONES ) );
 
