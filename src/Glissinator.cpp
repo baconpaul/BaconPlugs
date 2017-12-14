@@ -88,7 +88,6 @@ GlissinatorWidget::GlissinatorWidget()
   Glissinator *module = new Glissinator();
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
-  printf( "BOX is %d x %d\n", SCREW_WIDTH * 5, RACK_HEIGHT );
   
   {
     SVGPanel *panel = new SVGPanel();
@@ -98,8 +97,19 @@ GlissinatorWidget::GlissinatorWidget()
   }
 
 
-  addParam( createParam< BefacoSlidePot >( Vec( 10, 10 ), module, Glissinator::GLISS_TIME, 0, 1, 0.1 ) );
-  addInput( createInput< PJ301MPort >( Vec( 10, RACK_HEIGHT - 15 - 30 ), module, Glissinator::SOURCE_INPUT ) );
-  addOutput( createOutput< PJ301MPort >( Vec( box.size.x - 32, RACK_HEIGHT - 15 - 30 ), module, Glissinator::SLID_OUTPUT ) );
-  addChild( createLight< SmallLight< BlueLight > >( Vec( box.size.x/2, RACK_HEIGHT - 15 - 40 ), module, Glissinator::SLIDING_LIGHT ) );
+  addParam( createParam< BaconSlider< 270 > >( Vec( 10, 10 ),
+                                               module,
+                                               Glissinator::GLISS_TIME,
+                                               0,
+                                               1,
+                                               0.1 ) );
+  
+  addInput( createInput< PJ301MPort >( Vec( 10, RACK_HEIGHT - 15 - 30 ),
+                                       module,
+                                       Glissinator::SOURCE_INPUT ) );
+  addOutput( createOutput< PJ301MPort >( Vec( box.size.x - 32, RACK_HEIGHT - 15 - 30 ),
+                                         module,
+                                         Glissinator::SLID_OUTPUT ) );
+  addChild( createLight< SmallLight< BlueLight > >( Vec( box.size.x/2, RACK_HEIGHT - 15 - 40 ),
+                                                    module, Glissinator::SLIDING_LIGHT ) );
 }

@@ -89,3 +89,65 @@ struct SevenSegmentLight : virtual COLORBASE {
   }
 };
 
+template <int H>
+struct BaconSlider : SVGSlider
+{
+  int slider_height = 41;
+  int slider_width = 20;
+  int widget_width = 32;
+  BaconSlider()
+  {
+    int margin = (widget_width-slider_width)/2;
+    maxHandlePos = Vec( (widget_width-slider_width)/2, margin );
+    minHandlePos = Vec( (widget_width-slider_width)/2, (H-slider_height - margin) );
+    box.size = Vec( widget_width, H );
+
+    background->svg = NULL;
+    background->wrap(); 
+    background->box.pos = Vec( 0, 0 );
+
+    handle->svg = SVG::load( assetPlugin( plugin, "res/BaconSliderHandle.svg" ) );
+    handle->wrap();
+
+  }
+
+  void draw( NVGcontext *vg ) override
+  {
+    int margin = (widget_width-slider_width)/2;
+    int nStrokes = 10;
+    int yTop = slider_height / 2;
+    int yHeight = H - slider_height;
+    
+    for( int i=0; i<= nStrokes; ++i )
+      {
+        int dx = yHeight / nStrokes;
+        nvgBeginPath( vg );
+        nvgMoveTo( vg, 1, dx * i + yTop + margin );
+        nvgLineTo( vg, widget_width-1, dx * i + yTop + margin );
+        nvgStrokeColor( vg, nvgRGBA( 10, 10, 10, 255 ) );
+        nvgStroke( vg );
+
+        nvgBeginPath( vg );
+        nvgMoveTo( vg, 1, dx * i + yTop + margin + 1 );
+        nvgLineTo( vg, widget_width-1, dx * i + yTop + margin + 1 );
+        nvgStrokeColor( vg, nvgRGBA( 200, 200, 200, 255 ) );
+        nvgStroke( vg );
+      }
+
+    nvgBeginPath( vg );
+    nvgRect( vg,
+             widget_width/2 - 2, yTop,
+             5, yHeight );
+    nvgFillColor( vg, COLOR_BLACK );
+    nvgFill( vg );
+
+    nvgBeginPath( vg );
+    nvgMoveTo( vg, widget_width/2 - 2, yTop );
+    nvgLineTo( vg, widget_width/2 - 2, yTop+yHeight );
+    nvgLineTo( vg, widget_width/2 - 2+5, yTop+yHeight );
+    nvgStrokeColor( vg, nvgRGBA( 120, 120, 120, 255 ) );
+    nvgStroke( vg );
+    
+    SVGSlider::draw( vg );
+  }
+};
