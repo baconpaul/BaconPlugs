@@ -5,7 +5,7 @@
       "plugin": "Core",
       "model": "AudioInterface",
       "pos": [
-        855.0,
+        1365.0,
         0.0
       ],
       "params": [],
@@ -66,12 +66,12 @@
         "gates": [
           1,
           1,
+          0,
+          0,
           1,
+          0,
           1,
-          1,
-          1,
-          1,
-          1
+          0
         ],
         "gateMode": 0
       }
@@ -97,13 +97,13 @@
       "plugin": "Fundamental",
       "model": "VCO",
       "pos": [
-        480.0,
+        780.0,
         0.0
       ],
       "params": [
         1.0,
         0.0,
-        -1.67401123046875,
+        12.906031608581543,
         0.035999998450279236,
         0.5975000262260437,
         0.0,
@@ -114,7 +114,7 @@
       "plugin": "BaconPlugs",
       "model": "ALingADing",
       "pos": [
-        630.0,
+        930.0,
         0.0
       ],
       "params": []
@@ -123,14 +123,71 @@
       "plugin": "Fundamental",
       "model": "VCMixer",
       "pos": [
-        705.0,
+        1005.0,
         0.0
       ],
       "params": [
-        0.5,
-        0.11700036376714706,
-        0.37950026988983154,
+        0.65450000762939453,
+        0.16650043427944183,
+        0.32700002193450928,
         0.0
+      ]
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "LFO",
+      "pos": [
+        480.0,
+        0.0
+      ],
+      "params": [
+        0.0,
+        1.0,
+        0.17599968612194061,
+        0.0,
+        0.49700021743774414,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "VCMixer",
+      "pos": [
+        630.0,
+        0.0
+      ],
+      "params": [
+        0.25399988889694214,
+        0.11250016838312149,
+        0.084000028669834137,
+        0.0
+      ]
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "VCA",
+      "pos": [
+        1275.0,
+        0.0
+      ],
+      "params": [
+        0.63950067758560181,
+        0.5
+      ]
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "ADSR",
+      "pos": [
+        1155.0,
+        0.0
+      ],
+      "params": [
+        0.049499992281198502,
+        1.0,
+        0.91749989986419678,
+        0.69800049066543579
       ]
     }
   ],
@@ -142,18 +199,6 @@
       "inputId": 0
     },
     {
-      "outputModuleId": 2,
-      "outputId": 0,
-      "inputModuleId": 4,
-      "inputId": 1
-    },
-    {
-      "outputModuleId": 3,
-      "outputId": 3,
-      "inputModuleId": 4,
-      "inputId": 0
-    },
-    {
       "outputModuleId": 4,
       "outputId": 0,
       "inputModuleId": 5,
@@ -162,20 +207,62 @@
     {
       "outputModuleId": 5,
       "outputId": 0,
-      "inputModuleId": 0,
-      "inputId": 0
+      "inputModuleId": 8,
+      "inputId": 2
     },
     {
-      "outputModuleId": 1,
-      "outputId": 2,
-      "inputModuleId": 3,
-      "inputId": 0
+      "outputModuleId": 2,
+      "outputId": 0,
+      "inputModuleId": 5,
+      "inputId": 3
+    },
+    {
+      "outputModuleId": 3,
+      "outputId": 3,
+      "inputModuleId": 4,
+      "inputId": 1
     },
     {
       "outputModuleId": 2,
       "outputId": 1,
-      "inputModuleId": 5,
+      "inputModuleId": 4,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 6,
+      "outputId": 2,
+      "inputModuleId": 7,
+      "inputId": 1
+    },
+    {
+      "outputModuleId": 7,
+      "outputId": 0,
+      "inputModuleId": 3,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 6,
+      "outputId": 0,
+      "inputModuleId": 7,
       "inputId": 3
+    },
+    {
+      "outputModuleId": 8,
+      "outputId": 0,
+      "inputModuleId": 0,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 9,
+      "outputId": 0,
+      "inputModuleId": 8,
+      "inputId": 1
+    },
+    {
+      "outputModuleId": 1,
+      "outputId": 0,
+      "inputModuleId": 9,
+      "inputId": 4
     }
   ]
 }

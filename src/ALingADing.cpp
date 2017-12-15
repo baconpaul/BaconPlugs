@@ -31,8 +31,8 @@ struct ALingADing : Module {
 
   inline float diode_sim( float in )
   {
-    float out = 0.2 * log( 1.0 + exp( 10 * ( in - 1 ) ) );
-    return out;
+    if( in < 0 ) return 0;
+    else return 0.2 * log( 1.0 + exp( 10 * ( in - 1 ) ) );
   }
   
   void step()
