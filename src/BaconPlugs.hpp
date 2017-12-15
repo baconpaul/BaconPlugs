@@ -117,16 +117,19 @@ struct BaconSlider : SVGSlider
     int nStrokes = 10;
     int yTop = slider_height / 2;
     int yHeight = H - slider_height;
+
+#if 0
+    nvgBeginPath( vg );
+    nvgRect( vg, 0, 0, widget_width, H );
+    nvgFillColor( vg, COLOR_RED );
+    nvgFill( vg );
+#endif
     
+    float dx = yHeight / nStrokes;
+
+
     for( int i=0; i<= nStrokes; ++i )
       {
-        int dx = yHeight / nStrokes;
-        nvgBeginPath( vg );
-        nvgMoveTo( vg, 1, dx * i + yTop + margin );
-        nvgLineTo( vg, widget_width-1, dx * i + yTop + margin );
-        nvgStrokeColor( vg, nvgRGBA( 10, 10, 10, 255 ) );
-        nvgStroke( vg );
-
         nvgBeginPath( vg );
         nvgMoveTo( vg, 1, dx * i + yTop + margin + 1 );
         nvgLineTo( vg, widget_width-1, dx * i + yTop + margin + 1 );
@@ -137,17 +140,26 @@ struct BaconSlider : SVGSlider
     nvgBeginPath( vg );
     nvgRect( vg,
              widget_width/2 - 2, yTop,
-             5, yHeight );
+             5, yHeight+1 );
     nvgFillColor( vg, COLOR_BLACK );
     nvgFill( vg );
 
     nvgBeginPath( vg );
     nvgMoveTo( vg, widget_width/2 - 2, yTop );
-    nvgLineTo( vg, widget_width/2 - 2, yTop+yHeight );
-    nvgLineTo( vg, widget_width/2 - 2+5, yTop+yHeight );
+    nvgLineTo( vg, widget_width/2 - 2, yTop+yHeight+1 );
+    nvgLineTo( vg, widget_width/2 - 2+5, yTop+yHeight+1 );
     nvgStrokeColor( vg, nvgRGBA( 120, 120, 120, 255 ) );
     nvgStroke( vg );
     
+    for( int i=0; i<= nStrokes; ++i )
+      {
+        nvgBeginPath( vg );
+        nvgMoveTo( vg, 1, dx * i + yTop + margin );
+        nvgLineTo( vg, widget_width-1, dx * i + yTop + margin );
+        nvgStrokeColor( vg, nvgRGBA( 10, 10, 10, 255 ) );
+        nvgStroke( vg );
+      }
+
     SVGSlider::draw( vg );
   }
 };

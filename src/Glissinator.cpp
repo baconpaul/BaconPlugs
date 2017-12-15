@@ -28,13 +28,17 @@ struct Glissinator : Module {
 
   Glissinator() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ) {
     offsetCount = -1;
+    params[ GLISS_TIME ].value = 0.1;
   }
 
 
   
   void step()
   {
-    int shift_time = 5000;
+    float glist_sec = params[ GLISS_TIME ].value;
+    int shift_time = engineGetSampleRate() * glist_sec;
+    if( shift_time < 10 ) shift_time = 10;
+    
     float thisIn = inputs[ SOURCE_INPUT ].value;
     if( offsetCount < 0 )
       {
