@@ -19,6 +19,10 @@ struct ALingADingWidget : ModuleWidget {
   ALingADingWidget();
 };
 
+struct BitulatorWidget : ModuleWidget {
+  BitulatorWidget();
+};
+
 template< typename COLORBASE >
 struct SevenSegmentLight : virtual COLORBASE {
   int lx, ly, ppl;

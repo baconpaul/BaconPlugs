@@ -14,4 +14,5 @@ void init(rack::Plugin *p) {
 	p->addModel(createModel<AddOneWidget>("BaconPlugs", "HarMoNee", "HarMoNee", AMPLIFIER_TAG));
         p->addModel(createModel<GlissinatorWidget>("BaconPlugs", "Glissinator", "Glissinator", AMPLIFIER_TAG)); // TODO: Fix that tag
         p->addModel(createModel<ALingADingWidget>("BaconPlugs", "ALingADing", "ALingADing", AMPLIFIER_TAG)); // TODO: Fix that tag
+        p->addModel(createModel<BitulatorWidget>("BaconPlugs", "Bitulator", "Bitulator", AMPLIFIER_TAG)); // TODO: Fix that tag
 }

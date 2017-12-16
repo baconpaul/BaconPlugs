@@ -1,0 +1,148 @@
+{
+  "version": "",
+  "modules": [
+    {
+      "plugin": "Fundamental",
+      "model": "SEQ3",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "params": [
+        2.0,
+        0.0,
+        0.0,
+        8.0,
+        1.5299997329711914,
+        0.0,
+        0.0,
+        0.0,
+        0.97499972581863403,
+        0.0,
+        0.0,
+        0.0,
+        1.5449999570846558,
+        0.0,
+        0.0,
+        0.0,
+        3.1800003051757812,
+        0.0,
+        0.0,
+        0.0,
+        1.1849997043609619,
+        0.0,
+        0.0,
+        0.0,
+        2.1749997138977051,
+        0.0,
+        0.0,
+        0.0,
+        2.5950002670288086,
+        0.0,
+        0.0,
+        0.0,
+        1.829999566078186,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "data": {
+        "running": true,
+        "gates": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "gateMode": 0
+      }
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "VCO",
+      "pos": [
+        330.0,
+        0.0
+      ],
+      "params": [
+        1.0,
+        1.0,
+        -15.390000343322754,
+        0.0,
+        0.5,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "plugin": "BaconPlugs",
+      "model": "Bitulator",
+      "pos": [
+        480.0,
+        0.0
+      ],
+      "params": [
+        1.0
+      ]
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "VCMixer",
+      "pos": [
+        600.0,
+        0.0
+      ],
+      "params": [
+        0.5,
+        0.49049997329711914,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "plugin": "Core",
+      "model": "AudioInterface",
+      "pos": [
+        750.0,
+        0.0
+      ],
+      "params": [],
+      "data": {
+        "driver": 5,
+        "device": 1,
+        "sampleRate": 44100.0,
+        "blockSize": 256
+      }
+    }
+  ],
+  "wires": [
+    {
+      "outputModuleId": 0,
+      "outputId": 1,
+      "inputModuleId": 1,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 1,
+      "outputId": 1,
+      "inputModuleId": 2,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 2,
+      "outputId": 0,
+      "inputModuleId": 3,
+      "inputId": 1
+    },
+    {
+      "outputModuleId": 3,
+      "outputId": 0,
+      "inputModuleId": 4,
+      "inputId": 0
+    }
+  ]
+}

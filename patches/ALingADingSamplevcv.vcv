@@ -11,7 +11,7 @@
       "params": [],
       "data": {
         "driver": 5,
-        "device": 2,
+        "device": 1,
         "sampleRate": 44100.0,
         "blockSize": 256
       }
@@ -117,7 +117,9 @@
         930.0,
         0.0
       ],
-      "params": []
+      "params": [
+        0.91800016164779663
+      ]
     },
     {
       "plugin": "Fundamental",
@@ -217,12 +219,6 @@
       "inputId": 3
     },
     {
-      "outputModuleId": 3,
-      "outputId": 3,
-      "inputModuleId": 4,
-      "inputId": 1
-    },
-    {
       "outputModuleId": 2,
       "outputId": 1,
       "inputModuleId": 4,
@@ -263,6 +259,12 @@
       "outputId": 0,
       "inputModuleId": 9,
       "inputId": 4
+    },
+    {
+      "outputModuleId": 3,
+      "outputId": 3,
+      "inputModuleId": 4,
+      "inputId": 1
     }
   ]
 }
