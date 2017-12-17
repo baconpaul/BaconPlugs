@@ -194,3 +194,14 @@ struct DMPTextPanel : virtual TransparentWidget
   void draw( NVGcontext *vg ) override;
 };
 
+struct BaconPlugBackground : virtual TransparentWidget
+{
+  BaconPlugBackground( Vec size )
+  {
+    box.pos = Vec( 0, 0 );
+    box.size = size;
+  }
+
+  void draw( NVGcontext *vg ) override;
+};
+

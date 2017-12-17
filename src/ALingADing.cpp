@@ -63,13 +63,8 @@ ALingADingWidget::ALingADingWidget()
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
 
-  {
-    SVGPanel *panel = new SVGPanel();
-    panel->box.size = box.size;
-    panel->setBackground( SVG::load( assetPlugin( plugin, "res/ALingADing.svg" ) ) );
-    addChild( panel );
-  }
-  printf( "BOX.SIZE=%lf %lf\n", box.size.x, box.size.y );
+  BaconPlugBackground *panel = new BaconPlugBackground( box.size );
+  addChild( panel );
 
   DMPTextPanel *d = new DMPTextPanel( Vec( 5, 5 ), "ABCD", 1.5 );
   addChild( d );

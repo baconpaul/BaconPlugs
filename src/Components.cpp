@@ -27,7 +27,7 @@ public:
               float xo = (col+0.5) * pxSize + pos.x;
               float yo = (row+0.5) * pxSize + pos.y;
               nvgBeginPath( vg );
-              nvgRect( vg, xo, yo, pxSize, pxSize );
+              nvgRect( vg, xo-0.1, yo-0.1, pxSize+0.2, pxSize+0.2 );
               nvgFillColor( vg, COLOR_BLACK );
               nvgFill( vg );
             }
@@ -91,6 +91,35 @@ void DMPTextPanel::draw( NVGcontext *vg )
   Vec cpos = Vec( 0, 0 );
   for( const char* c = txt.c_str(); *c != 0; ++c ) {
     d.drawText( vg, cpos, *c, pxper );
-    cpos.x += pxper * 5;
+    cpos.x += pxper * 5.0;
   }
+}
+
+void BaconPlugBackground::draw( NVGcontext *vg )
+{
+  nvgBeginPath( vg );
+  nvgRect( vg, 0, 0, box.size.x, box.size.y );
+  nvgFillColor( vg, nvgRGBA( 220, 220, 210, 255 ) );
+  nvgFill( vg );
+
+  nvgBeginPath( vg );
+  nvgMoveTo( vg, 0, 0 );
+  nvgLineTo( vg, box.size.x, 0 );
+  nvgLineTo( vg, box.size.x, box.size.y );
+  nvgLineTo( vg, 0, box.size.y );
+  nvgLineTo( vg, 0, 0 );
+  nvgStrokeColor( vg, nvgRGBA( 180, 180, 170, 255 ) );
+  nvgStroke( vg );
+
+  DMPText d;
+  const char* m = "BACONPLUGS";
+  float dens = 4.5;
+  
+  float pxper = ( box.size.x - 4 ) / 11.0 / dens;
+  Vec cpos = Vec( 2, box.size.y -  pxper * 7 - 2 );
+  for( const char* c = m; *c != 0; ++c )
+    {
+      d.drawText( vg, cpos, *c, pxper );
+      cpos.x += pxper * 5.0;
+    }
 }
