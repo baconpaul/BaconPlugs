@@ -62,7 +62,7 @@ ALingADingWidget::ALingADingWidget()
   ALingADing *module = new ALingADing();
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
-  
+
   {
     SVGPanel *panel = new SVGPanel();
     panel->box.size = box.size;
@@ -70,6 +70,10 @@ ALingADingWidget::ALingADingWidget()
     addChild( panel );
   }
   printf( "BOX.SIZE=%lf %lf\n", box.size.x, box.size.y );
+
+  DMPTextPanel *d = new DMPTextPanel( Vec( 5, 5 ), "ABCD", 1.5 );
+  addChild( d );
+  
 
   addInput( createInput< PJ301MPort >( Vec( 7, 50 ),
                                        module,

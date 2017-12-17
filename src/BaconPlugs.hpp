@@ -1,5 +1,9 @@
 #include "rack.hpp"
 
+#include <map>
+#include <vector>
+#include <string>
+
 using namespace rack;
 
 #define SCREW_WIDTH 15
@@ -171,3 +175,22 @@ struct BaconSlider : SVGSlider
     SVGSlider::draw( vg );
   }
 };
+
+/*
+then something like this
+*/
+struct DMPTextPanel : virtual TransparentWidget
+{
+  std::string txt;
+  float pxper;
+  
+  DMPTextPanel( Vec pos, const char* txtc, float pxperdot ) : txt( txtc ), pxper( pxperdot )
+  {
+    box.pos = pos;
+    box.size.y = pxperdot * 7;
+    box.size.x = 5 * txt.length() * pxperdot;
+  }
+
+  void draw( NVGcontext *vg ) override;
+};
+
