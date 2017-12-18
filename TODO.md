@@ -1,4 +1,3 @@
-- UI on ALingADing
 - UI on HarMoNee
 - UI on Bitulator
 

@@ -196,6 +196,36 @@ struct BaconPlugBackground : virtual TransparentWidget
   void draw( NVGcontext *vg ) override;
 };
 
+struct TextLabel : virtual TransparentWidget
+{
+  int memFont = -1;
+  std::string label;
+  int pxSize;
+  int align;
+  TextLabel( Vec pos, const char* lab, int px ) : label( lab ), pxSize( px )
+  {
+    align = NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE;
+    box.pos = pos;
+  }
+
+  TextLabel( Vec pos, const char* lab, int px, int al ) : label( lab ), pxSize( px ), align( al )
+  {
+    box.pos = pos;
+  }
+
+  void draw( NVGcontext *vg ) override {
+    if( memFont < 0 )
+      memFont = BaconPlugFontMgr::get( vg, "res/Monitorica-Bd.ttf" );
+
+    nvgBeginPath( vg );
+    nvgFontFaceId( vg, memFont );
+    nvgFontSize( vg, pxSize );
+    nvgFillColor( vg, COLOR_BLACK );
+    nvgTextAlign( vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE );
+    nvgText( vg, 0, 0, label.c_str(), NULL );
+  }
+};
+
 struct BaconPlugLabel : virtual TransparentWidget
 {
   int memFont = -1;
