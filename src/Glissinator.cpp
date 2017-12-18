@@ -92,15 +92,10 @@ GlissinatorWidget::GlissinatorWidget()
   Glissinator *module = new Glissinator();
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
+
+  BaconPlugBackground *bg = new BaconPlugBackground( box.size, "Glissinator" );
+  addChild( bg );
   
-  {
-    SVGPanel *panel = new SVGPanel();
-    panel->box.size = box.size;
-    panel->setBackground( SVG::load( assetPlugin( plugin, "res/Glissinator.svg" ) ) );
-    addChild( panel );
-  }
-
-
   addParam( createParam< BaconSlider< 270 > >( Vec( 10, 10 ),
                                                module,
                                                Glissinator::GLISS_TIME,

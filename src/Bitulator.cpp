@@ -73,13 +73,9 @@ BitulatorWidget::BitulatorWidget()
   Bitulator *module = new Bitulator();
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 8, RACK_HEIGHT );
-  
-  {
-    SVGPanel *panel = new SVGPanel();
-    panel->box.size = box.size;
-    panel->setBackground( SVG::load( assetPlugin( plugin, "res/Bitulator.svg" ) ) );
-    addChild( panel );
-  }
+
+  BaconPlugBackground *bg = new BaconPlugBackground( box.size, "Bitulator" );
+  addChild( bg );
 
   addInput( createInput< PJ301MPort >( Vec( 7, 50 ),
                                        module,
