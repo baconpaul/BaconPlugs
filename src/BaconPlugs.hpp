@@ -11,8 +11,8 @@ using namespace rack;
 
 extern Plugin *plugin;
 
-struct AddOneWidget : ModuleWidget {
-  AddOneWidget();
+struct HarMoNeeWidget : ModuleWidget {
+  HarMoNeeWidget();
 };
 
 struct GlissinatorWidget : ModuleWidget {
@@ -196,7 +196,10 @@ struct DMPTextPanel : virtual TransparentWidget
 
 struct BaconPlugBackground : virtual TransparentWidget
 {
-  BaconPlugBackground( Vec size )
+  int memFont = -1;
+  std::string title;
+  
+  BaconPlugBackground( Vec size, const char* titleIn ) : title( titleIn )
   {
     box.pos = Vec( 0, 0 );
     box.size = size;

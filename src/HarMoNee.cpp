@@ -1,7 +1,7 @@
 #include "BaconPlugs.hpp"
 
 
-struct AddOne : Module {
+struct HarMoNee : Module {
   enum ParamIds {
     UP_OR_DOWN,
     HALF_STEP,
@@ -42,7 +42,7 @@ struct AddOne : Module {
   float targetOffset;
   int offsetCount;
   
-  AddOne() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ) {
+  HarMoNee() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ) {
     for( int i=0; i<OCTAVE; ++i ) offsets.push_back( 0 );
 
     offsets[ HALF_STEP ] = 1;
@@ -59,7 +59,7 @@ struct AddOne : Module {
   void step() override;
 };
 
-void AddOne::step() {
+void HarMoNee::step() {
   /* TODO
      
      Display the shift 
@@ -154,47 +154,44 @@ void AddOne::step() {
   outputs[ INCREASED_OUTPUT ].value = increased;
 }
 
-AddOneWidget::AddOneWidget()
+HarMoNeeWidget::HarMoNeeWidget()
 {
-  AddOne *module = new AddOne();
+  HarMoNee *module = new HarMoNee();
   setModule( module );
   box.size = Vec( SCREW_WIDTH*8 , RACK_HEIGHT );
-  {
-    SVGPanel *panel = new SVGPanel();
-    panel->box.size = box.size;
-    panel->setBackground( SVG::load( assetPlugin( plugin, "res/AddOne.svg" ) ) );
-    addChild( panel );
-  }
 
+  BaconPlugBackground *bg = new BaconPlugBackground( box.size, "HarMoNee" );
+  addChild( bg );
+  
   // These components are 32 x 32 so
   int comp = 5;
   int space = (box.size.x - comp*2)/ 3;
   int margin = ( space - 32 );
   
-  addInput( createInput< PJ301MPort >( Vec( comp*2 + 0 * space + margin, 335 ), module, AddOne::SOURCE_INPUT ) );
-  addOutput( createOutput<PJ301MPort>(Vec ( comp*2 + 1 * space + margin, 335 ), module, AddOne::ECHO_OUTPUT ) );
-  addOutput( createOutput<PJ301MPort>(Vec ( comp*2 + 2 * space + margin, 335 ), module, AddOne::INCREASED_OUTPUT ) );
+  addInput( createInput< PJ301MPort >( Vec( comp*2 + 0 * space + margin, 335 ), module, HarMoNee::SOURCE_INPUT ) );
+  addOutput( createOutput<PJ301MPort>(Vec ( comp*2 + 1 * space + margin, 335 ), module, HarMoNee::ECHO_OUTPUT ) );
+  addOutput( createOutput<PJ301MPort>(Vec ( comp*2 + 2 * space + margin, 335 ), module, HarMoNee::INCREASED_OUTPUT ) );
 
   // NKK is 32 x 44
-  addParam( createParam< NKK >( Vec( 80, 16 ), module, AddOne::UP_OR_DOWN, 0, 1, 1 ) );
-  addChild( createLight< MediumLight< GreenLight >>( Vec( 70, 16 + 22 - 4 - 5 ), module, AddOne::UP_LIGHT ) );
-  addChild( createLight< MediumLight< RedLight >>( Vec( 70, 16 + 22 - 4 + 5 ), module, AddOne::DOWN_LIGHT ) );
+  addParam( createParam< NKK >( Vec( 80, 16 ), module, HarMoNee::UP_OR_DOWN, 0, 1, 1 ) );
+  addChild( createLight< MediumLight< GreenLight >>( Vec( 70, 16 + 22 - 4 - 5 ), module, HarMoNee::UP_LIGHT ) );
+  addChild( createLight< MediumLight< RedLight >>( Vec( 70, 16 + 22 - 4 + 5 ), module, HarMoNee::DOWN_LIGHT ) );
 
 
   addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 10, 18 ),
                                              module,
-                                             AddOne::DIGIT_LIGHT_TENS ) );
+                                             HarMoNee::DIGIT_LIGHT_TENS ) );
 
   addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 36, 18 ),
                                              module,
-                                             AddOne::DIGIT_LIGHT_ONES ) );
+                                             HarMoNee::DIGIT_LIGHT_ONES ) );
 
   int x = 80; int y = 16 + 45; float v = -1;
-  int ld = AddOne::HALF_STEP_LIGHT - AddOne::HALF_STEP;
+  int ld = HarMoNee::HALF_STEP_LIGHT - HarMoNee::HALF_STEP;
 
-  for( int i = AddOne::HALF_STEP; i <= AddOne::OCTAVE; ++i )
+  for( int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i )
     {
-      if( i == AddOne::OCTAVE ) { v = 1; } { v = -1; }
+      if( i == HarMoNee::OCTAVE ) { v = 1; } { v = -1; }
       addParam( createParam<NKK>( Vec( x, y ), module, i, 0, 1, v ) );
       addChild( createLight< MediumLight< BlueLight > >( Vec( 70, y + 22 - 5 ), module, i + ld ) );
       y += 45;

@@ -52,7 +52,6 @@ void DMPText::init()
 {
   if( ! initialized ) {
       initialized = true;
-      printf( "%s\n", assetPlugin( plugin, "res/Keypunch029.json" ).c_str() );
 
       json_t *json;
       json_error_t error;
@@ -97,6 +96,9 @@ void DMPTextPanel::draw( NVGcontext *vg )
 
 void BaconPlugBackground::draw( NVGcontext *vg )
 {
+  if( memFont < 0 )
+    memFont = nvgCreateFont( vg, "Monitoria", assetPlugin( plugin, "res/Monitorica-Bd.ttf" ).c_str() );
+
   nvgBeginPath( vg );
   nvgRect( vg, 0, 0, box.size.x, box.size.y );
   nvgFillColor( vg, nvgRGBA( 220, 220, 210, 255 ) );
@@ -111,15 +113,19 @@ void BaconPlugBackground::draw( NVGcontext *vg )
   nvgStrokeColor( vg, nvgRGBA( 180, 180, 170, 255 ) );
   nvgStroke( vg );
 
-  DMPText d;
-  const char* m = "BACONPLUGS";
-  float dens = 4.5;
-  
-  float pxper = ( box.size.x - 4 ) / 11.0 / dens;
-  Vec cpos = Vec( 2, box.size.y -  pxper * 7 - 2 );
-  for( const char* c = m; *c != 0; ++c )
-    {
-      d.drawText( vg, cpos, *c, pxper );
-      cpos.x += pxper * 5.0;
-    }
+  nvgFontFaceId( vg, memFont );
+  nvgFontSize( vg, 14 );
+  nvgFillColor( vg, nvgRGBA( 0, 0, 0, 255 ) );
+  nvgStrokeColor( vg, nvgRGBA( 0, 0, 0, 255 ) );
+  nvgTextAlign( vg, NVG_ALIGN_CENTER|NVG_ALIGN_BOTTOM );
+  nvgText( vg, box.size.x / 2, box.size.y - 5, "BaconPlugs", NULL );
+
+  nvgFontFaceId( vg, memFont );
+  nvgFontSize( vg, 16 );
+  nvgFillColor( vg, nvgRGBA( 0, 0, 0, 255 ) );
+  nvgStrokeColor( vg, nvgRGBA( 0, 0, 0, 255 ) );
+  nvgTextAlign( vg, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
+  nvgText( vg, box.size.x / 2, 5, title.c_str(), NULL );
+
+
 }

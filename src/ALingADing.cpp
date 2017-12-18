@@ -63,12 +63,8 @@ ALingADingWidget::ALingADingWidget()
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
 
-  BaconPlugBackground *panel = new BaconPlugBackground( box.size );
+  BaconPlugBackground *panel = new BaconPlugBackground( box.size, "ALingADing" );
   addChild( panel );
-
-  DMPTextPanel *d = new DMPTextPanel( Vec( 5, 5 ), "ABCD", 1.5 );
-  addChild( d );
-  
 
   addInput( createInput< PJ301MPort >( Vec( 7, 50 ),
                                        module,
@@ -82,7 +78,7 @@ ALingADingWidget::ALingADingWidget()
                                                  ALingADing::WET_DRY_MIX,
                                                  0, 1, 1 ));
   
-  addOutput( createOutput< PJ301MPort >( Vec( (box.size.x - 24) / 2, RACK_HEIGHT - 15 - 30 ),
+  addOutput( createOutput< PJ301MPort >( Vec( (box.size.x - 24) / 2, RACK_HEIGHT - 15 - 60 ),
                                          module,
                                          ALingADing::MODULATED_OUTPUT ) );
 }
