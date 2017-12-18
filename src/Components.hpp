@@ -221,7 +221,7 @@ struct TextLabel : virtual TransparentWidget
     nvgFontFaceId( vg, memFont );
     nvgFontSize( vg, pxSize );
     nvgFillColor( vg, COLOR_BLACK );
-    nvgTextAlign( vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE );
+    nvgTextAlign( vg, align );
     nvgText( vg, 0, 0, label.c_str(), NULL );
   }
 };

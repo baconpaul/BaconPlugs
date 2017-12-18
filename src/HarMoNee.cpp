@@ -163,36 +163,45 @@ HarMoNeeWidget::HarMoNeeWidget()
   BaconPlugBackground *bg = new BaconPlugBackground( box.size, "HarMoNee" );
   addChild( bg );
   
-  // These components are 32 x 32 so
-  int comp = 5;
-  int space = (box.size.x - comp*2)/ 3;
-  int margin = ( space - 32 );
-  
-  addInput( createInput< PJ301MPort >( Vec( comp*2 + 0 * space + margin, 335 ), module, HarMoNee::SOURCE_INPUT ) );
-  addOutput( createOutput<PJ301MPort>(Vec ( comp*2 + 1 * space + margin, 335 ), module, HarMoNee::ECHO_OUTPUT ) );
-  addOutput( createOutput<PJ301MPort>(Vec ( comp*2 + 2 * space + margin, 335 ), module, HarMoNee::INCREASED_OUTPUT ) );
+  Vec iPos( 12, 100 );
+  addChild( new BaconPlugLabel( iPos, BaconPlugLabel::ABOVE, BaconPlugLabel::SIG_IN, "in" ) );
+  addInput( createInput< PJ301MPort >( iPos, module, HarMoNee::SOURCE_INPUT ) );
+
+  iPos.y += 60;
+  addChild( new BaconPlugLabel( iPos, BaconPlugLabel::ABOVE, BaconPlugLabel::SIG_OUT, "root" ) );
+  addOutput( createOutput<PJ301MPort>(iPos, module, HarMoNee::ECHO_OUTPUT ) );
+
+  iPos.y += 60;
+  addChild( new BaconPlugLabel( iPos, BaconPlugLabel::ABOVE, BaconPlugLabel::SIG_OUT, "harm" ) );
+  addOutput( createOutput<PJ301MPort>(iPos, module, HarMoNee::INCREASED_OUTPUT ) );
 
   // NKK is 32 x 44
-  addParam( createParam< NKK >( Vec( 80, 16 ), module, HarMoNee::UP_OR_DOWN, 0, 1, 1 ) );
-  addChild( createLight< MediumLight< GreenLight >>( Vec( 70, 16 + 22 - 4 - 5 ), module, HarMoNee::UP_LIGHT ) );
-  addChild( createLight< MediumLight< RedLight >>( Vec( 70, 16 + 22 - 4 + 5 ), module, HarMoNee::DOWN_LIGHT ) );
+  addParam( createParam< NKK >( Vec( 80, 26 ), module, HarMoNee::UP_OR_DOWN, 0, 1, 1 ) );
+  addChild( new TextLabel( Vec( 74, 26+22-4-5-5 ), "up", 12, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM ) );
+  addChild( createLight< MediumLight< GreenLight >>( Vec( 70, 26 + 22 - 4 - 5 ), module, HarMoNee::UP_LIGHT ) );
+
+  addChild( new TextLabel( Vec( 74, 26+22-4+5+8+7 ), "dn", 12, NVG_ALIGN_CENTER | NVG_ALIGN_TOP ) );
+  addChild( createLight< MediumLight< RedLight >>( Vec( 70, 26 + 22 - 4 + 5 ), module, HarMoNee::DOWN_LIGHT ) );
 
 
-  addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 10, 18 ),
+  addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 10, 30 ),
                                              module,
                                              HarMoNee::DIGIT_LIGHT_TENS ) );
 
-  addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 36, 18 ),
+  addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 36, 30 ),
                                              module,
                                              HarMoNee::DIGIT_LIGHT_ONES ) );
 
-  int x = 80; int y = 16 + 45; float v = -1;
+  int x = 80; int y = 26 + 45; float v = -1;
   int ld = HarMoNee::HALF_STEP_LIGHT - HarMoNee::HALF_STEP;
 
+  const char* labels[] = { "1/2", "W", "m3", "III", "V", "O" };
   for( int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i )
     {
       if( i == HarMoNee::OCTAVE ) { v = 1; } { v = -1; }
       addParam( createParam<NKK>( Vec( x, y ), module, i, 0, 1, v ) );
+      addChild( new TextLabel( Vec( 66, y+22 ), labels[ i - HarMoNee::HALF_STEP ],
+                               14, NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE ) );
       addChild( createLight< MediumLight< BlueLight > >( Vec( 70, y + 22 - 5 ), module, i + ld ) );
       y += 45;
     }

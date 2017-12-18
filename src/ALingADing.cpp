@@ -84,9 +84,9 @@ ALingADingWidget::ALingADingWidget()
   addChild( new TextLabel( Vec( box.size.x / 2, 140 ),
                            "Mix", 14 ) );
 
-  addChild( new TextLabel( Vec( box.size.x / 2 + 20, 140 + 65 ),
+  addChild( new TextLabel( Vec( box.size.x / 2 + 10, 140 + 60 ),
                            "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP ) );
-  addChild( new TextLabel( Vec( box.size.x / 2 - 20, 140 + 65 ),
+  addChild( new TextLabel( Vec( box.size.x / 2 - 10, 140 + 60 ),
                            "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP ) );
 
   addParam( createParam< RoundLargeBlackKnob >( Vec( (box.size.x - 46)/2, 150 ),
