@@ -96,19 +96,33 @@ GlissinatorWidget::GlissinatorWidget()
   BaconPlugBackground *bg = new BaconPlugBackground( box.size, "Glissinator" );
   addChild( bg );
   
-  addParam( createParam< BaconSlider< 270 > >( Vec( 10, 10 ),
+  addParam( createParam< BaconSlider< 260 > >( Vec( box.size.x / 2 - 16, 34 ),
                                                module,
                                                Glissinator::GLISS_TIME,
                                                0,
                                                1,
                                                0.1 ) );
+
+  Vec inP = Vec( 7, RACK_HEIGHT - 15 - 43 );
+  Vec outP = Vec( box.size.x - 24 - 7, RACK_HEIGHT - 15 - 43 );
   
-  addInput( createInput< PJ301MPort >( Vec( 10, RACK_HEIGHT - 15 - 30 ),
+  addChild( new BaconPlugLabel( inP,
+                                BaconPlugLabel::ABOVE,
+                                BaconPlugLabel::SIG_IN,
+                                "in" ) );
+  
+  addInput( createInput< PJ301MPort >( inP,
                                        module,
                                        Glissinator::SOURCE_INPUT ) );
-  addOutput( createOutput< PJ301MPort >( Vec( box.size.x - 32, RACK_HEIGHT - 15 - 30 ),
+
+  addChild( new BaconPlugLabel( outP,
+                                BaconPlugLabel::ABOVE,
+                                BaconPlugLabel::SIG_OUT,
+                                "out" ) );
+  
+  addOutput( createOutput< PJ301MPort >( outP,
                                          module,
                                          Glissinator::SLID_OUTPUT ) );
-  addChild( createLight< SmallLight< BlueLight > >( Vec( box.size.x/2, RACK_HEIGHT - 15 - 40 ),
+  addChild( createLight< MediumLight< BlueLight > >( Vec( box.size.x/2 - 4.5 , 27 ),
                                                     module, Glissinator::SLIDING_LIGHT ) );
 }

@@ -1,7 +1,8 @@
 - UI on ALingADing
 - UI on HarMoNee
 - UI on Bitulator
-- UI on Glissinator
+
+- Slider UX doesn't line up ticks at zero (in Glissinator)
 
 - Scan for printfs
 - Make sure all of res is used

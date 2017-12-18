@@ -1,0 +1,60 @@
+{
+  "version": "",
+  "modules": [
+    {
+      "plugin": "BaconPlugs",
+      "model": "HarMoNee",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "params": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "plugin": "BaconPlugs",
+      "model": "Glissinator",
+      "pos": [
+        165.0,
+        0.0
+      ],
+      "params": [
+        0.30300003290176392
+      ]
+    },
+    {
+      "plugin": "BaconPlugs",
+      "model": "ALingADing",
+      "pos": [
+        285.0,
+        0.0
+      ],
+      "params": [
+        1.0
+      ]
+    },
+    {
+      "plugin": "BaconPlugs",
+      "model": "Bitulator",
+      "pos": [
+        420.0,
+        0.0
+      ],
+      "params": [
+        1.0,
+        1.0,
+        6.0,
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "wires": []
+}
