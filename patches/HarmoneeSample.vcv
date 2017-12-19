@@ -82,7 +82,7 @@
       "plugin": "Fundamental",
       "model": "VCO",
       "pos": [
-        465.0,
+        450.0,
         0.0
       ],
       "params": [
@@ -99,7 +99,7 @@
       "plugin": "Fundamental",
       "model": "VCO",
       "pos": [
-        615.0,
+        600.0,
         0.0
       ],
       "params": [
@@ -116,7 +116,7 @@
       "plugin": "Fundamental",
       "model": "VCMixer",
       "pos": [
-        765.0,
+        750.0,
         0.0
       ],
       "params": [
@@ -130,7 +130,7 @@
       "plugin": "Core",
       "model": "AudioInterface",
       "pos": [
-        915.0,
+        900.0,
         0.0
       ],
       "params": [],

@@ -1,109 +1,97 @@
 #include "BaconPlugs.hpp"
 #include <jansson.h>
 
-std::map< std::string, int > BaconPlugFontMgr::fontMap;
 
-int BaconPlugFontMgr::get( NVGcontext *vg, std::string resName )
+struct BaconPlugFontMgr
 {
-  if( fontMap.find( resName ) == fontMap.end() )
-    {
-      fontMap[ resName ] = nvgCreateFont( vg, resName.c_str(), assetPlugin( plugin, resName ).c_str() );
-    }
-  return fontMap[ resName ];
-}
-
-struct DMPText // Thanks http://scruss.com/blog/tag/font/
-{
-  typedef std::map< char, std::vector< bool > > fontData_t;
-private:
-  static fontData_t fontData;
-  static bool initialized;
-  void init();
-  
-public:
-  DMPText() {
-    init();
-  }
-  
-  void drawText( NVGcontext *vg, Vec pos, char c, int pxSize )
+  static std::map< std::string, int > fontMap;
+  static int get( NVGcontext *vg, std::string resName )
   {
-    fontData_t::iterator k = fontData.find( c );
-    if( k != fontData.end() ) {
-      fontData_t::mapped_type blist = k->second;
-      int row=0, col=0;
-      for( auto v = blist.begin(); v != blist.end(); ++v )
-        {
-          if( *v )
-            {
-              float xo = (col+0.5) * pxSize + pos.x;
-              float yo = (row+0.5) * pxSize + pos.y;
-              nvgBeginPath( vg );
-              nvgRect( vg, xo-0.1, yo-0.1, pxSize+0.2, pxSize+0.2 );
-              nvgFillColor( vg, COLOR_BLACK );
-              nvgFill( vg );
-            }
-          
-          col++;
-          if( col == 5 ) {
-            col = 0;
-            row ++;
-          }
-        }
-    }
-    else {
-    }
+    if( fontMap.find( resName ) == fontMap.end() )
+      {
+        fontMap[ resName ] = nvgCreateFont( vg, resName.c_str(), assetPlugin( plugin, resName ).c_str() );
+      }
+    return fontMap[ resName ];
   }
 };
 
+std::map< std::string, int > BaconPlugFontMgr::fontMap;
 
-bool DMPText::initialized = false;
-DMPText::fontData_t DMPText::fontData = DMPText::fontData_t();
-
-void DMPText::init()
+struct BaconPlugBackground : virtual TransparentWidget
 {
-  if( ! initialized ) {
-      initialized = true;
-
-      json_t *json;
-      json_error_t error;
-      
-      json = json_load_file(assetPlugin( plugin, "res/Keypunch029.json" ).c_str(), 0, &error);
-      if(!json) {
-        printf( "JSON FILE not loaded\n" );
-      }
-      const char* key;
-      json_t *value;
-      json_object_foreach( json, key, value ) {
-        fontData_t::mapped_type valmap;
-        size_t index;
-        json_t *aval;
-        json_array_foreach( value, index, aval ) {
-          std::string s( json_string_value( aval ) );
-          for( const char* c = s.c_str(); *c != 0; ++c ) {
-            valmap.push_back( *c == '#' );
-          }
-        }
-        DMPText::fontData[ key[ 0 ] ] = valmap;
-      }
+  int memFont = -1;
+  std::string title;
+  
+  BaconPlugBackground( Vec size, const char* titleIn ) : title( titleIn )
+  {
+    box.pos = Vec( 0, 0 );
+    box.size = size;
   }
-}
 
+  void draw( NVGcontext *vg ) override;
+};
 
-void DMPTextPanel::draw( NVGcontext *vg )
+struct RoundedBorder : virtual TransparentWidget
 {
-  DMPText d;
-
-  nvgBeginPath( vg );
-  nvgRect( vg, 0, 0, box.size.x, box.size.y );
-  nvgFillColor( vg, nvgRGBA( 255, 255, 200, 255 ) );
-  nvgFill( vg );
-
-  Vec cpos = Vec( 0, 0 );
-  for( const char* c = txt.c_str(); *c != 0; ++c ) {
-    d.drawText( vg, cpos, *c, pxper );
-    cpos.x += pxper * 5.0;
+  RoundedBorder( Vec pos, Vec sz )
+  {
+    box.pos = pos;
+    box.size = sz;
   }
-}
+
+  void draw( NVGcontext *vg )
+  {
+    nvgBeginPath( vg );
+    nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 );
+    nvgStrokeColor( vg, COLOR_BLACK );
+    nvgStroke( vg );
+  }
+};
+
+struct TextLabel : virtual TransparentWidget
+{
+  int memFont = -1;
+  std::string label;
+  int pxSize;
+  int align;
+  TextLabel( Vec pos, const char* lab, int px ) : label( lab ), pxSize( px )
+  {
+    align = NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE;
+    box.pos = pos;
+  }
+
+  TextLabel( Vec pos, const char* lab, int px, int al ) : label( lab ), pxSize( px ), align( al )
+  {
+    box.pos = pos;
+  }
+
+  void draw( NVGcontext *vg ) override {
+    if( memFont < 0 )
+      memFont = BaconPlugFontMgr::get( vg, "res/Monitorica-Bd.ttf" );
+
+    nvgBeginPath( vg );
+    nvgFontFaceId( vg, memFont );
+    nvgFontSize( vg, pxSize );
+    nvgFillColor( vg, COLOR_BLACK );
+    nvgTextAlign( vg, align );
+    nvgText( vg, 0, 0, label.c_str(), NULL );
+  }
+};
+
+struct BaconPlugLabel : virtual TransparentWidget
+{
+  int memFont = -1;
+
+  BaconStyleModuleWidget::LabelStyle  st;
+  BaconStyleModuleWidget::LabelAt     at;
+  std::string label;
+
+  BaconPlugLabel( Vec portPos, BaconStyleModuleWidget::LabelAt l, BaconStyleModuleWidget::LabelStyle s, const char* ilabel );
+  
+  void draw( NVGcontext *vg ) override;
+
+};
+
 
 void BaconPlugBackground::draw( NVGcontext *vg )
 {
@@ -112,7 +100,7 @@ void BaconPlugBackground::draw( NVGcontext *vg )
 
   nvgBeginPath( vg );
   nvgRect( vg, 0, 0, box.size.x, box.size.y );
-  nvgFillColor( vg, nvgRGBA( 220, 220, 210, 255 ) );
+  nvgFillColor( vg, BaconStyleModuleWidget::bg );
   nvgFill( vg );
 
   nvgBeginPath( vg );
@@ -121,27 +109,27 @@ void BaconPlugBackground::draw( NVGcontext *vg )
   nvgLineTo( vg, box.size.x, box.size.y );
   nvgLineTo( vg, 0, box.size.y );
   nvgLineTo( vg, 0, 0 );
-  nvgStrokeColor( vg, nvgRGBA( 180, 180, 170, 255 ) );
+  nvgStrokeColor( vg, BaconStyleModuleWidget::bgOutline );
   nvgStroke( vg );
 
   nvgFontFaceId( vg, memFont );
   nvgFontSize( vg, 14 );
-  nvgFillColor( vg, nvgRGBA( 0, 0, 0, 255 ) );
-  nvgStrokeColor( vg, nvgRGBA( 0, 0, 0, 255 ) );
+  nvgFillColor( vg, COLOR_BLACK );
+  nvgStrokeColor( vg, COLOR_BLACK );
   nvgTextAlign( vg, NVG_ALIGN_CENTER|NVG_ALIGN_BOTTOM );
   nvgText( vg, box.size.x / 2, box.size.y - 5, "BaconPlugs", NULL );
 
   nvgFontFaceId( vg, memFont );
   nvgFontSize( vg, 16 );
-  nvgFillColor( vg, nvgRGBA( 0, 0, 0, 255 ) );
-  nvgStrokeColor( vg, nvgRGBA( 0, 0, 0, 255 ) );
+  nvgFillColor( vg, COLOR_BLACK );
+  nvgStrokeColor( vg, COLOR_BLACK );
   nvgTextAlign( vg, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
   nvgText( vg, box.size.x / 2, 5, title.c_str(), NULL );
 
 
 }
 
-BaconPlugLabel::BaconPlugLabel( Vec portPos, LabelAt l, LabelStyle s, const char* ilabel )
+BaconPlugLabel::BaconPlugLabel( Vec portPos, BaconStyleModuleWidget::LabelAt l, BaconStyleModuleWidget::LabelStyle s, const char* ilabel )
   :
   st( s ), at( l ), label( ilabel )
 {
@@ -162,7 +150,7 @@ void BaconPlugLabel::draw( NVGcontext *vg )
   NVGcolor txtCol = COLOR_BLACK;
   
   switch( st ) {
-  case( SIG_IN ) :
+  case( BaconStyleModuleWidget::SIG_IN ) :
     {
       nvgBeginPath( vg );
       nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 );
@@ -170,19 +158,20 @@ void BaconPlugLabel::draw( NVGcontext *vg )
       nvgStroke( vg );
       break;
     }
-  case( SIG_OUT ) :
+  case( BaconStyleModuleWidget::SIG_OUT ) :
     {
       nvgBeginPath( vg );
       nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 );
-      nvgFillColor( vg, nvgRGBA( 90, 90, 60, 255 ) );
+      nvgFillColor( vg, BaconStyleModuleWidget::highlight );
       nvgFill( vg );
+
       nvgStrokeColor( vg, COLOR_BLACK );
       nvgStroke( vg );
 
       txtCol = COLOR_WHITE;
       break;
     }
-  case( OTHER ) :
+  case( BaconStyleModuleWidget::OTHER ) :
     {
       nvgBeginPath( vg );
       nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 );
@@ -199,3 +188,28 @@ void BaconPlugLabel::draw( NVGcontext *vg )
   nvgText( vg, box.size.x / 2, 3, label.c_str(), NULL );
 
 }
+
+
+TransparentWidget *BaconStyleModuleWidget::createBaconBG( const char* lab )
+{
+  return new BaconPlugBackground( box.size, lab );
+}
+
+TransparentWidget *BaconStyleModuleWidget::createBaconLabel( Vec pos, const char* lab, int px, int align )
+{
+  return new TextLabel( pos, lab, px, align );
+}
+
+TransparentWidget *BaconStyleModuleWidget::createPlugLabel( Vec plugPos, LabelAt l, LabelStyle s, const char* ilabel )
+{
+  return new BaconPlugLabel( plugPos, l, s, ilabel );
+}
+
+TransparentWidget *BaconStyleModuleWidget::createRoundedBorder( Vec pos, Vec sz )
+{
+  return new RoundedBorder( pos, sz );
+}
+
+NVGcolor BaconStyleModuleWidget::bg = nvgRGBA( 220, 220, 210, 255 );
+NVGcolor BaconStyleModuleWidget::bgOutline = nvgRGBA( 180, 180, 170, 255 );
+NVGcolor BaconStyleModuleWidget::highlight = nvgRGBA( 90, 90, 60, 255 );

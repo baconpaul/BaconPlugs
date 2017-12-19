@@ -158,77 +158,11 @@ struct BaconSlider : SVGSlider
   }
 };
 
-/*
-then something like this
-*/
-struct DMPTextPanel : virtual TransparentWidget
+struct BaconStyleModuleWidget : ModuleWidget
 {
-  std::string txt;
-  float pxper;
-  
-  DMPTextPanel( Vec pos, const char* txtc, float pxperdot ) : txt( txtc ), pxper( pxperdot )
-  {
-    box.pos = pos;
-    box.size.y = pxperdot * 7;
-    box.size.x = 5 * txt.length() * pxperdot;
-  }
-
-  void draw( NVGcontext *vg ) override;
-};
-
-struct BaconPlugFontMgr
-{
-  static std::map< std::string, int > fontMap;
-  static int get( NVGcontext *vg, std::string resName );
-};
-
-struct BaconPlugBackground : virtual TransparentWidget
-{
-  int memFont = -1;
-  std::string title;
-  
-  BaconPlugBackground( Vec size, const char* titleIn ) : title( titleIn )
-  {
-    box.pos = Vec( 0, 0 );
-    box.size = size;
-  }
-
-  void draw( NVGcontext *vg ) override;
-};
-
-struct TextLabel : virtual TransparentWidget
-{
-  int memFont = -1;
-  std::string label;
-  int pxSize;
-  int align;
-  TextLabel( Vec pos, const char* lab, int px ) : label( lab ), pxSize( px )
-  {
-    align = NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE;
-    box.pos = pos;
-  }
-
-  TextLabel( Vec pos, const char* lab, int px, int al ) : label( lab ), pxSize( px ), align( al )
-  {
-    box.pos = pos;
-  }
-
-  void draw( NVGcontext *vg ) override {
-    if( memFont < 0 )
-      memFont = BaconPlugFontMgr::get( vg, "res/Monitorica-Bd.ttf" );
-
-    nvgBeginPath( vg );
-    nvgFontFaceId( vg, memFont );
-    nvgFontSize( vg, pxSize );
-    nvgFillColor( vg, COLOR_BLACK );
-    nvgTextAlign( vg, align );
-    nvgText( vg, 0, 0, label.c_str(), NULL );
-  }
-};
-
-struct BaconPlugLabel : virtual TransparentWidget
-{
-  int memFont = -1;
+  static NVGcolor bg;
+  static NVGcolor bgOutline;
+  static NVGcolor highlight;
 
   enum LabelAt {
     ABOVE,
@@ -243,14 +177,20 @@ struct BaconPlugLabel : virtual TransparentWidget
     OTHER
   };
 
-  LabelStyle  st;
-  LabelAt     at;
-  std::string label;
-
-  BaconPlugLabel( Vec portPos, LabelAt l, LabelStyle s, const char* ilabel );
+  int cx() { return box.size.x / 2; }
+  int cx( int w ) { return (box.size.x-w) / 2; }
   
-  void draw( NVGcontext *vg ) override;
-
+  TransparentWidget *createBaconBG( const char* lab );
+  TransparentWidget *createBaconLabel( Vec pos, const char* lab, int px )
+  {
+    return createBaconLabel( pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+  }
+  TransparentWidget *createBaconLabel( Vec pos, const char* lab, int px, int align );
+  TransparentWidget *createPlugLabel( Vec plugPos, LabelStyle s, const char* ilabel ) {
+    return createPlugLabel( plugPos, LabelAt::ABOVE, s, ilabel );
+  }
+  TransparentWidget *createPlugLabel( Vec plugPos, LabelAt l, LabelStyle s, const char* ilabel );
+  TransparentWidget *createRoundedBorder( Vec pos, Vec sz );
 };
 
 #endif

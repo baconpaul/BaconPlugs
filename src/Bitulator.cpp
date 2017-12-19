@@ -72,33 +72,47 @@ BitulatorWidget::BitulatorWidget()
 {
   Bitulator *module = new Bitulator();
   setModule( module );
-  box.size = Vec( SCREW_WIDTH * 8, RACK_HEIGHT );
+  box.size = Vec( SCREW_WIDTH * 6, RACK_HEIGHT );
 
-  BaconPlugBackground *bg = new BaconPlugBackground( box.size, "Bitulator" );
-  addChild( bg );
+  addChild( createBaconBG( "Bitulator" ) );
 
-  addInput( createInput< PJ301MPort >( Vec( 7, 50 ),
-                                       module,
-                                       Bitulator::SIGNAL_INPUT ) );
+  int wdpos = 40;
+  addChild( createBaconLabel( Vec( cx(), wdpos ), "Mix", 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE ) );
+  addChild( createBaconLabel( Vec( cx() + 10, wdpos + 60 ), "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP ) );
+  addChild( createBaconLabel( Vec( cx() - 10, wdpos + 60 ), "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP ) );
 
-  addParam( createParam< Davies1900hBlackKnob >( Vec( (box.size.x - 36)/2, 100 ),
-                                                 module,
-                                                 Bitulator::WET_DRY_MIX,
-                                                 0, 1, 1 ));
+  addParam( createParam< RoundLargeBlackKnob >( Vec( cx( 46 ), wdpos + 10 ),
+                                                module,
+                                                Bitulator::WET_DRY_MIX,
+                                                0, 1, 1 ));
 
-  addParam( createParam< CKSS >( Vec( 10, 140 ), module, Bitulator::BITULATE, 0, 1, 1 ) );
-  addParam( createParam< Davies1900hBlackKnob >( Vec( (box.size.x - 36)/2, 140 ),
+  addChild( createRoundedBorder( Vec( 5, 140 ), Vec( box.size.x-10, 70 ) ) );
+  addChild( createBaconLabel( Vec( box.size.x / 2, 143 ), "Quantize", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP ) );
+  addParam( createParam< CKSS >( Vec( 10, 160 ), module, Bitulator::BITULATE, 0, 1, 1 ) );
+  addParam( createParam< RoundBlackKnob >( Vec( (box.size.x - 15 - 36), 165 ),
                                                  module,
                                                  Bitulator::STEP_COUNT,
                                                  2, 16, 6 ));
 
-  addParam( createParam< CKSS >( Vec( 10, 180 ), module, Bitulator::CLIPULATE, 0, 1, 1 ) );
-  addParam( createParam< Davies1900hBlackKnob >( Vec( (box.size.x - 36)/2, 180 ),
+  addChild( createRoundedBorder( Vec( 5, 215 ), Vec( box.size.x-10, 70 ) ) );
+  addChild( createBaconLabel( Vec( box.size.x / 2, 218 ), "Amp'n'Clip", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP ) );
+
+  addParam( createParam< CKSS >( Vec( 10, 235 ), module, Bitulator::CLIPULATE, 0, 1, 1 ) );
+  addParam( createParam< RoundBlackKnob >( Vec( (box.size.x - 15 - 36 ), 240 ),
                                                  module,
                                                  Bitulator::AMP_LEVEL,
                                                  1, 10, 1 ));
 
-  addOutput( createOutput< PJ301MPort >( Vec( (box.size.x - 24) / 2, RACK_HEIGHT - 15 - 30 ),
+  Vec inP = Vec( 10, RACK_HEIGHT - 15 - 43 );
+  Vec outP = Vec( box.size.x - 24 - 10, RACK_HEIGHT - 15 - 43 );
+  
+  addChild( createPlugLabel( inP, SIG_IN, "in" ) );
+  addInput( createInput< PJ301MPort >( inP,
+                                       module,
+                                       Bitulator::SIGNAL_INPUT ) );
+
+  addChild( createPlugLabel( outP, SIG_OUT, "out" ) );
+  addOutput( createOutput< PJ301MPort >( outP,
                                          module,
                                          Bitulator::CRUNCHED_OUTPUT ) );
 }

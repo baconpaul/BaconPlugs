@@ -1,4 +1,5 @@
-- UI on Bitulator
+- Alignment helpers on Style base class
+- UI on Bitulator including Lights
 
 - Slider UX doesn't line up ticks at zero (in Glissinator)
 

@@ -14,22 +14,22 @@ using namespace rack;
 
 extern Plugin *plugin;
 
-struct HarMoNeeWidget : ModuleWidget {
+#include "Components.hpp"
+
+struct HarMoNeeWidget : BaconStyleModuleWidget {
   HarMoNeeWidget();
 };
 
-struct GlissinatorWidget : ModuleWidget {
+struct GlissinatorWidget : BaconStyleModuleWidget {
   GlissinatorWidget();
 };
 
-struct ALingADingWidget : ModuleWidget {
+struct ALingADingWidget : BaconStyleModuleWidget {
   ALingADingWidget();
 };
 
-struct BitulatorWidget : ModuleWidget {
+struct BitulatorWidget : BaconStyleModuleWidget {
   BitulatorWidget();
 };
-
-#include "Components.hpp"
 
 #endif
