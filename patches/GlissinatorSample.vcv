@@ -5,7 +5,7 @@
       "plugin": "Core",
       "model": "AudioInterface",
       "pos": [
-        825.0,
+        705.0,
         0.0
       ],
       "params": [],
@@ -20,7 +20,7 @@
       "plugin": "Fundamental",
       "model": "VCO",
       "pos": [
-        525.0,
+        405.0,
         0.0
       ],
       "params": [
@@ -97,7 +97,7 @@
       "plugin": "Fundamental",
       "model": "VCMixer",
       "pos": [
-        675.0,
+        555.0,
         0.0
       ],
       "params": [
@@ -117,45 +117,6 @@
       "params": [
         0.41250017285346985
       ]
-    },
-    {
-      "plugin": "BaconPlugs",
-      "model": "HarMoNee",
-      "pos": [
-        405.0,
-        0.0
-      ],
-      "params": [
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ]
-    },
-    {
-      "plugin": "Fundamental",
-      "model": "Scope",
-      "pos": [
-        1005.0,
-        0.0
-      ],
-      "params": [
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        -7.3699994087219238,
-        0.0,
-        0.0,
-        0.0
-      ],
-      "data": {
-        "lissajous": 0,
-        "external": 0
-      }
     }
   ],
   "wires": [
@@ -178,12 +139,6 @@
       "inputId": 0
     },
     {
-      "outputModuleId": 5,
-      "outputId": 1,
-      "inputModuleId": 1,
-      "inputId": 0
-    },
-    {
       "outputModuleId": 3,
       "outputId": 0,
       "inputModuleId": 0,
@@ -192,13 +147,7 @@
     {
       "outputModuleId": 4,
       "outputId": 0,
-      "inputModuleId": 5,
-      "inputId": 0
-    },
-    {
-      "outputModuleId": 5,
-      "outputId": 0,
-      "inputModuleId": 6,
+      "inputModuleId": 1,
       "inputId": 0
     }
   ]
