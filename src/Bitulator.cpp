@@ -27,6 +27,8 @@ struct Bitulator : Module {
   };
 
   enum LightIds {
+    BITULATING_LIGHT,
+    CRUNCHING_LIGHT,
     NUM_LIGHTS
   };
 
@@ -36,6 +38,9 @@ struct Bitulator : Module {
     params[ AMP_LEVEL ].value = 1;
     params[ BITULATE ].value = 1;
     params[ CLIPULATE ].value = 1;
+
+    lights[ BITULATING_LIGHT ].value = 1;
+    lights[ CRUNCHING_LIGHT ].value = 1;
   }
 
 
@@ -52,15 +57,21 @@ struct Bitulator : Module {
       float crunch = (int)( (vin/5.0) * qi ) / qi * 5.0;
 
       res = crunch;
+      lights[ BITULATING_LIGHT ].value = 1;
     }
     else
     {
       res = vin;
+      lights[ BITULATING_LIGHT ].value = 0;
     }
 
     if( params[ CLIPULATE ].value > 0 ) {
       float al = params[ AMP_LEVEL ].value;
       res = clampf( res * al, -5.0, 5.0 );
+      lights[ CRUNCHING_LIGHT ].value = 1;
+    }
+    else {
+      lights[ CRUNCHING_LIGHT ].value = 0;
     }
         
 
@@ -86,22 +97,34 @@ BitulatorWidget::BitulatorWidget()
                                                 Bitulator::WET_DRY_MIX,
                                                 0, 1, 1 ));
 
-  addChild( createRoundedBorder( Vec( 5, 140 ), Vec( box.size.x-10, 70 ) ) );
-  addChild( createBaconLabel( Vec( box.size.x / 2, 143 ), "Quantize", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP ) );
-  addParam( createParam< CKSS >( Vec( 10, 160 ), module, Bitulator::BITULATE, 0, 1, 1 ) );
-  addParam( createParam< RoundBlackKnob >( Vec( (box.size.x - 15 - 36), 165 ),
-                                                 module,
-                                                 Bitulator::STEP_COUNT,
-                                                 2, 16, 6 ));
+  Vec cr( 5, 140 ), rs( box.size.x-10, 70 );
+  addChild( createRoundedBorder( cr, rs ) );
+  addChild( createBaconLabel( Vec( cx(), cr.y+3 ), "Quantize", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP ) );
+  addChild( createLight< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::BITULATING_LIGHT ) );
+  addParam( createParam< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::BITULATE, 0, 1, 1 ) );
+  Vec knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 20 );
+  Vec knobCtr = knobPos.plus( Vec( 18, 18 ) );
+  addParam( createParam< RoundBlackKnob >( knobPos,
+                                           module,
+                                           Bitulator::STEP_COUNT,
+                                           2, 16, 6 ));
+  addChild( createBaconLabel( knobCtr.plus( Vec(  8, 18 ) ), "smth", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP ) );
+  addChild( createBaconLabel( knobCtr.plus( Vec( -8, 18 ) ), "crnch", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP ) );
 
-  addChild( createRoundedBorder( Vec( 5, 215 ), Vec( box.size.x-10, 70 ) ) );
-  addChild( createBaconLabel( Vec( box.size.x / 2, 218 ), "Amp'n'Clip", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP ) );
 
-  addParam( createParam< CKSS >( Vec( 10, 235 ), module, Bitulator::CLIPULATE, 0, 1, 1 ) );
-  addParam( createParam< RoundBlackKnob >( Vec( (box.size.x - 15 - 36 ), 240 ),
-                                                 module,
-                                                 Bitulator::AMP_LEVEL,
-                                                 1, 10, 1 ));
+  cr = Vec( 5, 215 );
+  addChild( createRoundedBorder( cr, rs ) );
+  addChild( createBaconLabel( Vec( cx(), cr.y+3 ), "Amp'n'Clip", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP ) );
+  addChild( createLight< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::CRUNCHING_LIGHT ) );
+  addParam( createParam< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::CLIPULATE, 0, 1, 1 ) );
+  knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 20 );
+  knobCtr = knobPos.plus( Vec( 18, 18 ) );
+  addParam( createParam< RoundBlackKnob >( knobPos,
+                                           module,
+                                           Bitulator::AMP_LEVEL,
+                                           1, 10, 1 ) );
+  addChild( createBaconLabel( knobCtr.plus( Vec(  12, 18 ) ), "11", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP ) );
+  addChild( createBaconLabel( knobCtr.plus( Vec( -8, 18 ) ), "one", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP ) );
 
   Vec inP = Vec( 10, RACK_HEIGHT - 15 - 43 );
   Vec outP = Vec( box.size.x - 24 - 10, RACK_HEIGHT - 15 - 43 );
