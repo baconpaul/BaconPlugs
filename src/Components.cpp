@@ -25,7 +25,7 @@ struct InternalRoundedBorder : virtual TransparentWidget
     box.size = sz;
   }
 
-  void draw( NVGcontext *vg )
+  void draw( NVGcontext *vg ) override
   {
     nvgBeginPath( vg );
     nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 );

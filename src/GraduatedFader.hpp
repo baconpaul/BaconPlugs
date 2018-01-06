@@ -44,7 +44,7 @@ struct GraduatedFader : SVGSlider
     GraduatedFader *s;
     InternalSliderBG( GraduatedFader *s_ ) : s( s_ ) {}
     
-    void draw( NVGcontext *vg )
+    void draw( NVGcontext *vg ) override
     {
       int widget_width = s->widget_width;
       int nStrokes = 10;

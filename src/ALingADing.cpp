@@ -38,7 +38,7 @@ struct ALingADing : Module {
     else return 0.2 * log( 1.0 + exp( 10 * ( in - 1 ) ) );
   }
   
-  void step()
+  void step() override
   {
     float vin = inputs[ SIGNAL_INPUT ].value;
     float vc  = inputs[ CARRIER_INPUT ].value;

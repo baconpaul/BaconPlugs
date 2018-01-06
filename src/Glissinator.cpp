@@ -33,7 +33,7 @@ struct Glissinator : Module {
 
 
   
-  void step()
+  void step() override
   {
     float glist_sec = params[ GLISS_TIME ].value;
     int shift_time = engineGetSampleRate() * glist_sec;

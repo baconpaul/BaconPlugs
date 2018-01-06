@@ -44,7 +44,7 @@ struct Bitulator : Module {
   }
 
 
-  void step()
+  void step() override
   {
     float vin = inputs[ SIGNAL_INPUT ].value;
     float wd = params[ WET_DRY_MIX ].value;
