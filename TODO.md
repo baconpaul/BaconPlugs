@@ -2,6 +2,9 @@ ToDo: Master Branch
 
 Plugins:
 *  CV tonal Quantizer plugin
+   ** Pretty good 12 step rough start, so
+   ** add different steps, different 12 tone scales, etc...
+   
 *  Multi-nome plugin (learn about gates some more before I do this obvs)
 *  CleverClipper (branch "CleverClipper" already exists)
 *  Musical Arpeggiator

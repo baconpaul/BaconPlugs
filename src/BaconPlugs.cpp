@@ -11,8 +11,10 @@ void init(rack::Plugin *p) {
 #endif
 	p->website = "https://github.com/baconpaul/BaconPlugs";
 
-	p->addModel(createModel<HarMoNeeWidget>("BaconPlugs", "HarMoNee", "HarMoNee", AMPLIFIER_TAG));
-        p->addModel(createModel<GlissinatorWidget>("BaconPlugs", "Glissinator", "Glissinator", AMPLIFIER_TAG)); // TODO: Fix that tag
-        p->addModel(createModel<ALingADingWidget>("BaconPlugs", "ALingADing", "ALingADing", AMPLIFIER_TAG)); // TODO: Fix that tag
-        p->addModel(createModel<BitulatorWidget>("BaconPlugs", "Bitulator", "Bitulator", AMPLIFIER_TAG)); // TODO: Fix that tag
+        // remember these tags are in [plugins.hpp
+	p->addModel(createModel<HarMoNeeWidget>("BaconPlugs", "HarMoNee", "HarMoNee", TUNER_TAG));
+        p->addModel(createModel<GlissinatorWidget>("BaconPlugs", "Glissinator", "Glissinator", EFFECT_TAG)); // TODO: Fix that tag
+        p->addModel(createModel<ALingADingWidget>("BaconPlugs", "ALingADing", "ALingADing", RING_MODULATOR_TAG)); // TODO: Fix that tag
+        p->addModel(createModel<BitulatorWidget>("BaconPlugs", "Bitulator", "Bitulator", DISTORTION_TAG)); // TODO: Fix that tag
+        p->addModel(createModel<QuantEyesWidget>("BaconPlugs", "QuantEyes", "QuantEyes", QUANTIZER_TAG)); // TODO: Fix that tag
 }

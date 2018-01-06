@@ -1,0 +1,227 @@
+{
+  "version": "",
+  "modules": [
+    {
+      "plugin": "Fundamental",
+      "model": "SEQ3",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "params": [
+        -0.17200051248073578,
+        0.0,
+        0.0,
+        8.0,
+        0.79499953985214233,
+        0.0,
+        0.0,
+        0.0,
+        2.0249993801116943,
+        0.0,
+        0.0,
+        0.0,
+        2.8349974155426025,
+        0.0,
+        0.0,
+        0.0,
+        2.1749999523162842,
+        0.0,
+        0.0,
+        0.0,
+        1.6949996948242188,
+        0.0,
+        0.0,
+        0.0,
+        1.2299997806549072,
+        0.0,
+        0.0,
+        0.0,
+        2.6099982261657715,
+        0.0,
+        0.0,
+        0.0,
+        2.2050032615661621,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "data": {
+        "running": true,
+        "gates": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "gateMode": 0
+      }
+    },
+    {
+      "plugin": "BaconPlugs",
+      "model": "Glissinator",
+      "pos": [
+        330.0,
+        0.0
+      ],
+      "params": [
+        0.85800004005432129
+      ]
+    },
+    {
+      "plugin": "Core",
+      "model": "AudioInterface",
+      "pos": [
+        1095.0,
+        0.0
+      ],
+      "params": [],
+      "data": {
+        "driver": 5,
+        "device": 1,
+        "sampleRate": 44100.0,
+        "blockSize": 256
+      }
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "VCMixer",
+      "pos": [
+        945.0,
+        0.0
+      ],
+      "params": [
+        0.88849997520446777,
+        0.1620001345872879,
+        0.13349999487400055,
+        0.0
+      ]
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "VCO",
+      "pos": [
+        645.0,
+        0.0
+      ],
+      "params": [
+        1.0,
+        1.0,
+        -11.988008499145508,
+        0.0,
+        0.5,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "plugin": "BaconPlugs",
+      "model": "QuantEyes",
+      "pos": [
+        405.0,
+        0.0
+      ],
+      "params": []
+    },
+    {
+      "plugin": "BaconPlugs",
+      "model": "HarMoNee",
+      "pos": [
+        525.0,
+        0.0
+      ],
+      "params": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "plugin": "Fundamental",
+      "model": "VCO",
+      "pos": [
+        795.0,
+        0.0
+      ],
+      "params": [
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.5,
+        0.14850008487701416,
+        0.3135000467300415
+      ]
+    }
+  ],
+  "wires": [
+    {
+      "outputModuleId": 0,
+      "outputId": 1,
+      "inputModuleId": 1,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 3,
+      "outputId": 0,
+      "inputModuleId": 2,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 3,
+      "outputId": 0,
+      "inputModuleId": 2,
+      "inputId": 1
+    },
+    {
+      "outputModuleId": 1,
+      "outputId": 0,
+      "inputModuleId": 5,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 5,
+      "outputId": 0,
+      "inputModuleId": 4,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 4,
+      "outputId": 1,
+      "inputModuleId": 3,
+      "inputId": 1
+    },
+    {
+      "outputModuleId": 6,
+      "outputId": 1,
+      "inputModuleId": 7,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 7,
+      "outputId": 2,
+      "inputModuleId": 3,
+      "inputId": 3
+    },
+    {
+      "outputModuleId": 5,
+      "outputId": 0,
+      "inputModuleId": 6,
+      "inputId": 0
+    },
+    {
+      "outputModuleId": 4,
+      "outputId": 3,
+      "inputModuleId": 7,
+      "inputId": 1
+    }
+  ]
+}

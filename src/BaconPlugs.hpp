@@ -32,4 +32,8 @@ struct BitulatorWidget : ModuleWidget {
   BitulatorWidget();
 };
 
+struct QuantEyesWidget : ModuleWidget {
+  QuantEyesWidget();
+};
+
 #endif
