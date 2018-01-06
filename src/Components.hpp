@@ -8,6 +8,7 @@
 #include <string>
 
 #include "GraduatedFader.hpp"
+#include "BufferedDrawFunction.hpp"
 
 using namespace rack;
 
@@ -28,12 +29,17 @@ struct SevenSegmentLight : T {
     { 1, 1, 1, 1, 1, 1, 1 },
     { 1, 1, 1, 1, 0, 1, 1 }
   };
+
+  int pvalue;
+
+  BufferedDrawFunctionWidget<SevenSegmentLight<T>> *buffer;
   
   SevenSegmentLight( )
   {
     lx = 7;
     ly = 11;
     ppl = 4;
+    pvalue = -1;
     this->box.size = Vec( ppl * (lx-1) + 2, ppl * (ly-1) + 2 );
 
     // https://en.wikipedia.org/wiki/Seven-segment_display#/media/File:7_segment_display_labeled.svg
@@ -44,10 +50,28 @@ struct SevenSegmentLight : T {
     unscaledLoc.push_back( Rect( Vec( 1, 6 ), Vec( 1, 3 ) ) );
     unscaledLoc.push_back( Rect( Vec( 1, 2 ), Vec( 1, 3 ) ) );
     unscaledLoc.push_back( Rect( Vec( 2, 5 ), Vec( 3, 1 ) ) );
+
+    buffer = new BufferedDrawFunctionWidget<SevenSegmentLight<T>>( Vec( 0, 0 ), this->box.size,
+                                                                   this,
+                                                                   &SevenSegmentLight<T>::drawSegments );
+    this->addChild( buffer );
   }
 
   void draw( NVGcontext *vg ) override
   {
+    float fvalue = this->module->lights[ this->firstLightId ].value;
+    int value = clampf( fvalue, 0, 9 );
+    if( value != pvalue )
+      buffer->dirty = true;
+
+    pvalue = value;
+    
+    buffer->draw( vg );
+  }
+
+  void drawSegments( NVGcontext *vg )
+  {
+    // This is now buffered to only be called when the value has changed
     int w = this->box.size.x;
     int h = this->box.size.y;
     
@@ -60,6 +84,7 @@ struct SevenSegmentLight : T {
     int i=0;
     float fvalue = this->module->lights[ this->firstLightId ].value;
     int value = clampf( fvalue, 0, 9 );
+
     int *ebn = elementsByNum[ value ];
 
     NVGcolor oncol = this->baseColors[ 0 ];
@@ -71,16 +96,47 @@ struct SevenSegmentLight : T {
         int ew = it->size.x;
         int eh = it->size.y;
         nvgBeginPath( vg );
-        nvgRect( vg, x * ppl + 1, y * ppl + 1, ew * ppl, eh * ppl );
+        // New version with corners
+        float x0 = x * ppl + 1;
+        float y0 = y * ppl + 1;
+        float w = ew * ppl;
+        float h = eh * ppl;
+        float tri = ppl / 2;
+        
+        if( eh == 1 )
+          {
+            // This is a sideways element
+            nvgMoveTo( vg, x0, y0 );
+            nvgLineTo( vg, x0 + w, y0 );
+            nvgLineTo( vg, x0 + w + tri, y0 + tri );
+            nvgLineTo( vg, x0 + w, y0 + h);
+            nvgLineTo( vg, x0, y0 + h);
+            nvgLineTo( vg, x0 - tri, y0 + tri );
+            nvgClosePath( vg );
+          }
+        else
+          {
+            nvgMoveTo( vg, x0, y0 );
+            nvgLineTo( vg, x0, y0 + h );
+            nvgLineTo( vg, x0 + tri, y0 + h + tri );
+            nvgLineTo( vg, x0 + w, y0 + h);
+            nvgLineTo( vg, x0 + w, y0);
+            nvgLineTo( vg, x0 + tri, y0 - tri );
+          }
+
+
+        // Old version nvgRect( vg, x * ppl + 1, y * ppl + 1, ew * ppl, eh * ppl );
         if( ebn[ i ] > 0 )
           {
             nvgFillColor( vg, oncol );
+            nvgFill( vg );
           }
-      else
-        {
-          nvgFillColor( vg, nvgRGBA( 50, 70, 50, 255 ) );
-        }
-        nvgFill( vg );
+        else
+          {
+            nvgFillColor( vg, nvgRGBA( 50, 70, 50, 255 ) );
+            nvgFill( vg );
+                    
+          }
         ++i;
       }
     
