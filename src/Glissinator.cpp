@@ -95,13 +95,15 @@ GlissinatorWidget::GlissinatorWidget()
   BaconBackground *bg = new BaconBackground( box.size, "Glissinator" );
 
   addChild( bg->wrappedInFramebuffer() );
+
+  ParamWidget *slider = createParam< GraduatedFader< 255 > >( Vec( bg->cx( 29 ), 43 ),
+                                                              module,
+                                                              Glissinator::GLISS_TIME,
+                                                              0,
+                                                              1,
+                                                              0.1 );
   
-  addParam( createParam< BaconSlider< 260 > >( Vec( box.size.x / 2 - 16, 34 ),
-                                               module,
-                                               Glissinator::GLISS_TIME,
-                                               0,
-                                               1,
-                                               0.1 ) );
+  addParam( slider );
 
   Vec inP = Vec( 7, RACK_HEIGHT - 15 - 43 );
   Vec outP = Vec( box.size.x - 24 - 7, RACK_HEIGHT - 15 - 43 );

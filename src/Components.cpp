@@ -168,7 +168,7 @@ void InternalPlugLabel::draw( NVGcontext *vg )
   case( BaconBackground::OTHER ) :
     {
       nvgBeginPath( vg );
-      nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 );
+      nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 ); 
       nvgStrokeColor( vg, COLOR_RED );
       nvgStroke( vg );
       break;
@@ -220,3 +220,4 @@ FramebufferWidget* BaconBackground::wrappedInFramebuffer()
   fb->addChild( this );
   return fb;
 }
+

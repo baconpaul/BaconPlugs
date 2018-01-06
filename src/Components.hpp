@@ -7,10 +7,13 @@
 #include <vector>
 #include <string>
 
+#include "GraduatedFader.hpp"
+
 using namespace rack;
 
-template < typename T >
-struct SevenSegmentLight : virtual T {
+
+template <typename T>
+struct SevenSegmentLight : T {
   int lx, ly, ppl;
   std::vector< Rect > unscaledLoc;
   int elementsByNum[ 10 ][ 7 ] = {
@@ -42,6 +45,7 @@ struct SevenSegmentLight : virtual T {
     unscaledLoc.push_back( Rect( Vec( 1, 2 ), Vec( 1, 3 ) ) );
     unscaledLoc.push_back( Rect( Vec( 2, 5 ), Vec( 3, 1 ) ) );
   }
+
   void draw( NVGcontext *vg ) override
   {
     int w = this->box.size.x;
@@ -80,81 +84,6 @@ struct SevenSegmentLight : virtual T {
         ++i;
       }
     
-  }
-};
-
-template <int H>
-struct BaconSlider : SVGSlider
-{
-  int slider_height = 41;
-  int slider_width = 20;
-  int widget_width = 32;
-  BaconSlider()
-  {
-    int margin = (widget_width-slider_width)/2;
-    maxHandlePos = Vec( (widget_width-slider_width)/2, margin );
-    minHandlePos = Vec( (widget_width-slider_width)/2, (H-slider_height - margin) );
-    box.size = Vec( widget_width, H );
-
-    background->svg = NULL;
-    background->wrap(); 
-    background->box.pos = Vec( 0, 0 );
-
-    handle->svg = SVG::load( assetPlugin( plugin, "res/BaconSliderHandle.svg" ) );
-    handle->wrap();
-
-  }
-
-  void draw( NVGcontext *vg ) override
-  {
-    int margin = (widget_width-slider_width)/2;
-    int nStrokes = 10;
-    int yTop = slider_height / 2;
-    int yHeight = H - slider_height;
-
-#if 0
-    nvgBeginPath( vg );
-    nvgRect( vg, 0, 0, widget_width, H );
-    nvgFillColor( vg, COLOR_RED );
-    nvgFill( vg );
-#endif
-    
-    float dx = yHeight / nStrokes;
-
-
-    for( int i=0; i<= nStrokes; ++i )
-      {
-        nvgBeginPath( vg );
-        nvgMoveTo( vg, 1, dx * i + yTop + margin + 1 );
-        nvgLineTo( vg, widget_width-1, dx * i + yTop + margin + 1 );
-        nvgStrokeColor( vg, nvgRGBA( 200, 200, 200, 255 ) );
-        nvgStroke( vg );
-      }
-
-    nvgBeginPath( vg );
-    nvgRect( vg,
-             widget_width/2 - 2, yTop,
-             5, yHeight+1 );
-    nvgFillColor( vg, COLOR_BLACK );
-    nvgFill( vg );
-
-    nvgBeginPath( vg );
-    nvgMoveTo( vg, widget_width/2 - 2, yTop );
-    nvgLineTo( vg, widget_width/2 - 2, yTop+yHeight+1 );
-    nvgLineTo( vg, widget_width/2 - 2+5, yTop+yHeight+1 );
-    nvgStrokeColor( vg, nvgRGBA( 120, 120, 120, 255 ) );
-    nvgStroke( vg );
-    
-    for( int i=0; i<= nStrokes; ++i )
-      {
-        nvgBeginPath( vg );
-        nvgMoveTo( vg, 1, dx * i + yTop + margin );
-        nvgLineTo( vg, widget_width-1, dx * i + yTop + margin );
-        nvgStrokeColor( vg, nvgRGBA( 10, 10, 10, 255 ) );
-        nvgStroke( vg );
-      }
-
-    SVGSlider::draw( vg );
   }
 };
 
