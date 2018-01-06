@@ -16,19 +16,19 @@ extern Plugin *plugin;
 
 #include "Components.hpp"
 
-struct HarMoNeeWidget : BaconStyleModuleWidget {
+struct HarMoNeeWidget : ModuleWidget {
   HarMoNeeWidget();
 };
 
-struct GlissinatorWidget : BaconStyleModuleWidget {
+struct GlissinatorWidget : ModuleWidget {
   GlissinatorWidget();
 };
 
-struct ALingADingWidget : BaconStyleModuleWidget {
+struct ALingADingWidget : ModuleWidget {
   ALingADingWidget();
 };
 
-struct BitulatorWidget : BaconStyleModuleWidget {
+struct BitulatorWidget : ModuleWidget {
   BitulatorWidget();
 };
 

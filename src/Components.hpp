@@ -9,8 +9,8 @@
 
 using namespace rack;
 
-template< typename COLORBASE >
-struct SevenSegmentLight : virtual COLORBASE {
+template < typename T >
+struct SevenSegmentLight : virtual T {
   int lx, ly, ppl;
   std::vector< Rect > unscaledLoc;
   int elementsByNum[ 10 ][ 7 ] = {
@@ -26,7 +26,7 @@ struct SevenSegmentLight : virtual COLORBASE {
     { 1, 1, 1, 1, 0, 1, 1 }
   };
   
-  SevenSegmentLight()
+  SevenSegmentLight( )
   {
     lx = 7;
     ly = 11;
@@ -158,11 +158,14 @@ struct BaconSlider : SVGSlider
   }
 };
 
-struct BaconStyleModuleWidget : ModuleWidget
+struct BaconBackground : virtual TransparentWidget
 {
   static NVGcolor bg;
   static NVGcolor bgOutline;
   static NVGcolor highlight;
+
+  int memFont = -1;
+  std::string title;
 
   enum LabelAt {
     ABOVE,
@@ -180,17 +183,24 @@ struct BaconStyleModuleWidget : ModuleWidget
   int cx() { return box.size.x / 2; }
   int cx( int w ) { return (box.size.x-w) / 2; }
   
-  TransparentWidget *createBaconBG( const char* lab );
-  TransparentWidget *createBaconLabel( Vec pos, const char* lab, int px )
+  BaconBackground( Vec size, const char* lab );
+  ~BaconBackground() { }
+  
+  BaconBackground *addLabel( Vec pos, const char* lab, int px )
   {
-    return createBaconLabel( pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+    return addLabel( pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
   }
-  TransparentWidget *createBaconLabel( Vec pos, const char* lab, int px, int align );
-  TransparentWidget *createPlugLabel( Vec plugPos, LabelStyle s, const char* ilabel ) {
-    return createPlugLabel( plugPos, LabelAt::ABOVE, s, ilabel );
+  BaconBackground *addLabel( Vec pos, const char* lab, int px, int align );
+
+  BaconBackground *addPlugLabel( Vec plugPos, LabelStyle s, const char* ilabel ) {
+    return addPlugLabel( plugPos, LabelAt::ABOVE, s, ilabel );
   }
-  TransparentWidget *createPlugLabel( Vec plugPos, LabelAt l, LabelStyle s, const char* ilabel );
-  TransparentWidget *createRoundedBorder( Vec pos, Vec sz );
+  BaconBackground *addPlugLabel( Vec plugPos, LabelAt l, LabelStyle s, const char* ilabel );
+  BaconBackground *addRoundedBorder( Vec pos, Vec sz );
+
+  void draw( NVGcontext *vg ) override;
+
+  FramebufferWidget *wrappedInFramebuffer();
 };
 
 #endif

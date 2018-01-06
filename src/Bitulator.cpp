@@ -85,21 +85,22 @@ BitulatorWidget::BitulatorWidget()
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 6, RACK_HEIGHT );
 
-  addChild( createBaconBG( "Bitulator" ) );
-
+  BaconBackground *bg = new BaconBackground( box.size, "Bitulator" );
+  addChild( bg->wrappedInFramebuffer() );
+  
   int wdpos = 40;
-  addChild( createBaconLabel( Vec( cx(), wdpos ), "Mix", 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE ) );
-  addChild( createBaconLabel( Vec( cx() + 10, wdpos + 60 ), "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP ) );
-  addChild( createBaconLabel( Vec( cx() - 10, wdpos + 60 ), "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP ) );
+  bg->addLabel( Vec( bg->cx(), wdpos ), "Mix", 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE );
+  bg->addLabel( Vec( bg->cx() + 10, wdpos + 60 ), "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() - 10, wdpos + 60 ), "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
 
-  addParam( createParam< RoundLargeBlackKnob >( Vec( cx( 46 ), wdpos + 10 ),
+  addParam( createParam< RoundLargeBlackKnob >( Vec( bg->cx( 46 ), wdpos + 10 ),
                                                 module,
                                                 Bitulator::WET_DRY_MIX,
                                                 0, 1, 1 ));
 
   Vec cr( 5, 140 ), rs( box.size.x-10, 70 );
-  addChild( createRoundedBorder( cr, rs ) );
-  addChild( createBaconLabel( Vec( cx(), cr.y+3 ), "Quantize", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP ) );
+  bg->addRoundedBorder( cr, rs );
+  bg->addLabel( Vec( bg->cx(), cr.y+3 ), "Quantize", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
   addChild( createLight< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::BITULATING_LIGHT ) );
   addParam( createParam< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::BITULATE, 0, 1, 1 ) );
   Vec knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 20 );
@@ -108,13 +109,13 @@ BitulatorWidget::BitulatorWidget()
                                            module,
                                            Bitulator::STEP_COUNT,
                                            2, 16, 6 ));
-  addChild( createBaconLabel( knobCtr.plus( Vec(  8, 18 ) ), "smth", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP ) );
-  addChild( createBaconLabel( knobCtr.plus( Vec( -8, 18 ) ), "crnch", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP ) );
-
-
+  bg->addLabel( knobCtr.plus( Vec(  8, 18 ) ), "smth", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  bg->addLabel( knobCtr.plus( Vec( -8, 18 ) ), "crnch", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
+  
+  
   cr = Vec( 5, 215 );
-  addChild( createRoundedBorder( cr, rs ) );
-  addChild( createBaconLabel( Vec( cx(), cr.y+3 ), "Amp'n'Clip", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP ) );
+  bg->addRoundedBorder( cr, rs );
+  bg->addLabel( Vec( bg->cx(), cr.y+3 ), "Amp'n'Clip", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
   addChild( createLight< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::CRUNCHING_LIGHT ) );
   addParam( createParam< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::CLIPULATE, 0, 1, 1 ) );
   knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 20 );
@@ -123,18 +124,18 @@ BitulatorWidget::BitulatorWidget()
                                            module,
                                            Bitulator::AMP_LEVEL,
                                            1, 10, 1 ) );
-  addChild( createBaconLabel( knobCtr.plus( Vec(  12, 18 ) ), "11", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP ) );
-  addChild( createBaconLabel( knobCtr.plus( Vec( -8, 18 ) ), "one", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP ) );
-
+  bg->addLabel( knobCtr.plus( Vec(  12, 18 ) ), "11", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  bg->addLabel( knobCtr.plus( Vec( -8, 18 ) ), "one", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
+  
   Vec inP = Vec( 10, RACK_HEIGHT - 15 - 43 );
   Vec outP = Vec( box.size.x - 24 - 10, RACK_HEIGHT - 15 - 43 );
   
-  addChild( createPlugLabel( inP, SIG_IN, "in" ) );
+  bg->addPlugLabel( inP, BaconBackground::SIG_IN, "in" );
   addInput( createInput< PJ301MPort >( inP,
                                        module,
                                        Bitulator::SIGNAL_INPUT ) );
 
-  addChild( createPlugLabel( outP, SIG_OUT, "out" ) );
+  bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );
   addOutput( createOutput< PJ301MPort >( outP,
                                          module,
                                          Bitulator::CRUNCHED_OUTPUT ) );

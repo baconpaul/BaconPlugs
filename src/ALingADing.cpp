@@ -63,39 +63,35 @@ ALingADingWidget::ALingADingWidget()
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
 
-  addChild( createBaconBG( "ALingADing" ) );
-
-  addChild( createPlugLabel( Vec( 7, 70 ),
-                             SIG_IN,
-                             "sig" ) );
+  BaconBackground *bg = new BaconBackground( box.size, "ALingADing" );
+  
+  addChild( bg->wrappedInFramebuffer() );
+  
+  bg->addPlugLabel( Vec( 7, 70 ), BaconBackground::SIG_IN, "sig" );
   addInput( createInput< PJ301MPort >( Vec( 7, 70 ),
                                        module,
                                        ALingADing::SIGNAL_INPUT ) );
   
-  addChild( createPlugLabel( Vec( box.size.x-24-7, 70 ),
-                            SIG_IN,
-                             "car" ) );
+  bg->addPlugLabel( Vec( box.size.x-24-7, 70 ), BaconBackground::SIG_IN, "car" );
   
   addInput( createInput< PJ301MPort >( Vec( box.size.x-24 - 7, 70 ), // That 24 makes no sense but hey
                                        module,
                                        ALingADing::CARRIER_INPUT ) );
   
-  addChild( createBaconLabel( Vec( cx(), 140 ), "Mix", 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE ) );
+  bg->addLabel( Vec( bg->cx(), 140 ), "Mix", 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE );
   
-  addChild( createBaconLabel( Vec( cx() + 10, 140 + 60 ),
-                           "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP ) );
-  addChild( createBaconLabel( Vec( cx() - 10, 140 + 60 ),
-                           "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP ) );
+  bg->addLabel( Vec( bg->cx() + 10, 140 + 60 ),
+                "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() - 10, 140 + 60 ),
+                "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
 
-  addParam( createParam< RoundLargeBlackKnob >( Vec( cx( 46 ), 150 ),
+  addParam( createParam< RoundLargeBlackKnob >( Vec( bg->cx( 46 ), 150 ),
                                                 module,
                                                 ALingADing::WET_DRY_MIX,
                                                 0, 1, 1 ));
 
-  Vec outP = Vec( cx( 24 ), RACK_HEIGHT - 15 - 43 );
-  addChild( createPlugLabel( outP,
-                             SIG_OUT,
-                             "out" ) );
+  Vec outP = Vec( bg->cx( 24 ), RACK_HEIGHT - 15 - 43 );
+  bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );
   addOutput( createOutput< PJ301MPort >( outP,
                                          module,
                                          ALingADing::MODULATED_OUTPUT ) );

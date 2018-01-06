@@ -92,8 +92,9 @@ GlissinatorWidget::GlissinatorWidget()
   Glissinator *module = new Glissinator();
   setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
+  BaconBackground *bg = new BaconBackground( box.size, "Glissinator" );
 
-  addChild( createBaconBG( "Glissinator" ) );
+  addChild( bg->wrappedInFramebuffer() );
   
   addParam( createParam< BaconSlider< 260 > >( Vec( box.size.x / 2 - 16, 34 ),
                                                module,
@@ -105,12 +106,12 @@ GlissinatorWidget::GlissinatorWidget()
   Vec inP = Vec( 7, RACK_HEIGHT - 15 - 43 );
   Vec outP = Vec( box.size.x - 24 - 7, RACK_HEIGHT - 15 - 43 );
   
-  addChild( createPlugLabel( inP, SIG_IN, "in" ) );
+  bg->addPlugLabel( inP, BaconBackground::SIG_IN, "in" );
   addInput( createInput< PJ301MPort >( inP,
                                        module,
                                        Glissinator::SOURCE_INPUT ) );
 
-  addChild( createPlugLabel( outP, SIG_OUT, "out" ) );
+  bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );
   
   addOutput( createOutput< PJ301MPort >( outP,
                                          module,
