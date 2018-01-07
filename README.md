@@ -12,7 +12,7 @@ do let me know, either by raising an issue on this github or by tagging me on tw
 
 I build regularly on MacOS and check that the source builds on Linux from time to time.
 All the sample patches that I use to test and make the screenshots here are
-[available in the source distribution.](tree/master/patches) I will get around to a 
+[available in the source distribution.](https://github.com/baconpaul/BaconPlugs/tree/master/patches) I will get around to a 
 mac and linux binary distribution and push it to the community patch list soon. If you would
 like to volunteer to build, test, and package them for windows, please raise a github issue and we
 can figure out how to have that happen!
