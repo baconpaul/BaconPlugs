@@ -13,7 +13,7 @@
 using namespace rack;
 
 
-template <typename T>
+template <typename T, int px = 4>
 struct SevenSegmentLight : T {
   int lx, ly, ppl;
   std::vector< Rect > unscaledLoc;
@@ -32,13 +32,13 @@ struct SevenSegmentLight : T {
 
   int pvalue;
 
-  BufferedDrawFunctionWidget<SevenSegmentLight<T>> *buffer;
+  BufferedDrawFunctionWidget<SevenSegmentLight<T, px>> *buffer;
   
   SevenSegmentLight( )
   {
     lx = 7;
     ly = 11;
-    ppl = 4;
+    ppl = px;
     pvalue = -1;
     this->box.size = Vec( ppl * (lx-1) + 2, ppl * (ly-1) + 2 );
 
@@ -51,9 +51,9 @@ struct SevenSegmentLight : T {
     unscaledLoc.push_back( Rect( Vec( 1, 2 ), Vec( 1, 3 ) ) );
     unscaledLoc.push_back( Rect( Vec( 2, 5 ), Vec( 3, 1 ) ) );
 
-    buffer = new BufferedDrawFunctionWidget<SevenSegmentLight<T>>( Vec( 0, 0 ), this->box.size,
-                                                                   this,
-                                                                   &SevenSegmentLight<T>::drawSegments );
+    buffer = new BufferedDrawFunctionWidget<SevenSegmentLight<T,px>>( Vec( 0, 0 ), this->box.size,
+                                                                      this,
+                                                                      &SevenSegmentLight<T,px>::drawSegments );
     this->addChild( buffer );
   }
 
