@@ -1,12 +1,22 @@
 # BaconPlugs
 
-BaconPlugs are my set (currently of size 4) of EuroRack style plugins for 
-[VCVRack](http://www.vcvrack.com). The modules are mostly just me noodling around.
-All the source is here, releases under an Apache 2.0 license. You are free to use
-these modules as you see fit. If you happen to use them to make music, please
-do let me know, either here or by tagging me on twitter (@baconpaul).
+BaconPlugs are my set of EuroRack style plugins for 
+[VCVRack](http://www.vcvrack.com). The modules are mostly just me noodling around, but 
+they sort of fall into two groups. One group deals with control voltage manipulation on 1v/oct signals
+and does things like gliss and musical quantization. The other are wierdo distortions
+and the like I am trying out.
 
-I build regularly on MacOS and check that it builds on Linux from time to time.
+All the source is here, released under an Apache 2.0 license. You are free to use
+these modules as you see fit. If you happen to use them to make music, please
+do let me know, either by raising an issue on this github or by tagging me on twitter (@baconpaul).
+
+I build regularly on MacOS and check that the source builds on Linux from time to time.
+All the sample patches that I use to test and make the screenshots here are
+[available in the source distribution.](tree/master/patches) I will get around to a 
+mac and linux binary distribution and push it to the community patch list soon. If you would
+like to volunteer to build, test, and package them for windows, please raise a github issue and we
+can figure out how to have that happen!
+
 
 ## HarMoNee
 
@@ -15,7 +25,7 @@ one which is the original, and the second which is modified by a musical amount,
 like a minor 3rd. It spans plus or minus one octave, and is controlled by toggles.
 
 The toggles are additive. So if you want a fourth, choose a major third and a half step 
-both. You get the idea. Here's the sample patch I use for testing in the current version.
+both. You get the idea. 
 
 ![Example HarMoNee patch](doc/HarMoNee.png)
 
@@ -29,12 +39,33 @@ of gliss time. Here's a sample patch.
 
 ![Example Glissinator Patch](doc/Glissinator.png)
 
+## QuantEyes
+
+QuantEyes takes a CV signal and clamps it to certain values 1/12 of a volt apart.
+Functionally this means that CV signals which are changing on input will be clamped to
+a chromatic scale on output if all the notes are activated. But you can also deactivate
+certain notes to allow you to pick scales to which you quantize.
+
+Since quantizing to scales could be useful for multiple things driving oscillators, 
+you can apply this quantization to up to 3 inputs using the same scale.
+
+Finally, you can choose where the "root" note is in CV space. The default is that
+1 volt is the "R" note, but if you set root to 3, then 1 3/12 volts would be R. If you don't
+understand this, send in a changing signal, select only the R note in the set of LED buttons, 
+and then twiddle the root note.
+
+Here's a (pretty cool sounding, I think) patch which combines QuantEyes with the 
+Glissinator and Harmonee modules.
+
+![Example QuantEyes Patch](doc/QuantEyes.png)
+
 ## ALingADing 
 
-ALingADing is a simulation of a Ring Modulator based on [this paper by Julian Parker](http://recherche.ircam.fr/pub/dafx11/Papers/66_e.pdf).
-Rather tha following Parker's use of a few polynomials to simulate his diode, 
+ALingADing is a simulation of a Ring Modulator based on [this paper by Julian Parker](http://recherche.ircam.fr/pub/dafx11/Papers/66_e.pdf) and
+then taking some shortcuts.
+Rather than following Parker's use of a few polynomials to simulate his diode, 
 I basically use an implementaion of a softmax, eyeballing the parameters to roughly meet the figure in his
-book. The only control is a wet/dry mix (where wet is the signal modulated by carrier
+paper. The only control is a wet/dry mix (where wet is the signal modulated by carrier
 and dry is just the signal). Sloppy, sure, but it sounds kinda cool. Here's a sample patch.
 
 ![Example ALingADing Patch](doc/ALingADing.png)
@@ -46,7 +77,7 @@ functions. Firstly, it "quantizes" to a smaller number of "bits", but does it in
 wierd and sloppy way of basically making sure there are only N values possible in the 
 output. Apply this to a sine wave with a low value of N and you get sort of stacked squares. 
 Secondly it has a gross digital clipping amplifier. Basically signal is the clamp of input times
-param. APply this to a sine wave and turn it up and you get pretty much a perfect square.
+param. Apply this to a sine wave and turn it up and you get pretty much a perfect square.
 Combine them for grunky grunk noise. Dumb, but fun. Here's a sample patch.
 
 ![Example Bitulator Patch](doc/Bitulator.png)
