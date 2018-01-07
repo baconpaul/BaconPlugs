@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <tuple>
 
 #include "GraduatedFader.hpp"
 #include "BufferedDrawFunction.hpp"
@@ -149,6 +150,9 @@ struct BaconBackground : virtual TransparentWidget
   static NVGcolor bgOutline;
   static NVGcolor highlight;
 
+  typedef std::tuple< Rect, NVGcolor, bool > col_rect_t;
+  std::vector< col_rect_t > rects;
+
   int memFont = -1;
   std::string title;
 
@@ -182,6 +186,22 @@ struct BaconBackground : virtual TransparentWidget
   }
   BaconBackground *addPlugLabel( Vec plugPos, LabelAt l, LabelStyle s, const char* ilabel );
   BaconBackground *addRoundedBorder( Vec pos, Vec sz );
+
+  BaconBackground *addFilledRect( Vec pos, Vec sz, NVGcolor fill )
+  {
+    Rect r;
+    r.pos = pos; r.size = sz;
+    rects.push_back( col_rect_t( r, fill, true ) );
+    return this;
+  }
+
+  BaconBackground *addRect( Vec pos, Vec sz, NVGcolor fill )
+  {
+    Rect r;
+    r.pos = pos; r.size = sz;
+    rects.push_back( col_rect_t( r, fill, false ) );
+    return this;
+  }
 
   void draw( NVGcontext *vg ) override;
 

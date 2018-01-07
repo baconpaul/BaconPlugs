@@ -121,6 +121,26 @@ void BaconBackground::draw( NVGcontext *vg )
       nvgTranslate( vg, -w->box.pos.x, -w->box.pos.y );
     }
 
+  for( auto it = rects.begin(); it != rects.end(); ++it )
+    {
+      col_rect_t tu = *it;
+      Rect r     = std::get< 0 >(tu);
+      NVGcolor c = std::get< 1 >(tu);
+      bool f     = std::get< 2 >(tu);
+      nvgBeginPath( vg );
+      nvgRect( vg, r.pos.x, r.pos.y, r.size.x, r.size.y );
+      if( f )
+        {
+          nvgFillColor( vg, c );
+          nvgFill( vg );
+        }
+      else
+        {
+          nvgStrokeColor( vg, c );
+          nvgStroke( vg );
+        }
+    }
+
 }
 
 InternalPlugLabel::InternalPlugLabel( Vec portPos, BaconBackground::LabelAt l, BaconBackground::LabelStyle s, const char* ilabel )
