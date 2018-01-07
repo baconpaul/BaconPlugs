@@ -1,14 +1,8 @@
 ToDo: Master Branch
 
 Plugins:
-*  CV tonal Quantizer plugin
-   ** Pretty good 12 step rough start, so
-   ** add different steps, different 12 tone scales, etc...
-   ** those LEDs aren't saving
-   ** add a 19, 24, 48 tone quantization also
-   
 *  Multi-nome plugin (learn about gates some more before I do this obvs)
-*  CleverClipper (branch "CleverClipper" already exists)
+*  CleverClipper (branch "CleverClipper" already exists on mac and in dbox)
 *  Musical Arpeggiator
 *  TouchOSC reciever into CV and Gate land? (maybe)
   
