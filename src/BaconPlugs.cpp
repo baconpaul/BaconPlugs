@@ -5,7 +5,7 @@ Plugin *plugin;
 
 void init(rack::Plugin *p) {
 	plugin = p;
-	p->slug = "Bacon Music";
+	p->slug = "BaconMusic";
 #ifdef VERSION
 	p->version = TOSTRING(VERSION);
 #endif

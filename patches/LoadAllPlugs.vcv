@@ -2,7 +2,7 @@
   "version": "",
   "modules": [
     {
-      "plugin": "Bacon Music",
+      "plugin": "BaconMusic",
       "model": "HarMoNee",
       "pos": [
         0.0,
@@ -19,7 +19,7 @@
       ]
     },
     {
-      "plugin": "Bacon Music",
+      "plugin": "BaconMusic",
       "model": "Glissinator",
       "pos": [
         165.0,
@@ -30,7 +30,7 @@
       ]
     },
     {
-      "plugin": "Bacon Music",
+      "plugin": "BaconMusic",
       "model": "ALingADing",
       "pos": [
         285.0,
@@ -41,7 +41,7 @@
       ]
     },
     {
-      "plugin": "Bacon Music",
+      "plugin": "BaconMusic",
       "model": "Bitulator",
       "pos": [
         420.0,
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "plugin": "Bacon Music",
+      "plugin": "BaconMusic",
       "model": "QuantEyes",
       "pos": [
         645.0,

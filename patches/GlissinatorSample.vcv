@@ -11,7 +11,7 @@
       "params": [],
       "data": {
         "driver": 5,
-        "device": 1,
+        "device": 2,
         "sampleRate": 44100.0,
         "blockSize": 256
       }
@@ -108,7 +108,7 @@
       ]
     },
     {
-      "plugin": "Bacon Music",
+      "plugin": "BaconMusic",
       "model": "Glissinator",
       "pos": [
         330.0,
