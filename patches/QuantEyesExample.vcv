@@ -62,7 +62,7 @@
       }
     },
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "Glissinator",
       "pos": [
         330.0,
@@ -119,7 +119,7 @@
       ]
     },
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "QuantEyes",
       "pos": [
         525.0,
@@ -175,7 +175,7 @@
       ]
     },
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "HarMoNee",
       "pos": [
         405.0,

@@ -1,7 +1,7 @@
-# BaconPlugs
+# The Bacon Music VCVRack Modules
 
-BaconPlugs are my set of EuroRack style plugins for 
-[VCVRack](http://www.vcvrack.com). The modules are mostly just me noodling around, but 
+"Bacon Music" is my set of EuroRack style plugins for 
+[VCVRack](http://www.vcvrack.com). The modules are mostly inspured by me noodling around, and 
 they sort of fall into two groups. One group deals with control voltage manipulation on 1v/oct signals
 and does things like gliss and musical quantization. The other are wierdo distortions
 and the like I am trying out.
@@ -81,6 +81,15 @@ param. Apply this to a sine wave and turn it up and you get pretty much a perfec
 Combine them for grunky grunk noise. Dumb, but fun. Here's a sample patch.
 
 ![Example Bitulator Patch](doc/Bitulator.png)
+
+## Hey, what's with the repo name "BaconPlugs" vs slug "Bacon Music"
+
+So when I made my git repo I had no idea really how anything worked or if I'd write anything. 
+I was thinking "Hey I'm writing a collection of plugins for this software right". When I went
+with my first release, Andrew Rust pointed out that "BaconPlugs" wasn't a very good name for my 
+plugin and it's collected modules. He did it very politely, of course, and so I changed it to "Bacon Music" 
+for the slug name. The repo is still called BaconPlugs though, because that's more trouble to change than 
+I can handle.
 
 ## License
 

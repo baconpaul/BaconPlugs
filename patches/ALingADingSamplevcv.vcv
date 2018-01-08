@@ -11,7 +11,7 @@
       "params": [],
       "data": {
         "driver": 5,
-        "device": 2,
+        "device": 1,
         "sampleRate": 44100.0,
         "blockSize": 256
       }
@@ -111,7 +111,7 @@
       ]
     },
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "ALingADing",
       "pos": [
         930.0,
@@ -264,6 +264,12 @@
       "outputModuleId": 3,
       "outputId": 3,
       "inputModuleId": 4,
+      "inputId": 1
+    },
+    {
+      "outputModuleId": 8,
+      "outputId": 0,
+      "inputModuleId": 0,
       "inputId": 1
     }
   ]

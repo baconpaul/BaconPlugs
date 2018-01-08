@@ -62,7 +62,7 @@
       }
     },
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "HarMoNee",
       "pos": [
         330.0,
@@ -136,7 +136,7 @@
       "params": [],
       "data": {
         "driver": 5,
-        "device": 2,
+        "device": 1,
         "sampleRate": 44100.0,
         "blockSize": 256
       }
@@ -178,6 +178,12 @@
       "outputId": 0,
       "inputModuleId": 2,
       "inputId": 0
+    },
+    {
+      "outputModuleId": 4,
+      "outputId": 0,
+      "inputModuleId": 5,
+      "inputId": 1
     }
   ]
 }

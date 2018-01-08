@@ -104,7 +104,7 @@ void BaconBackground::draw( NVGcontext *vg )
   nvgFillColor( vg, COLOR_BLACK );
   nvgStrokeColor( vg, COLOR_BLACK );
   nvgTextAlign( vg, NVG_ALIGN_CENTER|NVG_ALIGN_BOTTOM );
-  nvgText( vg, box.size.x / 2, box.size.y - 5, "BaconPlugs", NULL );
+  nvgText( vg, box.size.x / 2, box.size.y - 5, "Bacon Music", NULL );
 
   nvgFontFaceId( vg, memFont );
   nvgFontSize( vg, 16 );

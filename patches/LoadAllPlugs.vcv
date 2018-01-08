@@ -2,7 +2,7 @@
   "version": "",
   "modules": [
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "HarMoNee",
       "pos": [
         0.0,
@@ -19,7 +19,7 @@
       ]
     },
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "Glissinator",
       "pos": [
         165.0,
@@ -30,7 +30,7 @@
       ]
     },
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "ALingADing",
       "pos": [
         285.0,
@@ -41,7 +41,7 @@
       ]
     },
     {
-      "plugin": "BaconPlugs",
+      "plugin": "Bacon Music",
       "model": "Bitulator",
       "pos": [
         420.0,
@@ -54,6 +54,45 @@
         1.0,
         1.0
       ]
+    },
+    {
+      "plugin": "Bacon Music",
+      "model": "QuantEyes",
+      "pos": [
+        645.0,
+        0.0
+      ],
+      "params": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "data": {
+        "scaleState": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
     }
   ],
   "wires": []
