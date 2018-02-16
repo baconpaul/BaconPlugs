@@ -133,12 +133,12 @@ BitulatorWidget::BitulatorWidget( Bitulator *model ) : ModuleWidget( model )
   Vec outP = Vec( box.size.x - 24 - 10, RACK_HEIGHT - 15 - 43 );
   
   bg->addPlugLabel( inP, BaconBackground::SIG_IN, "in" );
-  addInput( createInput< PJ301MPort >( inP,
+  addInput( Port::create< PJ301MPort >( inP, Port::INPUT,
                                        module,
                                        Bitulator::SIGNAL_INPUT ) );
 
   bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );
-  addOutput( createOutput< PJ301MPort >( outP,
+  addOutput( Port::create< PJ301MPort >( outP, Port::OUTPUT,
                                          module,
                                          Bitulator::CRUNCHED_OUTPUT ) );
 }

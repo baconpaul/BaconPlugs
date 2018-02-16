@@ -72,15 +72,17 @@ ALingADingWidget::ALingADingWidget(ALingADing *module) : ModuleWidget( module )
   addChild( bg->wrappedInFramebuffer() );
   
   bg->addPlugLabel( Vec( 7, 70 ), BaconBackground::SIG_IN, "sig" );
-  addInput( createInput< PJ301MPort >( Vec( 7, 70 ),
-                                       module,
-                                       ALingADing::SIGNAL_INPUT ) );
+  addInput( Port::create< PJ301MPort >( Vec( 7, 70 ),
+                                        Port::INPUT,
+                                        module,
+                                        ALingADing::SIGNAL_INPUT ) );
   
   bg->addPlugLabel( Vec( box.size.x-24-7, 70 ), BaconBackground::SIG_IN, "car" );
   
-  addInput( createInput< PJ301MPort >( Vec( box.size.x-24 - 7, 70 ), // That 24 makes no sense but hey
-                                       module,
-                                       ALingADing::CARRIER_INPUT ) );
+  addInput( Port::create< PJ301MPort >( Vec( box.size.x-24 - 7, 70 ), // That 24 makes no sense but hey
+                                        Port::INPUT,
+                                        module,
+                                        ALingADing::CARRIER_INPUT ) );
   
   bg->addLabel( Vec( bg->cx(), 140 ), "Mix", 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE );
   
@@ -96,7 +98,8 @@ ALingADingWidget::ALingADingWidget(ALingADing *module) : ModuleWidget( module )
 
   Vec outP = Vec( bg->cx( 24 ), RACK_HEIGHT - 15 - 43 );
   bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );
-  addOutput( createOutput< PJ301MPort >( outP,
+  addOutput( Port::create< PJ301MPort >( outP,
+                                         Port::OUTPUT,
                                          module,
                                          ALingADing::MODULATED_OUTPUT ) );
 }

@@ -111,13 +111,13 @@ GlissinatorWidget::GlissinatorWidget( Glissinator *model ) : ModuleWidget( model
   Vec outP = Vec( box.size.x - 24 - 7, RACK_HEIGHT - 15 - 43 );
   
   bg->addPlugLabel( inP, BaconBackground::SIG_IN, "in" );
-  addInput( createInput< PJ301MPort >( inP,
+  addInput( Port::create< PJ301MPort >( inP, Port::INPUT,
                                        module,
                                        Glissinator::SOURCE_INPUT ) );
 
   bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );
   
-  addOutput( createOutput< PJ301MPort >( outP,
+  addOutput( Port::create< PJ301MPort >( outP, Port::OUTPUT,
                                          module,
                                          Glissinator::SLID_OUTPUT ) );
   addChild( ModuleLightWidget::create< MediumLight< BlueLight > >( Vec( box.size.x/2 - 4.5 , 27 ),

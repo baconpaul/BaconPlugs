@@ -152,7 +152,7 @@ QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
       char buf[ 20 ];
       sprintf( buf, "in %d", i+1 );
       bg->addPlugLabel( inP.plus(off), BaconBackground::SIG_IN, buf );
-      addInput( createInput< PJ301MPort >( inP.plus(off),
+      addInput( Port::create< PJ301MPort >( inP.plus(off), Port::INPUT,
                                            module,
                                            QuantEyes::CV_INPUT + i ) );
 
@@ -160,7 +160,7 @@ QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
       bg->addPlugLabel( outP.plus(off), BaconBackground::SIG_OUT, buf );
 
       
-      addOutput( createOutput< PJ301MPort >( outP.plus(off),
+      addOutput( Port::create< PJ301MPort >( outP.plus(off), Port::OUTPUT,
                                              module,
                                              QuantEyes::QUANTIZED_OUT + i) );
 
