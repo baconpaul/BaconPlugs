@@ -67,7 +67,7 @@ struct Bitulator : Module {
 
     if( params[ CLIPULATE ].value > 0 ) {
       float al = params[ AMP_LEVEL ].value;
-      res = clampf( res * al, -5.0, 5.0 );
+      res = clamp( res * al, -5.0f, 5.0f );
       lights[ CRUNCHING_LIGHT ].value = 1;
     }
     else {
@@ -79,10 +79,12 @@ struct Bitulator : Module {
   }
 };
 
-BitulatorWidget::BitulatorWidget()
+struct BitulatorWidget : ModuleWidget {
+  BitulatorWidget( Bitulator *model );
+};
+
+BitulatorWidget::BitulatorWidget( Bitulator *model ) : ModuleWidget( model )
 {
-  Bitulator *module = new Bitulator();
-  setModule( module );
   box.size = Vec( SCREW_WIDTH * 6, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "Bitulator" );
@@ -93,7 +95,7 @@ BitulatorWidget::BitulatorWidget()
   bg->addLabel( Vec( bg->cx() + 10, wdpos + 60 ), "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
   bg->addLabel( Vec( bg->cx() - 10, wdpos + 60 ), "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
 
-  addParam( createParam< RoundLargeBlackKnob >( Vec( bg->cx( 46 ), wdpos + 10 ),
+  addParam( ParamWidget::create< RoundLargeBlackKnob >( Vec( bg->cx( 46 ), wdpos + 10 ),
                                                 module,
                                                 Bitulator::WET_DRY_MIX,
                                                 0, 1, 1 ));
@@ -101,11 +103,11 @@ BitulatorWidget::BitulatorWidget()
   Vec cr( 5, 140 ), rs( box.size.x-10, 70 );
   bg->addRoundedBorder( cr, rs );
   bg->addLabel( Vec( bg->cx(), cr.y+3 ), "Quantize", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
-  addChild( createLight< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::BITULATING_LIGHT ) );
-  addParam( createParam< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::BITULATE, 0, 1, 1 ) );
+  addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::BITULATING_LIGHT ) );
+  addParam( ParamWidget::create< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::BITULATE, 0, 1, 1 ) );
   Vec knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 20 );
   Vec knobCtr = knobPos.plus( Vec( 18, 18 ) );
-  addParam( createParam< RoundBlackKnob >( knobPos,
+  addParam( ParamWidget::create< RoundBlackKnob >( knobPos,
                                            module,
                                            Bitulator::STEP_COUNT,
                                            2, 16, 6 ));
@@ -116,11 +118,11 @@ BitulatorWidget::BitulatorWidget()
   cr = Vec( 5, 215 );
   bg->addRoundedBorder( cr, rs );
   bg->addLabel( Vec( bg->cx(), cr.y+3 ), "Amp'n'Clip", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
-  addChild( createLight< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::CRUNCHING_LIGHT ) );
-  addParam( createParam< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::CLIPULATE, 0, 1, 1 ) );
+  addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::CRUNCHING_LIGHT ) );
+  addParam( ParamWidget::create< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::CLIPULATE, 0, 1, 1 ) );
   knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 20 );
   knobCtr = knobPos.plus( Vec( 18, 18 ) );
-  addParam( createParam< RoundBlackKnob >( knobPos,
+  addParam( ParamWidget::create< RoundBlackKnob >( knobPos,
                                            module,
                                            Bitulator::AMP_LEVEL,
                                            1, 10, 1 ) );
@@ -140,3 +142,5 @@ BitulatorWidget::BitulatorWidget()
                                          module,
                                          Bitulator::CRUNCHED_OUTPUT ) );
 }
+
+Model *modelBitulator = Model::create< Bitulator, BitulatorWidget >("Bacon Music", "Bitulator", "Bitulator", DISTORTION_TAG);

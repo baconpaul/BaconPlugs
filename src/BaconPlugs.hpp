@@ -16,24 +16,11 @@ extern Plugin *plugin;
 
 #include "Components.hpp"
 
-struct HarMoNeeWidget : ModuleWidget {
-  HarMoNeeWidget();
-};
+extern Model *modelHarMoNee;
+extern Model *modelGlissinator;
+extern Model *modelALingADing;
+extern Model *modelBitulator;
+extern Model *modelQuantEyes;
 
-struct GlissinatorWidget : ModuleWidget {
-  GlissinatorWidget();
-};
-
-struct ALingADingWidget : ModuleWidget {
-  ALingADingWidget();
-};
-
-struct BitulatorWidget : ModuleWidget {
-  BitulatorWidget();
-};
-
-struct QuantEyesWidget : ModuleWidget {
-  QuantEyesWidget();
-};
 
 #endif

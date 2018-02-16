@@ -43,7 +43,7 @@ struct QuantEyes : virtual Module {
 
   void step() override
   {
-    int root = clampf( params[ ROOT_STEP ].value, 0, 12 );
+    int root = clamp( params[ ROOT_STEP ].value, 0.0f, 12.0f );
     lights[ ROOT_LIGHT_ONES ].value = root % 10;
     lights[ ROOT_LIGHT_TENS ].value = root / 10;
 
@@ -107,10 +107,12 @@ struct QuantEyes : virtual Module {
   
 };
 
-QuantEyesWidget::QuantEyesWidget()
+struct QuantEyesWidget : ModuleWidget {
+  QuantEyesWidget( QuantEyes *model );
+};
+
+QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
 {
-  QuantEyes *module = new QuantEyes();
-  setModule( module );
   box.size = Vec( SCREW_WIDTH * 11, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "QuantEyes" );
@@ -126,11 +128,11 @@ QuantEyesWidget::QuantEyesWidget()
       int x0 = rx + (i + 0.5) * slope;
       int yp0 = (SCALE_LENGTH - i - 1) * sp;
       bg->addLabel( Vec( rx - 3, yp0 + ry + sp / 2), d, 12, NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE );
-      addParam( createParam< LEDButton >( Vec( x0, yp0 + ry ), module, QuantEyes::SCALE_PARAM + i, 0, 1, 0 ) );
-      addChild( createLight< MediumLight< BlueLight > >( Vec( x0 + 4, yp0 + ry + 4 ), module, QuantEyes::SCALE_LIGHTS + i ) );
-      addChild( createLight< SmallLight< GreenLight > >( Vec( x0 + 20, yp0 + ry + 6 ), module, QuantEyes::ACTIVE_NOTE_LIGHTS + i ) );
-      addChild( createLight< SmallLight< GreenLight > >( Vec( x0 + 28, yp0 + ry + 6 ), module, QuantEyes::ACTIVE_NOTE_LIGHTS + i + 12 ) );
-      addChild( createLight< SmallLight< GreenLight > >( Vec( x0 + 36, yp0 + ry + 6 ), module, QuantEyes::ACTIVE_NOTE_LIGHTS + i + 24 ) );
+      addParam( ParamWidget::create< LEDButton >( Vec( x0, yp0 + ry ), module, QuantEyes::SCALE_PARAM + i, 0, 1, 0 ) );
+      addChild( ModuleLightWidget::create< MediumLight< BlueLight > >( Vec( x0 + 4, yp0 + ry + 4 ), module, QuantEyes::SCALE_LIGHTS + i ) );
+      addChild( ModuleLightWidget::create< SmallLight< GreenLight > >( Vec( x0 + 20, yp0 + ry + 6 ), module, QuantEyes::ACTIVE_NOTE_LIGHTS + i ) );
+      addChild( ModuleLightWidget::create< SmallLight< GreenLight > >( Vec( x0 + 28, yp0 + ry + 6 ), module, QuantEyes::ACTIVE_NOTE_LIGHTS + i + 12 ) );
+      addChild( ModuleLightWidget::create< SmallLight< GreenLight > >( Vec( x0 + 36, yp0 + ry + 6 ), module, QuantEyes::ACTIVE_NOTE_LIGHTS + i + 24 ) );
 
       auto c = nvgRGBA( 225, 225, 225, 255 );
       if( i == 1 || i == 3 || i == 6 || i == 8 || i == 10 )
@@ -168,15 +170,17 @@ QuantEyesWidget::QuantEyesWidget()
   bg->addRoundedBorder( Vec( 10, box.size.y - 78 ), Vec ( 70, 49 ) );
   bg->addLabel( Vec( 45, box.size.y - 74 ), "Root CV", 12, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
   int ybot = box.size.y - 78 + 24 + 5 + 20;
-  addParam( createParam< RoundSmallBlackKnob >( Vec( 13, ybot - 3 - 28 ),
+  addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 13, ybot - 3 - 28 ),
                                                 module,
                                                 QuantEyes::ROOT_STEP,
                                                 0, 12, 0 ) );
-  addChild( createLight< SevenSegmentLight< BlueLight, 2 > >( Vec( 47, ybot - 5 - 24 ),
+  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47, ybot - 5 - 24 ),
                                                            module,
                                                            QuantEyes::ROOT_LIGHT_TENS ) );
-  addChild( createLight< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + 14, ybot - 5 - 24 ),
+  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + 14, ybot - 5 - 24 ),
                                                            module,
                                                            QuantEyes::ROOT_LIGHT_ONES ) );
 
 }
+
+Model *modelQuantEyes = Model::create< QuantEyes, QuantEyesWidget > ("Bacon Music", "QuantEyes", "QuantEyes", QUANTIZER_TAG);

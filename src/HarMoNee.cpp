@@ -154,10 +154,13 @@ void HarMoNee::step() {
   outputs[ INCREASED_OUTPUT ].value = increased;
 }
 
-HarMoNeeWidget::HarMoNeeWidget()
+struct HarMoNeeWidget : ModuleWidget {
+  HarMoNeeWidget(HarMoNee *model);
+};
+
+
+HarMoNeeWidget::HarMoNeeWidget( HarMoNee *model ) : ModuleWidget( model )
 {
-  HarMoNee *module = new HarMoNee();
-  setModule( module );
   box.size = Vec( SCREW_WIDTH*8 , RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "HarMoNee" );
@@ -166,30 +169,30 @@ HarMoNeeWidget::HarMoNeeWidget()
   
   Vec iPos( 12, 100 );
   bg->addPlugLabel( iPos, BaconBackground::SIG_IN, "in" );
-  addInput( createInput< PJ301MPort >( iPos, module, HarMoNee::SOURCE_INPUT ) );
+  addInput( Port::create< PJ301MPort >( iPos, Port::INPUT, module, HarMoNee::SOURCE_INPUT ) );
 
   iPos.y += 60;
   bg->addPlugLabel( iPos, BaconBackground::SIG_OUT, "root" );
-  addOutput( createOutput<PJ301MPort>(iPos, module, HarMoNee::ECHO_OUTPUT ) );
+  addOutput( Port::create<PJ301MPort>(iPos, Port::OUTPUT, module, HarMoNee::ECHO_OUTPUT ) );
 
   iPos.y += 60;
   bg->addPlugLabel( iPos, BaconBackground::SIG_OUT, "harm" );
-  addOutput( createOutput<PJ301MPort>(iPos, module, HarMoNee::INCREASED_OUTPUT ) );
+  addOutput( Port::create<PJ301MPort>(iPos, Port::OUTPUT, module, HarMoNee::INCREASED_OUTPUT ) );
 
   // NKK is 32 x 44
-  addParam( createParam< NKK >( Vec( 80, 26 ), module, HarMoNee::UP_OR_DOWN, 0, 1, 1 ) );
+  addParam( ParamWidget::create< NKK >( Vec( 80, 26 ), module, HarMoNee::UP_OR_DOWN, 0, 1, 1 ) );
   bg->addLabel( Vec( 74, 26+22-4-5-5 ), "up", 12, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
-  addChild( createLight< MediumLight< GreenLight >>( Vec( 70, 26 + 22 - 4 - 5 ), module, HarMoNee::UP_LIGHT ) );
+  addChild( ModuleLightWidget::create< MediumLight< GreenLight >>( Vec( 70, 26 + 22 - 4 - 5 ), module, HarMoNee::UP_LIGHT ) );
 
   bg->addLabel( Vec( 74, 26+22-4+5+8+7 ), "dn", 12, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
-  addChild( createLight< MediumLight< RedLight >>( Vec( 70, 26 + 22 - 4 + 5 ), module, HarMoNee::DOWN_LIGHT ) );
+  addChild( ModuleLightWidget::create< MediumLight< RedLight >>( Vec( 70, 26 + 22 - 4 + 5 ), module, HarMoNee::DOWN_LIGHT ) );
 
 
-  addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 10, 30 ),
+  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight > >( Vec( 10, 30 ),
                                              module,
                                              HarMoNee::DIGIT_LIGHT_TENS ) );
 
-  addChild( createLight< SevenSegmentLight< BlueLight > >( Vec( 36, 30 ),
+  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight > >( Vec( 36, 30 ),
                                              module,
                                              HarMoNee::DIGIT_LIGHT_ONES ) );
 
@@ -200,10 +203,12 @@ HarMoNeeWidget::HarMoNeeWidget()
   for( int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i )
     {
       if( i == HarMoNee::OCTAVE ) { v = 1; } { v = -1; }
-      addParam( createParam<NKK>( Vec( x, y ), module, i, 0, 1, v ) );
+      addParam( ParamWidget::create<NKK>( Vec( x, y ), module, i, 0, 1, v ) );
       bg->addLabel( Vec( 66, y+22 ), labels[ i - HarMoNee::HALF_STEP ],
                     14, NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE );
-      addChild( createLight< MediumLight< BlueLight > >( Vec( 70, y + 22 - 5 ), module, i + ld ) );
+      addChild( ModuleLightWidget::create< MediumLight< BlueLight > >( Vec( 70, y + 22 - 5 ), module, i + ld ) );
       y += 45;
     }
 }
+
+Model *modelHarMoNee = Model::create<HarMoNee,HarMoNeeWidget>("Bacon Music", "HarMoNee", "HarMoNee", TUNER_TAG);

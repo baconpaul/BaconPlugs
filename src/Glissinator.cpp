@@ -87,16 +87,18 @@ struct Glissinator : Module {
   }
 };
 
-GlissinatorWidget::GlissinatorWidget()
+struct GlissinatorWidget : ModuleWidget {
+  GlissinatorWidget( Glissinator *model );
+};
+
+GlissinatorWidget::GlissinatorWidget( Glissinator *model ) : ModuleWidget( model )
 {
-  Glissinator *module = new Glissinator();
-  setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
   BaconBackground *bg = new BaconBackground( box.size, "Glissinator" );
 
   addChild( bg->wrappedInFramebuffer() );
 
-  ParamWidget *slider = createParam< GraduatedFader< 255 > >( Vec( bg->cx( 29 ), 43 ),
+  ParamWidget *slider = ParamWidget::create< GraduatedFader< 255 > >( Vec( bg->cx( 29 ), 43 ),
                                                               module,
                                                               Glissinator::GLISS_TIME,
                                                               0,
@@ -118,6 +120,8 @@ GlissinatorWidget::GlissinatorWidget()
   addOutput( createOutput< PJ301MPort >( outP,
                                          module,
                                          Glissinator::SLID_OUTPUT ) );
-  addChild( createLight< MediumLight< BlueLight > >( Vec( box.size.x/2 - 4.5 , 27 ),
+  addChild( ModuleLightWidget::create< MediumLight< BlueLight > >( Vec( box.size.x/2 - 4.5 , 27 ),
                                                     module, Glissinator::SLIDING_LIGHT ) );
 }
+
+Model *modelGlissinator = Model::create<Glissinator,GlissinatorWidget>("Bacon Music", "Glissinator", "Glissinator", EFFECT_TAG); 

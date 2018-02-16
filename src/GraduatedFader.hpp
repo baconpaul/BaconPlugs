@@ -3,7 +3,7 @@
 #include "BufferedDrawFunction.hpp"
 
 template <int H>
-struct GraduatedFader : SVGSlider
+struct GraduatedFader : SVGFader
 {
   int slider_height = 41;
   int slider_width  = 20;
@@ -30,7 +30,7 @@ struct GraduatedFader : SVGSlider
   void draw( NVGcontext *vg ) override
   {
     notches->draw( vg );
-    SVGSlider::draw( vg );
+    SVGFader::draw( vg );
   }
 
   void drawBackground( NVGcontext *vg )
@@ -80,7 +80,7 @@ struct GraduatedFader : SVGSlider
   {
     // Need this because I don't add it as a child, since the base class does something funky with that
     notches->onZoom( e );
-    SVGSlider::onZoom( e );
+    SVGFader::onZoom( e );
   }
 
 };

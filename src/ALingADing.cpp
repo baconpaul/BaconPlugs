@@ -4,6 +4,7 @@
 ** Based heavily on http://recherche.ircam.fr/pub/dafx11/Papers/66_e.pdf 
 */
 
+
 struct ALingADing : Module {
   enum ParamIds {
     WET_DRY_MIX, // TODO: Implement this
@@ -57,10 +58,13 @@ struct ALingADing : Module {
   }
 };
 
-ALingADingWidget::ALingADingWidget()
+struct ALingADingWidget : ModuleWidget {
+  ALingADingWidget(ALingADing *module);
+};
+
+
+ALingADingWidget::ALingADingWidget(ALingADing *module) : ModuleWidget( module )
 {
-  ALingADing *module = new ALingADing();
-  setModule( module );
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "ALingADing" );
@@ -85,7 +89,7 @@ ALingADingWidget::ALingADingWidget()
   bg->addLabel( Vec( bg->cx() - 10, 140 + 60 ),
                 "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
 
-  addParam( createParam< RoundLargeBlackKnob >( Vec( bg->cx( 46 ), 150 ),
+  addParam( ParamWidget::create< RoundLargeBlackKnob >( Vec( bg->cx( 46 ), 150 ),
                                                 module,
                                                 ALingADing::WET_DRY_MIX,
                                                 0, 1, 1 ));
@@ -96,3 +100,5 @@ ALingADingWidget::ALingADingWidget()
                                          module,
                                          ALingADing::MODULATED_OUTPUT ) );
 }
+
+Model *modelALingADing = Model::create<ALingADing,ALingADingWidget>("Bacon Music", "ALingADing", "ALingADing", RING_MODULATOR_TAG); 

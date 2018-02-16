@@ -61,7 +61,7 @@ struct SevenSegmentLight : T {
   void draw( NVGcontext *vg ) override
   {
     float fvalue = this->module->lights[ this->firstLightId ].value;
-    int value = clampf( fvalue, 0, 9 );
+    int value = clamp( fvalue, 0.0f, 9.0f );
     if( value != pvalue )
       buffer->dirty = true;
 
@@ -84,7 +84,7 @@ struct SevenSegmentLight : T {
     
     int i=0;
     float fvalue = this->module->lights[ this->firstLightId ].value;
-    int value = clampf( fvalue, 0, 9 );
+    int value = clamp( fvalue, 0.0f, 9.0f );
 
     int *ebn = elementsByNum[ value ];
 
