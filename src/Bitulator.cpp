@@ -92,10 +92,10 @@ BitulatorWidget::BitulatorWidget( Bitulator *model ) : ModuleWidget( model )
   
   int wdpos = 40;
   bg->addLabel( Vec( bg->cx(), wdpos ), "Mix", 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE );
-  bg->addLabel( Vec( bg->cx() + 10, wdpos + 60 ), "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
-  bg->addLabel( Vec( bg->cx() - 10, wdpos + 60 ), "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() + 10, wdpos + 72 ), "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() - 10, wdpos + 72 ), "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
 
-  addParam( ParamWidget::create< RoundLargeBlackKnob >( Vec( bg->cx( 46 ), wdpos + 10 ),
+  addParam( ParamWidget::create< RoundHugeBlackKnob >( Vec( bg->cx( 56 ), wdpos + 10 ),
                                                 module,
                                                 Bitulator::WET_DRY_MIX,
                                                 0, 1, 1 ));
@@ -105,29 +105,29 @@ BitulatorWidget::BitulatorWidget( Bitulator *model ) : ModuleWidget( model )
   bg->addLabel( Vec( bg->cx(), cr.y+3 ), "Quantize", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
   addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::BITULATING_LIGHT ) );
   addParam( ParamWidget::create< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::BITULATE, 0, 1, 1 ) );
-  Vec knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 20 );
+  Vec knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 18 );
   Vec knobCtr = knobPos.plus( Vec( 18, 18 ) );
-  addParam( ParamWidget::create< RoundBlackKnob >( knobPos,
+  addParam( ParamWidget::create< RoundLargeBlackKnob >( knobPos,
                                            module,
                                            Bitulator::STEP_COUNT,
                                            2, 16, 6 ));
-  bg->addLabel( knobCtr.plus( Vec(  8, 18 ) ), "smth", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
-  bg->addLabel( knobCtr.plus( Vec( -8, 18 ) ), "crnch", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
+  bg->addLabel( knobCtr.plus( Vec(  8, 21 ) ), "smth", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  bg->addLabel( knobCtr.plus( Vec( -8, 21 ) ), "crnch", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
   
   
   cr = Vec( 5, 215 );
   bg->addRoundedBorder( cr, rs );
-  bg->addLabel( Vec( bg->cx(), cr.y+3 ), "Amp'n'Clip", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx( 5 ), cr.y+3 ), "Amp'n'Clip", 14, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
   addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( cr.plus( Vec( 5, 5 ) ), module, Bitulator::CRUNCHING_LIGHT ) );
   addParam( ParamWidget::create< CKSS >( cr.plus( Vec( 5, 25 ) ), module, Bitulator::CLIPULATE, 0, 1, 1 ) );
-  knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 20 );
+  knobPos = Vec( cr.x + rs.x - 36 - 12, cr.y + 18 );
   knobCtr = knobPos.plus( Vec( 18, 18 ) );
-  addParam( ParamWidget::create< RoundBlackKnob >( knobPos,
+  addParam( ParamWidget::create< RoundLargeBlackKnob >( knobPos,
                                            module,
                                            Bitulator::AMP_LEVEL,
                                            1, 10, 1 ) );
-  bg->addLabel( knobCtr.plus( Vec(  12, 18 ) ), "11", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
-  bg->addLabel( knobCtr.plus( Vec( -8, 18 ) ), "one", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
+  bg->addLabel( knobCtr.plus( Vec(  12, 21 ) ), "11", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  bg->addLabel( knobCtr.plus( Vec( -8, 21 ) ), "one", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
   
   Vec inP = Vec( 10, RACK_HEIGHT - 15 - 43 );
   Vec outP = Vec( box.size.x - 24 - 10, RACK_HEIGHT - 15 - 43 );

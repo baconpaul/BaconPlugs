@@ -1,6 +1,7 @@
 ToDo: Master Branch
 
 Plugins:
+*  That eno-style pegboard router
 *  Multi-nome plugin (learn about gates some more before I do this obvs)
 *  CleverClipper (branch "CleverClipper" already exists on mac and in dbox)
 *  Musical Arpeggiator

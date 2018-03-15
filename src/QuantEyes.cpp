@@ -170,7 +170,7 @@ QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
   bg->addRoundedBorder( Vec( 10, box.size.y - 78 ), Vec ( 70, 49 ) );
   bg->addLabel( Vec( 45, box.size.y - 74 ), "Root CV", 12, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
   int ybot = box.size.y - 78 + 24 + 5 + 20;
-  addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 13, ybot - 3 - 28 ),
+  addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 16, ybot - 3 - 28 ),
                                                 module,
                                                 QuantEyes::ROOT_STEP,
                                                 0, 12, 0 ) );

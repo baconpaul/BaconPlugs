@@ -86,12 +86,12 @@ ALingADingWidget::ALingADingWidget(ALingADing *module) : ModuleWidget( module )
   
   bg->addLabel( Vec( bg->cx(), 140 ), "Mix", 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE );
   
-  bg->addLabel( Vec( bg->cx() + 10, 140 + 60 ),
+  bg->addLabel( Vec( bg->cx() + 10, 140 + 72 ),
                 "Wet", 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
-  bg->addLabel( Vec( bg->cx() - 10, 140 + 60 ),
+  bg->addLabel( Vec( bg->cx() - 10, 140 + 72 ),
                 "Dry", 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
 
-  addParam( ParamWidget::create< RoundLargeBlackKnob >( Vec( bg->cx( 46 ), 150 ),
+  addParam( ParamWidget::create< RoundHugeBlackKnob >( Vec( bg->cx( 56 ), 150 ),
                                                 module,
                                                 ALingADing::WET_DRY_MIX,
                                                 0, 1, 1 ));
