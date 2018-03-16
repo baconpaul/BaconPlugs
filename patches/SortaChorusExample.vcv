@@ -213,7 +213,7 @@
       "version": "master",
       "model": "AudioInterface",
       "pos": [
-        69,
+        61,
         0
       ],
       "params": [],
@@ -233,7 +233,7 @@
       "version": "0.6.0",
       "model": "VCMixer",
       "pos": [
-        59,
+        51,
         0
       ],
       "params": [
@@ -247,7 +247,7 @@
         },
         {
           "paramId": 2,
-          "value": 1.0
+          "value": 0.564999998
         },
         {
           "paramId": 3,
@@ -264,10 +264,15 @@
       "version": "0.6.0",
       "model": "SortaChorus",
       "pos": [
-        47,
+        43,
         0
       ],
-      "params": []
+      "params": [
+        {
+          "paramId": 0,
+          "value": 0.398999989
+        }
+      ]
     },
     {
       "plugin": "BaconMusic",
@@ -370,9 +375,9 @@
         "a": 1.0
       },
       "outputModuleId": 1,
-      "outputId": 0,
-      "inputModuleId": 3,
-      "inputId": 1
+      "outputId": 3,
+      "inputModuleId": 4,
+      "inputId": 0
     },
     {
       "color": {
@@ -409,6 +414,18 @@
       "outputId": 0,
       "inputModuleId": 1,
       "inputId": 0
+    },
+    {
+      "color": {
+        "r": 0.788235366,
+        "g": 0.0941176564,
+        "b": 0.278431386,
+        "a": 1.0
+      },
+      "outputModuleId": 4,
+      "outputId": 0,
+      "inputModuleId": 3,
+      "inputId": 1
     }
   ]
 }
