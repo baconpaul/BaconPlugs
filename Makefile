@@ -20,7 +20,8 @@ SOURCES += $(wildcard src/*.cpp)
 DISTRIBUTABLES += $(wildcard LICENSE*) res doc patches README.md
 
 # Include the VCV plugin Makefile framework
-include ../../plugin.mk
+RACK_DIR ?= ../..
+include $(RACK_DIR)/plugin.mk
 
 shadist:	dist
 	openssl sha256 dist/$(SLUG)-$(VERSION)-$(ARCH).zip > dist/$(SLUG)-$(VERSION)-$(ARCH).zip.sha256
