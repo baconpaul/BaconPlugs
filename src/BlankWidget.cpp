@@ -28,13 +28,18 @@ struct MODULE_NAME : virtual Module {
   }
 };
 
-WIDGET_NAME::WIDGET_NAME()
+struct WIDGET_NAME : ModuleWidget {
+  WIDGET_NAME( MODULE_NAME *module);
+};
+
+WIDGET_NAME::WIDGET_NAME( MODULE_NAME *module ) : ModuleWidget( module )
 {
-  MODULE_NAME *module = new MODULE_NAME();
-  setModule( module );
   box.size = Vec( SCREW_WIDTH * 8, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "MODULE_NAME" );
   addChild( bg->wrappedInFramebuffer());
 }
+
+Model *modelALingADingMODULE_NAME = Model::create<MODULE_NAME, WIDGET_NAME>("Bacon Music", <error>, <error>, <error>); 
+
 #endif

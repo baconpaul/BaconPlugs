@@ -11,10 +11,10 @@ void init(rack::Plugin *p) {
 #endif
 	p->website = "https://github.com/baconpaul/Bacon Music";
 
-        // remember these tags are in [plugins.hpp
         p->addModel( modelALingADing );
         p->addModel( modelHarMoNee );
         p->addModel( modelGlissinator );
         p->addModel( modelBitulator );
-        p->addModel( modelQuantEyes ); 
+        p->addModel( modelQuantEyes );
+        p->addModel( modelSortaChorus );
 }

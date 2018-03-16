@@ -21,6 +21,6 @@ extern Model *modelGlissinator;
 extern Model *modelALingADing;
 extern Model *modelBitulator;
 extern Model *modelQuantEyes;
-
+extern Model *modelSortaChorus;
 
 #endif
