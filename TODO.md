@@ -1,11 +1,16 @@
 ToDo: Master Branch
 
 Plugins:
-*  That eno-style pegboard router
+*  Chippy Set
+**  http://wiki.nesdev.com/w/index.php/APU_Noise And the triangle and pulse also probably in a big chippermood module
+**  http://wiki.nesdev.com/w/index.php/APU_Pulse
+**  http://wiki.nesdev.com/w/index.php/APU_Triangle
+**  Clock (N d + m (d+1)) / (n+m) = a = d + m/(n+m)
+*  Standalone test for chippy generators
 *  Multi-nome plugin (learn about gates some more before I do this obvs)
 *  CleverClipper (branch "CleverClipper" already exists on mac and in dbox)
 *  Musical Arpeggiator
-*  TouchOSC reciever into CV and Gate land? (maybe)
+
   
 Widgets:
 *  Select from N-things rotary knob (like on my gibson)
