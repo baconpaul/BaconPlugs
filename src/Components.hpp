@@ -188,6 +188,7 @@ struct BaconBackground : virtual TransparentWidget
   BaconBackground *addRoundedBorder( Vec pos, Vec sz );
 
   BaconBackground *addLabelsForHugeKnob( Vec topLabelPos, const char* knobLabel, const char* zeroLabel, const char* oneLabel, Vec &putKnobHere );
+  BaconBackground *addLabelsForLargeKnob( Vec topLabelPos, const char* knobLabel, const char* zeroLabel, const char* oneLabel, Vec &putKnobHere );
 
   BaconBackground *addFilledRect( Vec pos, Vec sz, NVGcolor fill )
   {

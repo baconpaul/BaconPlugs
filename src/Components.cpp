@@ -257,3 +257,19 @@ BaconBackground *BaconBackground::addLabelsForHugeKnob( Vec topLabelPos,
   putKnobHere.x = topLabelPos.x - 28;
   return this;
 }
+
+BaconBackground *BaconBackground::addLabelsForLargeKnob( Vec topLabelPos,
+                                                         const char* knobLabel,
+                                                         const char* zeroLabel,
+                                                         const char* oneLabel,
+                                                         Vec &putKnobHere )
+{
+  addLabel( topLabelPos, knobLabel, 14, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE );
+  addLabel( Vec( topLabelPos.x + 10, topLabelPos.y + 48 ),
+            oneLabel, 13, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  addLabel( Vec( topLabelPos.x - 10, topLabelPos.y + 48 ),
+            zeroLabel, 13, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP );
+  putKnobHere.y = topLabelPos.y + 10;
+  putKnobHere.x = topLabelPos.x - 18;
+  return this;
+}
