@@ -21,6 +21,9 @@ extern Model *modelGlissinator;
 extern Model *modelALingADing;
 extern Model *modelBitulator;
 extern Model *modelQuantEyes;
+
+#ifdef BUILD_SORTACHORUS
 extern Model *modelSortaChorus;
+#endif
 
 #endif

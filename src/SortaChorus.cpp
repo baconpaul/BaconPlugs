@@ -1,4 +1,6 @@
 
+#ifdef BUILD_SORTACHORUS
+
 #include "BaconPlugs.hpp"
 #include <algorithm>
 #include <cmath>
@@ -126,3 +128,5 @@ SortaChorusWidget::SortaChorusWidget( SortaChorus *module ) : ModuleWidget( modu
 }
 
 Model *modelSortaChorus = Model::create<SortaChorus, SortaChorusWidget>("Bacon Music", "SortaChorus", "SortaChorus", CHORUS_TAG );
+
+#endif

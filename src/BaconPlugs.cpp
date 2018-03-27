@@ -16,5 +16,8 @@ void init(rack::Plugin *p) {
         p->addModel( modelGlissinator );
         p->addModel( modelBitulator );
         p->addModel( modelQuantEyes );
+
+#ifdef BUILD_SORTACHORUS
         p->addModel( modelSortaChorus );
+#endif
 }
