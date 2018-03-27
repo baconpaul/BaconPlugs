@@ -7,16 +7,22 @@ and does things like gliss and musical quantization. The other are wierdo distor
 and the like I am trying out.
 
 All the source is here, released under an Apache 2.0 license. You are free to use
-these modules as you see fit. If you happen to use them to make music, please
-do let me know, either by raising an issue on this github or by tagging me on twitter (@baconpaul).
+these modules as you see fit. If you happen to use them to make music you want to share, please
+do let me know, either by raising an issue on this github or by tagging me on twitter (@baconpaul) or
+soundcloud (@baconpaul).
 
-I build regularly on MacOS and check that the source builds on Linux from time to time.
-All the sample patches that I use to test and make the screenshots here are
-[available in the source distribution.](https://github.com/baconpaul/BaconPlugs/tree/master/patches) I will get around to a 
-mac and linux binary distribution and push it to the community patch list soon. If you would
-like to volunteer to build, test, and package them for windows, please raise a github issue and we
-can figure out how to have that happen!
+As of the release of Rack 0.6, these plugins will be built as part of the 
+[v2 community distribution](https://github.com/VCVRack/community/tree/v2) so they should just be
+available for you to try. A massive thanks to the [Rack community team](https://github.com/VCVRack/community/issues/248)
+for maintaining these builds. 
 
+I'm happy to hear any feedback and bug reports. The best way
+to reach me is to just open a github issue [right here on github](https://github.com/baconpaul/BaconPlugs/issues). 
+
+Finally, all the [sample patches I used to make the screenshots](https://github.com/baconpaul/BaconPlugs/tree/master/patches) are
+on the github here. 
+
+I hope you enjoy the plugins! 
 
 ## HarMoNee
 
