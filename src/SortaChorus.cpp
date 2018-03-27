@@ -93,17 +93,23 @@ struct SortaChorusWidget : ModuleWidget {
 
 SortaChorusWidget::SortaChorusWidget( SortaChorus *module ) : ModuleWidget( module )
 {
-  box.size = Vec( SCREW_WIDTH * 8, RACK_HEIGHT );
+  box.size = Vec( SCREW_WIDTH * 10, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "SortaChorus" );
   addChild( bg->wrappedInFramebuffer());
 
-  Vec wdPos( bg->cx(), 40 ), knobPos;
-  bg->addLabelsForHugeKnob( wdPos, "Depth", "Dry", "Wet", knobPos );
-  addParam( ParamWidget::create< RoundHugeBlackKnob >( knobPos, module,
-                                                       SortaChorus::DEPTH,
-                                                       0, 2.0, 0.5 ) );
-  
+  Vec wdPos( 40, 40 ), knobPos;
+  bg->addLabelsForLargeKnob( wdPos, "Depth", "None", "Lots", knobPos );
+  addParam( ParamWidget::create< RoundLargeBlackKnob >( knobPos, module,
+                                                        SortaChorus::DEPTH,
+                                                        0, 2.0, 0.5 ) );
+
+  wdPos.x = box.size.x - 40;
+  bg->addLabelsForLargeKnob( wdPos, "Speed", "Slow", "Fast", knobPos );
+  addParam( ParamWidget::create< RoundLargeBlackKnob >( knobPos, module,
+                                                        SortaChorus::SPEED,
+                                                        0, 1.0, 0.5 ) );
+
   Vec inP = Vec( bg->cx( 24 ) - 30, RACK_HEIGHT - 15 - 43 );
   bg->addPlugLabel( inP, BaconBackground::SIG_IN, "in" );
   addInput( Port::create< PJ301MPort >( inP,

@@ -12,7 +12,7 @@
       "params": [
         {
           "paramId": 0,
-          "value": 2.3240006
+          "value": 1.66400123
         },
         {
           "paramId": 1,
@@ -174,7 +174,7 @@
       "version": "0.6.0",
       "model": "VCO",
       "pos": [
-        33,
+        38,
         0
       ],
       "params": [
@@ -188,7 +188,7 @@
         },
         {
           "paramId": 2,
-          "value": 0.0
+          "value": -12.3120031
         },
         {
           "paramId": 3,
@@ -213,14 +213,14 @@
       "version": "master",
       "model": "AudioInterface",
       "pos": [
-        61,
+        68,
         0
       ],
       "params": [],
       "data": {
         "audio": {
           "driver": 5,
-          "deviceName": "Apple Inc.: DisplayPort",
+          "deviceName": "Presonus: PreSonus FIREBOX (0356)",
           "offset": 0,
           "maxChannels": 8,
           "sampleRate": 44100,
@@ -233,7 +233,7 @@
       "version": "0.6.0",
       "model": "VCMixer",
       "pos": [
-        51,
+        58,
         0
       ],
       "params": [
@@ -264,13 +264,17 @@
       "version": "0.6.0",
       "model": "SortaChorus",
       "pos": [
-        43,
+        48,
         0
       ],
       "params": [
         {
           "paramId": 0,
-          "value": 0.398999989
+          "value": 0.656000376
+        },
+        {
+          "paramId": 1,
+          "value": 0.5
         }
       ]
     },
@@ -352,6 +356,21 @@
           1
         ]
       }
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.0",
+      "model": "Glissinator",
+      "pos": [
+        33,
+        0
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 0.094000034
+        }
+      ]
     }
   ],
   "wires": [
@@ -410,22 +429,34 @@
         "b": 0.278431386,
         "a": 1.0
       },
-      "outputModuleId": 5,
-      "outputId": 0,
-      "inputModuleId": 1,
-      "inputId": 0
-    },
-    {
-      "color": {
-        "r": 0.788235366,
-        "g": 0.0941176564,
-        "b": 0.278431386,
-        "a": 1.0
-      },
       "outputModuleId": 4,
       "outputId": 0,
       "inputModuleId": 3,
       "inputId": 1
+    },
+    {
+      "color": {
+        "r": 0.0470588282,
+        "g": 0.556862772,
+        "b": 0.0823529437,
+        "a": 1.0
+      },
+      "outputModuleId": 5,
+      "outputId": 0,
+      "inputModuleId": 6,
+      "inputId": 0
+    },
+    {
+      "color": {
+        "r": 0.0352941193,
+        "g": 0.525490224,
+        "b": 0.678431392,
+        "a": 1.0
+      },
+      "outputModuleId": 6,
+      "outputId": 0,
+      "inputModuleId": 1,
+      "inputId": 0
     }
   ]
 }
