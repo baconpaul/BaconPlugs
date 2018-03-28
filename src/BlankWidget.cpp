@@ -40,6 +40,6 @@ WIDGET_NAME::WIDGET_NAME( MODULE_NAME *module ) : ModuleWidget( module )
   addChild( bg->wrappedInFramebuffer());
 }
 
-Model *modelALingADingMODULE_NAME = Model::create<MODULE_NAME, WIDGET_NAME>("Bacon Music", <error>, <error>, <error>); 
+Model *modelMODULE_NAME = Model::create<MODULE_NAME, WIDGET_NAME>("Bacon Music", "MODULE_NAME", "MODULE_NAME", RACK_REPLACE_WITH_TAG); 
 
 #endif

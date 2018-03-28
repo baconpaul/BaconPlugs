@@ -26,4 +26,5 @@ extern Model *modelQuantEyes;
 extern Model *modelSortaChorus;
 #endif
 
+extern Model *modelChipNoise;
 #endif
