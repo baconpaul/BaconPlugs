@@ -114,7 +114,7 @@ namespace ChipSym
     float **waveForms;
     int nDutyCycles;
     int wfLength;
-        CPUStepper cpu;
+    CPUStepper cpu;
 
     
   public:
@@ -177,13 +177,87 @@ namespace ChipSym
     }
   };
 
-  class NESNoise
+  class NESNoise : public NESBase
   {
+  private:
+    CPUStepper cpu;
+    short shiftRegister;
+    short currentOutput;
+    short xorBit;
+    
   public:
 
+    NESNoise( float imin, float imax, int sampleRate )
+      :
+      NESBase( imin, imax ), cpu( sampleRate, NESNTSCCPURate / 2 )
+    {
+      setPeriod( 8 );
+      shiftRegister = 0x07;
+      currentOutput = shiftRegister & 1;
+      xorBit = 1;
+    }
+
+    void setModeFlag( bool mf )
+    {
+      if( mf ) xorBit = 6;
+      else xorBit = 1;
+    }
     void setPeriod( uint c ) // 0 - 15
     {
       if( c > 15 ) c = 8;
+      switch( c ) {
+      case 0:
+        digWavelength = 4; break;
+      case 1:
+        digWavelength = 8; break;
+      case 2:
+        digWavelength = 16; break;
+      case 3:
+        digWavelength = 32; break;
+      case 4:
+        digWavelength = 64; break;
+      case 5:
+        digWavelength = 96; break;
+      case 6:
+        digWavelength = 128; break;
+      case 7:
+        digWavelength = 160; break;
+      case 8:
+        digWavelength = 202; break;
+      case 9:
+        digWavelength = 254; break;
+      case 10:
+        digWavelength = 380; break;
+      case 11:
+        digWavelength = 508; break;
+      case 12:
+        digWavelength = 762; break;
+      case 13:
+        digWavelength = 1016; break;
+      case 14:
+        digWavelength = 2034; break;
+      case 15:
+        digWavelength = 4068; break;
+      }
+    }
+
+    float step()
+    {
+      int ticks = cpu.nextStepCPUTicks();
+      t -= ticks;
+      if( t < 0 )
+        {
+          t += digWavelength;
+
+          // Do the LFSR Shift
+          short bit  = ((shiftRegister >> 0) ^ (shiftRegister >> xorBit)) & 1;
+          shiftRegister =  (shiftRegister >> 1) | (bit << 13);
+
+          currentOutput = shiftRegister & 1;
+        }
+      
+      return currentOutput * wfMinToMax - wfMin;
+
     }
   };
 };

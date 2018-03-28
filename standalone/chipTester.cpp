@@ -35,6 +35,8 @@ int main( int argc, char** argv )
       std::cout << "\n";
     }
 
+
+  #if 0
   std::cout << "Running the NES tri gen\n";
   NESGen< ChipSym::NESTriangle > triGen;
   int df = 2<<8;
@@ -52,7 +54,21 @@ int main( int argc, char** argv )
 
   pulsGen.ngen.setDigWavelength( df / 2 );
   pulsGen.playAudioUntilEnterPressed();
+#endif
+  
+  NESGen< ChipSym::NESNoise > noiseGen;
+  noiseGen.playAudioUntilEnterPressed();
+
+  noiseGen.ngen.setModeFlag( true );
+  noiseGen.playAudioUntilEnterPressed();
+
+  noiseGen.ngen.setModeFlag( false );
+  noiseGen.ngen.setPeriod( 3 );
+  noiseGen.playAudioUntilEnterPressed();
 
 
-  return 0;
+  noiseGen.ngen.setModeFlag( false );
+  noiseGen.ngen.setPeriod( 11 );
+  noiseGen.playAudioUntilEnterPressed();
+return 0;
 }
