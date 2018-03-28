@@ -56,12 +56,10 @@ namespace ChipSym
 
     float wfMin, wfMax, wfMinToMax;
 
-    CPUStepper cpu;
-
   public:
-    NESBase( float imin, float imax, uint sampleRate )
+    NESBase( float imin, float imax )
       :
-      wfMin( imin ), wfMax( imax ), cpu( sampleRate, NESNTSCCPURate )
+      wfMin( imin ), wfMax( imax )
     {
       digWavelength = 1 << 7; // Callibrate this later
       t = digWavelength;
@@ -80,11 +78,13 @@ namespace ChipSym
   {
   private:
     float waveForm[ 32 ];
+    CPUStepper cpu;
+
 
   public:
     NESTriangle( float imin, float imax, uint sampleRate )
       :
-      NESBase( imin, imax, sampleRate )
+      NESBase( imin, imax ), cpu( sampleRate, NESNTSCCPURate )
     {
       for( int i=0; i<15; ++i ) {
         waveForm[ 15 - i ] = i / 15.0f;
@@ -100,7 +100,7 @@ namespace ChipSym
         {
           currPos ++;
           t += digWavelength;
-          if( currPos > 32 ) currPos = 0;
+          if( currPos >= 32 ) currPos = 0;
         }
       
       return waveForm[ currPos ] * wfMinToMax - wfMin;
@@ -114,11 +114,13 @@ namespace ChipSym
     float **waveForms;
     int nDutyCycles;
     int wfLength;
+        CPUStepper cpu;
+
     
   public:
     NESPulse( float imin, float imax, int sampleRate )
       :
-      NESBase( imin, imax, sampleRate )
+      NESBase( imin, imax ), cpu( sampleRate, NESNTSCCPURate / 2 )
     {
       wfLength = 8;
       nDutyCycles = 4;
@@ -168,12 +170,20 @@ namespace ChipSym
         {
           currPos ++;
           t += digWavelength;
-          if( currPos > wfLength  ) currPos = 0;
+          if( currPos >= wfLength  ) currPos = 0;
         }
       
       return waveForms[ dutyCycle ][ currPos ] * wfMinToMax - wfMin;
     }
-    
+  };
 
+  class NESNoise
+  {
+  public:
+
+    void setPeriod( uint c ) // 0 - 15
+    {
+      if( c > 15 ) c = 8;
+    }
   };
 };
