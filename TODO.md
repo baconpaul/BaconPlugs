@@ -3,10 +3,10 @@ ToDo: Master Branch
 Plugins:
 *  Chippy Set
    *  http://wiki.nesdev.com/w/index.php/APU_Noise And the triangle and pulse also probably in a big chippermood module  
-   *  Standalone test for chippy generators
 *  Multi-nome plugin (learn about gates some more before I do this obvs)
 *  CleverClipper (branch "CleverClipper" already exists on mac and in dbox)
 *  Musical Arpeggiator
+*  Draw that 8 bit waveshape?
 
   
 Widgets:
