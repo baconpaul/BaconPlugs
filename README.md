@@ -2,9 +2,13 @@
 
 "Bacon Music" is my set of EuroRack style plugins for 
 [VCVRack](http://www.vcvrack.com). The modules are mostly inspured by me noodling around, and 
-they sort of fall into two groups. One group deals with control voltage manipulation on 1v/oct signals
-and does things like gliss and musical quantization. The other are wierdo distortions
-and the like I am trying out.
+they sort of fall into a few groups: 
+
+* Control voltage manipulation on 1v/oct signals to do things like glissando and musical quantization;
+* 8-bit-y digital chip-like synthesis, doing things like NES replication and 
+various simple noise algorithms;
+* and finally, not very useful modulations and  distortions and stuff.
+
 
 All the source is here, released under an Apache 2.0 license. You are free to use
 these modules as you see fit. If you happen to use them to make music you want to share, please
@@ -24,7 +28,9 @@ on the github here.
 
 I hope you enjoy the plugins! 
 
-## HarMoNee
+## Control Voltage Manipulation
+
+### HarMoNee
 
 HarMoNee is a plugin which takes a 1v/oct CV signal and outputs two signals,
 one which is the original, and the second which is modified by a musical amount,
@@ -33,9 +39,9 @@ like a minor 3rd. It spans plus or minus one octave, and is controlled by toggle
 The toggles are additive. So if you want a fourth, choose a major third and a half step 
 both. You get the idea. 
 
-![Example HarMoNee patch](doc/HarMoNee.png)
+![Example HarMoNee patch](docs/HarMoNee.png)
 
-## Glissinator
+### Glissinator
 
 Glissinator takes a control voltage which is undergoing change and smooths out that
 change with a linear glissando. It is not triggered by a gate, just by differences
@@ -43,9 +49,9 @@ in the input CV. It never jumps discontinously, so if the CV changes "target" va
 mid-gliss, the whole thing turns around. The slider will give you between 0 and 1 seconds
 of gliss time. Here's a sample patch.
 
-![Example Glissinator Patch](doc/Glissinator.png)
+![Example Glissinator Patch](docs/Glissinator.png)
 
-## QuantEyes
+### QuantEyes
 
 QuantEyes takes a CV signal and clamps it to certain values 1/12 of a volt apart.
 Functionally this means that CV signals which are changing on input will be clamped to
@@ -63,9 +69,27 @@ and then twiddle the root note.
 Here's a (pretty cool sounding, I think) patch which combines QuantEyes with the 
 Glissinator and Harmonee modules.
 
-![Example QuantEyes Patch](doc/QuantEyes.png)
+![Example QuantEyes Patch](docs/QuantEyes.png)
 
-## ALingADing 
+## 8-bit-y stuff and chip emulators and the like
+
+### ChipNoise
+
+ChipNoise implments the NES noise generator without the NES envelope. It would have been
+impossible to implement without the careful description of the noise algorithm at
+[the NES Dev WIKI](http://wiki.nesdev.com/w/index.php/APU_Noise).
+
+The NES noise system has 16 different frequencies; and two modes. The two modes generate either
+a long pseudo-random pattern or (one of two) short pseudo-random patterns.
+
+The module just outputs the noise with a switch to change the mode and a knob to select the
+frequency. The knob is also exposed to CV. And yes, it really sounds like an NES. Here's a simple
+patch.
+
+![Example ChipNoise Patch](docs/ChipNoise.png)
+
+## Distortions and Modulations and so on
+### ALingADing 
 
 ALingADing is a simulation of a Ring Modulator based on [this paper by Julian Parker](http://recherche.ircam.fr/pub/dafx11/Papers/66_e.pdf) and
 then taking some shortcuts.
@@ -74,9 +98,9 @@ I basically use an implementaion of a softmax, eyeballing the parameters to roug
 paper. The only control is a wet/dry mix (where wet is the signal modulated by carrier
 and dry is just the signal). Sloppy, sure, but it sounds kinda cool. Here's a sample patch.
 
-![Example ALingADing Patch](doc/ALingADing.png)
+![Example ALingADing Patch](docs/ALingADing.png)
 
-## Bitulator
+### Bitulator
 
 Bitulator is really just me screwing around with some math on the input. It has two
 functions. Firstly, it "quantizes" to a smaller number of "bits", but does it in a
@@ -86,7 +110,7 @@ Secondly it has a gross digital clipping amplifier. Basically signal is the clam
 param. Apply this to a sine wave and turn it up and you get pretty much a perfect square.
 Combine them for grunky grunk noise. Dumb, but fun. Here's a sample patch.
 
-![Example Bitulator Patch](doc/Bitulator.png)
+![Example Bitulator Patch](docs/Bitulator.png)
 
 ## Hey, what's with the repo name "BaconPlugs" vs slug "Bacon Music"
 

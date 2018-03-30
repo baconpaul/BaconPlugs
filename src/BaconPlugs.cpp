@@ -22,4 +22,5 @@ void init(rack::Plugin *p) {
 #endif
   
   p->addModel( modelChipNoise );
+  p->addModel( modelChipWaves );
 }

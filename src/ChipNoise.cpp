@@ -1,6 +1,3 @@
-// TODO: Hook up LONG_MODE param
-//       Shipit!
-
 #include "BaconPlugs.hpp"
 #include "ChipSym.hpp"
 
@@ -53,6 +50,12 @@ struct ChipNoise : virtual Module {
     lights[ NOISE_LENGTH_ONES ].value = nl % 10;
     lights[ NOISE_LENGTH_TENS ].value = nl / 10;
     noise.setPeriod(nl);
+
+    if( params[ LONG_MODE ].value == 1 )
+      noise.setModeFlag( false );
+    else
+      noise.setModeFlag( true );
+        
     
     outputs[ NOISE_OUTPUT ].value = noise.step();
   }
@@ -94,6 +97,12 @@ ChipNoiseWidget::ChipNoiseWidget( ChipNoise *module ) : ModuleWidget( module )
                                                                             ChipNoise::NOISE_LENGTH_ONES ) );
 
 
+  bg->addRoundedBorder( Vec( 8, 170 ), Vec( SCREW_WIDTH * 6 - 16, 80 ) );
+  bg->addLabel( Vec( 13, 205 ), "pattern", 11, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
+  addParam( ParamWidget::create< NKK >( Vec( bg->cx() + 3, 190 ), module, ChipNoise::LONG_MODE, 0, 1, 1 ) );
+  bg->addLabel( Vec( bg->cx() + 18, 175 ), "long", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() + 18, 237 ), "short", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
+  
   // Output port
   Vec outP = Vec( bg->cx( 24 ), RACK_HEIGHT - 15 - 43 );
   bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );

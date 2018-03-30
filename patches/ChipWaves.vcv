@@ -2,57 +2,6 @@
   "version": "master",
   "modules": [
     {
-      "plugin": "Core",
-      "version": "master",
-      "model": "AudioInterface",
-      "pos": [
-        38,
-        0
-      ],
-      "params": [],
-      "data": {
-        "audio": {
-          "driver": 5,
-          "deviceName": "Apple Inc.: Built-in Output",
-          "offset": 0,
-          "maxChannels": 8,
-          "sampleRate": 44100,
-          "blockSize": 256
-        }
-      }
-    },
-    {
-      "plugin": "Fundamental",
-      "version": "0.6.0",
-      "model": "VCMixer",
-      "pos": [
-        28,
-        0
-      ],
-      "params": [
-        {
-          "paramId": 0,
-          "value": 1.0
-        },
-        {
-          "paramId": 1,
-          "value": 0.554500282
-        },
-        {
-          "paramId": 2,
-          "value": 1.0
-        },
-        {
-          "paramId": 3,
-          "value": 1.0
-        },
-        {
-          "paramId": 4,
-          "value": 1.0
-        }
-      ]
-    },
-    {
       "plugin": "Fundamental",
       "version": "0.6.0",
       "model": "SEQ3",
@@ -79,7 +28,7 @@
         },
         {
           "paramId": 4,
-          "value": 6.54000044
+          "value": 0.0
         },
         {
           "paramId": 12,
@@ -95,7 +44,7 @@
         },
         {
           "paramId": 5,
-          "value": 0.0750002787
+          "value": 0.0
         },
         {
           "paramId": 13,
@@ -111,7 +60,7 @@
         },
         {
           "paramId": 6,
-          "value": 3.4350009
+          "value": 0.0
         },
         {
           "paramId": 14,
@@ -127,7 +76,7 @@
         },
         {
           "paramId": 7,
-          "value": 6.07500124
+          "value": 0.0
         },
         {
           "paramId": 15,
@@ -143,7 +92,7 @@
         },
         {
           "paramId": 8,
-          "value": 7.51500034
+          "value": 0.0
         },
         {
           "paramId": 16,
@@ -159,7 +108,7 @@
         },
         {
           "paramId": 9,
-          "value": 6.01500034
+          "value": 0.0
         },
         {
           "paramId": 17,
@@ -175,7 +124,7 @@
         },
         {
           "paramId": 10,
-          "value": 4.42500114
+          "value": 0.0
         },
         {
           "paramId": 18,
@@ -191,7 +140,7 @@
         },
         {
           "paramId": 11,
-          "value": 10.0
+          "value": 0.0
         },
         {
           "paramId": 19,
@@ -223,70 +172,88 @@
     {
       "plugin": "BaconMusic",
       "version": "0.6.0",
-      "model": "ChipNoise",
+      "model": "ChipWaves",
       "pos": [
         22,
+        0
+      ],
+      "params": []
+    },
+    {
+      "plugin": "Fundamental",
+      "version": "0.6.0",
+      "model": "VCMixer",
+      "pos": [
+        30,
         0
       ],
       "params": [
         {
           "paramId": 0,
-          "value": 7.0
+          "value": 1.0
         },
         {
           "paramId": 1,
+          "value": 0.75399965
+        },
+        {
+          "paramId": 2,
+          "value": 1.0
+        },
+        {
+          "paramId": 3,
+          "value": 1.0
+        },
+        {
+          "paramId": 4,
           "value": 1.0
         }
       ]
+    },
+    {
+      "plugin": "Core",
+      "version": "master",
+      "model": "AudioInterface",
+      "pos": [
+        40,
+        0
+      ],
+      "params": [],
+      "data": {
+        "audio": {
+          "driver": 5,
+          "deviceName": "",
+          "offset": 0,
+          "maxChannels": 8,
+          "sampleRate": 44100,
+          "blockSize": 256
+        }
+      }
     }
   ],
   "wires": [
     {
       "color": {
-        "r": 0.0470588282,
-        "g": 0.556862772,
-        "b": 0.0823529437,
-        "a": 1.0
-      },
-      "outputModuleId": 1,
-      "outputId": 1,
-      "inputModuleId": 0,
-      "inputId": 0
-    },
-    {
-      "color": {
-        "r": 0.0352941193,
-        "g": 0.525490224,
-        "b": 0.678431392,
-        "a": 1.0
-      },
-      "outputModuleId": 1,
-      "outputId": 1,
-      "inputModuleId": 0,
-      "inputId": 1
-    },
-    {
-      "color": {
-        "r": 0.0470588282,
-        "g": 0.556862772,
-        "b": 0.0823529437,
+        "r": 0.788235366,
+        "g": 0.0941176564,
+        "b": 0.278431386,
         "a": 1.0
       },
       "outputModuleId": 2,
-      "outputId": 1,
+      "outputId": 0,
       "inputModuleId": 3,
       "inputId": 0
     },
     {
       "color": {
-        "r": 0.0352941193,
-        "g": 0.525490224,
-        "b": 0.678431392,
+        "r": 0.0470588282,
+        "g": 0.556862772,
+        "b": 0.0823529437,
         "a": 1.0
       },
-      "outputModuleId": 3,
-      "outputId": 0,
-      "inputModuleId": 1,
+      "outputModuleId": 1,
+      "outputId": 1,
+      "inputModuleId": 2,
       "inputId": 1
     }
   ]
