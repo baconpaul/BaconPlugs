@@ -76,7 +76,7 @@ namespace ChipSym
   
   class NESTriangle : public NESBase // http://wiki.nesdev.com/w/index.php/APU_Triangle
   {
-  private:
+  protected:
     float waveForm[ 32 ];
     CPUStepper cpu;
 
@@ -109,6 +109,17 @@ namespace ChipSym
     void setWavelengthInSeconds( float seconds )
     {
       setDigWavelength( (uint)( seconds * NESNTSCCPURate * 1000 * 1000 / 32 ) );
+    }
+  };
+
+  class NESArbitraryWaveform : public NESTriangle {
+  public:
+    NESArbitraryWaveform( float imin, float imax, uint sampleRate ) : NESTriangle( imin, imax, sampleRate ) { }
+
+    void setWaveformPoint( uint pos,  // 0->31
+                           uint val ) // 0->15
+    {
+      waveForm[ pos  ] = val;
     }
   };
 

@@ -54,7 +54,6 @@ int main( int argc, char** argv )
 
   pulsGen.ngen.setDigWavelength( df / 2 );
   pulsGen.playAudioUntilEnterPressed();
-#endif
   
   NESGen< ChipSym::NESNoise > noiseGen;
   noiseGen.playAudioUntilEnterPressed();
@@ -70,5 +69,19 @@ int main( int argc, char** argv )
   noiseGen.ngen.setModeFlag( false );
   noiseGen.ngen.setPeriod( 11 );
   noiseGen.playAudioUntilEnterPressed();
+#endif
+
+  NESGen< ChipSym::NESArbitraryWaveform > arbGen;
+  int df = 2<<7;
+  arbGen.ngen.setDigWavelength( df );
+  arbGen.playAudioUntilEnterPressed();
+
+  for( uint i=0; i<32; ++i )
+    {
+      arbGen.ngen.setWaveformPoint( i, 7 * ( sin ( 2 * 3.14159 * i / 32 ) + 1 ) );
+    }
+  arbGen.playAudioUntilEnterPressed();
+
+  
 return 0;
 }
