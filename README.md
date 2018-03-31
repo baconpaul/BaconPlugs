@@ -73,6 +73,27 @@ Glissinator and Harmonee modules.
 
 ## 8-bit-y stuff and chip emulators and the like
 
+### ChipWaves
+
+ChipWaves implements the NES triangle and pulse wave generator. It would have been
+impossible to implement without the careful description of the algorithms at
+[the NES Dev Wiki](http://wiki.nesdev.com/w/index.php/APU_Triangle).
+
+The NES has two tonal oscilattors, a triangle wave and a pulse. The pulse has 4
+different duty cycles. The triangle is a fixed wave. 
+
+They are tuned by wavelength with values up to 2^11 clock cycles. Rather than
+expose this very digital interface, though, I've set up the inputs to be tuned
+to CV in exactly the same way as VCO-1. So the conversion from 1v/oct signal
+to the 2^11 different wavelengths based on the simulated clock frequency (I chose NTSC)
+is all done for you.
+
+Basically, it just works like an oscillator. Drop it in and go chip crazy. The sample
+patch runs it mixed along with a VCO-1 so I could check tuning. Here's how I did it.
+
+![Example ChipWaves Patch](docs/ChipWaves.png)
+
+
 ### ChipNoise
 
 ChipNoise implments the NES noise generator without the NES envelope. It would have been
@@ -87,6 +108,7 @@ frequency. The knob is also exposed to CV. And yes, it really sounds like an NES
 patch.
 
 ![Example ChipNoise Patch](docs/ChipNoise.png)
+
 
 ## Distortions and Modulations and so on
 ### ALingADing 

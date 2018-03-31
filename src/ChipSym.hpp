@@ -105,6 +105,11 @@ namespace ChipSym
       
       return waveForm[ currPos ] * wfMinToMax - wfMin;
     }
+
+    void setWavelengthInSeconds( float seconds )
+    {
+      setDigWavelength( (uint)( seconds * NESNTSCCPURate * 1000 * 1000 / 32 ) );
+    }
   };
 
   class NESPulse : public NESBase // http://wiki.nesdev.com/w/index.php/APU_Pulse
@@ -156,7 +161,12 @@ namespace ChipSym
         }
 
     }
-    
+
+    void setWavelengthInSeconds( float seconds )
+    {
+      setDigWavelength( (uint)( seconds * NESNTSCCPURate * 1000 * 1000 / 2.0 / 8.0) );
+    }
+
     void setDutyCycle( int dc )
     {
       dutyCycle = dc;
