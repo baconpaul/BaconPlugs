@@ -211,4 +211,41 @@ struct BaconBackground : virtual TransparentWidget
   FramebufferWidget *wrappedInFramebuffer();
 };
 
+template< int NSteps, typename ColorModel >
+struct NStepDraggableLEDInput
+{
+};
+
+struct GreenFromZeroColorModel
+{
+  NVGcolor GREEN, BLACK;
+  GreenFromZeroColorModel() : GREEN( nvgRGB( 10, 255, 10 ) ), BLACK( nvgRGB( 10, 10, 10 ) ) { }
+  NVGcolor elementColor( int stepNo, int NSteps, int value )
+  {
+    if( stepNo < value )
+      return GREEN;
+    else
+      return BLACK;
+  }
+};
+
+
+struct RedGreenFromMiddleColorModel
+{
+  NVGcolor GREEN, BLACK, RED;
+  RedGreenFromMiddleColorModel() : GREEN( nvgRGB( 10, 10, 255 ) ), BLACK( nvgRGB( 10, 10, 10 ) ), RED( nvgRGB( 255, 10, 10 ) ) { }
+  NVGcolor elementColor( int stepNo, int NSteps, int value )
+  {
+    // This has the 'midpoint' be 0 so we want to compare with NSteps/2
+    if( value < NSteps / 2 ) {
+      // We are in the bottom half.
+      if( stepNo < value ) return BLACK;
+      else return RED;
+    } else {
+      if( stepNo > value ) return BLACK;
+      else return GREEN;
+    }
+  }
+};
+  
 #endif
