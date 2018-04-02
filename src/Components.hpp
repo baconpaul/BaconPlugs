@@ -11,6 +11,9 @@
 #include "GraduatedFader.hpp"
 #include "BufferedDrawFunction.hpp"
 
+// FIX THIS LATER
+#include <iostream>
+
 using namespace rack;
 
 
@@ -212,8 +215,107 @@ struct BaconBackground : virtual TransparentWidget
 };
 
 template< int NSteps, typename ColorModel >
-struct NStepDraggableLEDInput
+struct NStepDraggableLEDWidget : public ParamWidget
 {
+  BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>> *buffer;
+  bool dragging;
+  Vec lastDragPos;
+  ColorModel cm;
+  
+  NStepDraggableLEDWidget()
+  {
+    box.size = Vec( 20, 200 );
+    dragging = false;
+    lastDragPos = Vec( -1, -1 );
+    
+    buffer = new BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>>( Vec( 0, 0 ), this->box.size,
+                                                                                          this,
+                                                                                          &NStepDraggableLEDWidget<NSteps, ColorModel>::drawSegments );
+
+  }
+
+  int getStep()
+  {
+    float pvalue = this->module->params[ this->paramId ].value;
+    int step = (int)pvalue;
+    return step;
+  }
+
+  int impStep( float yp )
+  {
+    float py = (box.size.y - yp)/box.size.y;
+    return (int)( py * NSteps );
+  }
+  
+  void draw( NVGcontext *vg ) override
+  {
+    buffer->draw( vg );
+  }
+
+  void valueByMouse( float ey )
+  {
+    if( impStep( ey ) != getStep() )
+    {
+      std::cout << "Resetting value to " << impStep( ey ) << "\n";
+      this->module->params[ this->paramId ].value = impStep( ey );
+      buffer->dirty = true;
+    }
+  }
+  
+  void onMouseDown( EventMouseDown &e ) override
+  {
+    ParamWidget::onMouseDown( e );
+    valueByMouse( e.pos.y );
+    dragging = true;
+  }
+
+  void onMouseUp( EventMouseUp &e ) override
+  {
+    ParamWidget::onMouseUp( e );
+    valueByMouse( e.pos.y );
+    dragging = false;
+    lastDragPos = Vec( -1, -1 );
+  }
+
+  void onMouseMove( EventMouseMove &e ) override
+  {
+    ParamWidget::onMouseMove( e );
+    if( dragging && ( e.pos.x != lastDragPos.x || e.pos.y != lastDragPos.y ))
+      {
+        valueByMouse( e.pos.y );
+        lastDragPos = e.pos;
+      }
+  }
+
+  void onMouseLeave( EventMouseLeave &e ) override
+  {
+    ParamWidget::onMouseLeave( e );
+    dragging = false;
+    lastDragPos = Vec( -1, -1 );
+  }
+
+  void drawSegments( NVGcontext *vg )
+  {
+    // This is now buffered to only be called when the value has changed
+    int w = this->box.size.x;
+    int h = this->box.size.y;
+    
+    nvgBeginPath( vg );
+    nvgRect( vg, 0, 0, w, h );
+    nvgFillColor( vg, nvgRGBA( 155, 155, 155, 255 ) );
+    nvgFill( vg );
+
+    float dy = box.size.y / NSteps;
+    for( int i=0; i<NSteps; ++i )
+      {
+        nvgBeginPath( vg );
+        nvgRect( vg, 2, i * dy + 2, w - 4, dy - 4 );
+        nvgFillColor( vg, cm.elementColor( NSteps - 1 - i , NSteps, getStep() ) );
+        nvgFill( vg );
+      }
+  }  
+
+  
 };
 
 struct GreenFromZeroColorModel
@@ -222,7 +324,7 @@ struct GreenFromZeroColorModel
   GreenFromZeroColorModel() : GREEN( nvgRGB( 10, 255, 10 ) ), BLACK( nvgRGB( 10, 10, 10 ) ) { }
   NVGcolor elementColor( int stepNo, int NSteps, int value )
   {
-    if( stepNo < value )
+    if( stepNo <= value )
       return GREEN;
     else
       return BLACK;
@@ -233,16 +335,16 @@ struct GreenFromZeroColorModel
 struct RedGreenFromMiddleColorModel
 {
   NVGcolor GREEN, BLACK, RED;
-  RedGreenFromMiddleColorModel() : GREEN( nvgRGB( 10, 10, 255 ) ), BLACK( nvgRGB( 10, 10, 10 ) ), RED( nvgRGB( 255, 10, 10 ) ) { }
+  RedGreenFromMiddleColorModel() : GREEN( nvgRGB( 10, 255, 10 ) ), BLACK( nvgRGB( 10, 10, 10 ) ), RED( nvgRGB( 255, 10, 10 ) ) { }
   NVGcolor elementColor( int stepNo, int NSteps, int value )
   {
     // This has the 'midpoint' be 0 so we want to compare with NSteps/2
     if( value < NSteps / 2 ) {
       // We are in the bottom half.
-      if( stepNo < value ) return BLACK;
+      if( stepNo < value || stepNo > NSteps / 2) return BLACK;
       else return RED;
     } else {
-      if( stepNo > value ) return BLACK;
+      if( stepNo >= value || stepNo <=! NSteps / 2) return BLACK;
       else return GREEN;
     }
   }

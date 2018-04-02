@@ -28,4 +28,5 @@ extern Model *modelSortaChorus;
 
 extern Model *modelChipNoise;
 extern Model *modelChipWaves;
+extern Model *modelChipYourWave;
 #endif
