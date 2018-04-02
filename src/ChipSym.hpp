@@ -281,4 +281,19 @@ namespace ChipSym
 
     }
   };
+
+  class LFSRGeneralImpl
+  {
+  public:
+    typedef std::bitset< 24 > bits;
+  private:
+  public:
+    void setActivetBits( size_t aBits ) // < 24 please
+    {
+    }
+    void setTapsAsInt( uint taps ) // so 1 << 16 & 1 << 14 & 1 << 7 type thing
+    {
+    }
+    
+  };
 };
