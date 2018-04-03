@@ -29,8 +29,8 @@ struct ChipWaves : virtual Module {
   ChipSym::NESTriangle ntri;
 
   ChipWaves() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ),
-                npulse( -2.0, 2.0, engineGetSampleRate() ),
-                ntri( -2.0, 2.0, engineGetSampleRate() )
+                npulse( -5.0, 5.0, engineGetSampleRate() ),
+                ntri( -5.0, 5.0, engineGetSampleRate() )
   {
     npulse.setDigWavelength( 2<<9 );
     ntri.setDigWavelength( 2<<8 );

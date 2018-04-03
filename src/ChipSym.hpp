@@ -86,7 +86,7 @@ namespace ChipSym
       :
       NESBase( imin, imax ), cpu( sampleRate, NESNTSCCPURate )
     {
-      for( int i=0; i<15; ++i ) {
+      for( int i=0; i<16; ++i ) {
         waveForm[ 15 - i ] = i / 15.0f;
         waveForm[ 16 + i ] = i / 15.0f;
       }
@@ -103,7 +103,7 @@ namespace ChipSym
           if( currPos >= 32 ) currPos = 0;
         }
       
-      return waveForm[ currPos ] * wfMinToMax - wfMin;
+      return waveForm[ currPos ] * wfMinToMax + wfMin;
     }
 
     void setWavelengthInSeconds( float seconds )
@@ -119,8 +119,10 @@ namespace ChipSym
     void setWaveformPoint( uint pos,  // 0->31
                            uint val ) // 0->15
     {
-      waveForm[ pos  ] = val;
+      waveForm[ pos  ] = val / 15.0f;
     }
+
+    uint getWaveformPoint( uint pos ) { return waveForm[ pos ] * 15.0f; }
   };
 
   class NESPulse : public NESBase // http://wiki.nesdev.com/w/index.php/APU_Pulse
@@ -194,7 +196,7 @@ namespace ChipSym
           if( currPos >= wfLength  ) currPos = 0;
         }
       
-      return waveForms[ dutyCycle ][ currPos ] * wfMinToMax - wfMin;
+      return waveForms[ dutyCycle ][ currPos ] * wfMinToMax + wfMin;
     }
   };
 
@@ -277,7 +279,7 @@ namespace ChipSym
           currentOutput = shiftRegister & 1;
         }
       
-      return currentOutput * wfMinToMax - wfMin;
+      return currentOutput * wfMinToMax + wfMin;
 
     }
   };

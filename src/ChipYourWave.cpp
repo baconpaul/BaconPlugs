@@ -27,7 +27,7 @@ struct ChipYourWave : virtual Module {
   ChipSym::NESArbitraryWaveform narb;
 
   ChipYourWave() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ),
-                   narb( -2.0, 2.0, engineGetSampleRate() )
+                   narb( -5.0, 5.0, engineGetSampleRate() )
   {
     narb.setDigWavelength( 2<<8 );
   }
@@ -49,6 +49,9 @@ struct ChipYourWave : virtual Module {
 
     narb.setWavelengthInSeconds( dwf );
 
+    for( int i=0; i<32; ++i )
+      narb.setWaveformPoint( i, params[ WAVEFORM_START + i ].value );
+    
     if( outputs[ WAVE_OUTPUT ].active )
       outputs[ WAVE_OUTPUT ].value = narb.step();
   }
@@ -60,12 +63,12 @@ struct ChipYourWaveWidget : ModuleWidget {
 
 ChipYourWaveWidget::ChipYourWaveWidget( ChipYourWave *module ) : ModuleWidget( module )
 {
-  box.size = Vec( SCREW_WIDTH * 20, RACK_HEIGHT );
+  box.size = Vec( SCREW_WIDTH * 23, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "ChipYourWave" );
   addChild( bg->wrappedInFramebuffer());
 
-  Vec outP = Vec( bg->cx( 24 ) + 25, RACK_HEIGHT - 15 - 43 );
+  Vec outP = Vec( box.size.x - 40, 45 + 30 );
   bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );
   addOutput( Port::create< PJ301MPort >( outP,
                                          Port::OUTPUT,
@@ -82,11 +85,14 @@ ChipYourWaveWidget::ChipYourWaveWidget( ChipYourWave *module ) : ModuleWidget( m
                                         module,
                                         ChipYourWave::FREQ_CV ) );
 
-  addParam( ParamWidget::create< NStepDraggableLEDWidget< 16, GreenFromZeroColorModel >>( Vec( 10, 120 ), module,
-                                                                                          ChipYourWave::WAVEFORM_START, 0, 15, 8 ) );
-
-    addParam( ParamWidget::create< NStepDraggableLEDWidget< 16, RedGreenFromMiddleColorModel >>( Vec( 40, 120 ), module,
-                                                                                          ChipYourWave::WAVEFORM_START + 1, 0, 15, 8 ) );
+  bg->addLabel( Vec( bg->cx(), 135 ), "Draw your Digital Waveform Here", 14, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+  for( int i=0; i<32; ++i )
+    {
+      addParam( ParamWidget::create< NStepDraggableLEDWidget< 16, RedGreenFromMiddleColorModel >>( Vec( 10 + 10 * i, 140 ), module,
+                                                                                                   ChipYourWave::WAVEFORM_START + i,
+                                                                                                   0, 15,
+                                                                                                   module->narb.getWaveformPoint( i )) );
+    }
 
 
 }

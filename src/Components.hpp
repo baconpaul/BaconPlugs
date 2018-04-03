@@ -11,9 +11,6 @@
 #include "GraduatedFader.hpp"
 #include "BufferedDrawFunction.hpp"
 
-// FIX THIS LATER
-#include <iostream>
-
 using namespace rack;
 
 
@@ -224,7 +221,7 @@ struct NStepDraggableLEDWidget : public ParamWidget
   
   NStepDraggableLEDWidget()
   {
-    box.size = Vec( 20, 200 );
+    box.size = Vec( 10, 200 );
     dragging = false;
     lastDragPos = Vec( -1, -1 );
     
@@ -256,9 +253,8 @@ struct NStepDraggableLEDWidget : public ParamWidget
   {
     if( impStep( ey ) != getStep() )
     {
-      std::cout << "Resetting value to " << impStep( ey ) << "\n";
-      this->module->params[ this->paramId ].value = impStep( ey );
       buffer->dirty = true;
+      setValue( impStep( ey ) );
     }
   }
   
@@ -302,14 +298,14 @@ struct NStepDraggableLEDWidget : public ParamWidget
     
     nvgBeginPath( vg );
     nvgRect( vg, 0, 0, w, h );
-    nvgFillColor( vg, nvgRGBA( 155, 155, 155, 255 ) );
+    nvgFillColor( vg, nvgRGB( 40, 40, 40 ) );
     nvgFill( vg );
 
     float dy = box.size.y / NSteps;
     for( int i=0; i<NSteps; ++i )
       {
         nvgBeginPath( vg );
-        nvgRect( vg, 2, i * dy + 2, w - 4, dy - 4 );
+        nvgRect( vg, 1, i * dy + 1, w - 2, dy - 2 );
         nvgFillColor( vg, cm.elementColor( NSteps - 1 - i , NSteps, getStep() ) );
         nvgFill( vg );
       }
@@ -325,7 +321,7 @@ struct GreenFromZeroColorModel
   NVGcolor elementColor( int stepNo, int NSteps, int value )
   {
     if( stepNo <= value )
-      return GREEN;
+      return nvgRGB( 10, 155 + 1.0f * stepNo / NSteps * 100, 10 );
     else
       return BLACK;
   }
@@ -341,11 +337,19 @@ struct RedGreenFromMiddleColorModel
     // This has the 'midpoint' be 0 so we want to compare with NSteps/2
     if( value < NSteps / 2 ) {
       // We are in the bottom half.
-      if( stepNo < value || stepNo > NSteps / 2) return BLACK;
-      else return RED;
+      if( stepNo < value || stepNo >= NSteps / 2) return BLACK;
+      else
+        {
+          int distance = NSteps / 2 - stepNo;
+          return nvgRGB( 155 + 1.0f * distance / ( NSteps / 2 ) * 100 , 10, 10 );
+        }
     } else {
-      if( stepNo >= value || stepNo <=! NSteps / 2) return BLACK;
-      else return GREEN;
+      if( stepNo > value || stepNo < NSteps / 2) return BLACK;
+      else
+        {
+          int distance = stepNo - NSteps / 2;
+          return nvgRGB( 10, 155 + 1.0f * distance / ( NSteps / 2 ) * 100 , 10 );
+        }
     }
   }
 };

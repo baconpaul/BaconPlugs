@@ -222,7 +222,7 @@
     },
     {
       "plugin": "BaconMusic",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "model": "ChipNoise",
       "pos": [
         22,
@@ -235,9 +235,56 @@
         },
         {
           "paramId": 1,
-          "value": 1.0
+          "value": 0.0
         }
       ]
+    },
+    {
+      "plugin": "Fundamental",
+      "version": "0.6.0",
+      "model": "Scope",
+      "pos": [
+        48,
+        0
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 0.0
+        },
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 2,
+          "value": 0.0
+        },
+        {
+          "paramId": 3,
+          "value": 0.0
+        },
+        {
+          "paramId": 4,
+          "value": -16.0
+        },
+        {
+          "paramId": 5,
+          "value": 0.0
+        },
+        {
+          "paramId": 6,
+          "value": 0.0
+        },
+        {
+          "paramId": 7,
+          "value": 0.0
+        }
+      ],
+      "data": {
+        "lissajous": 0,
+        "external": 0
+      }
     }
   ],
   "wires": [
@@ -288,6 +335,18 @@
       "outputId": 0,
       "inputModuleId": 1,
       "inputId": 1
+    },
+    {
+      "color": {
+        "r": 0.788235366,
+        "g": 0.0941176564,
+        "b": 0.278431386,
+        "a": 1.0
+      },
+      "outputModuleId": 3,
+      "outputId": 0,
+      "inputModuleId": 4,
+      "inputId": 0
     }
   ]
 }

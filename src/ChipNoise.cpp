@@ -31,7 +31,7 @@ struct ChipNoise : virtual Module {
   ChipSym::NESNoise noise;
   
   ChipNoise() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ),
-                noise( -2.0, 2.0, engineGetSampleRate() )
+                noise( -5.0, 5.0, engineGetSampleRate() )
                 
   {
     params[ LONG_MODE ].value = 1;
