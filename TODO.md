@@ -1,13 +1,11 @@
 ToDo: Master Branch
 
 Plugins:
-*  Chippy Set
-   *  LSFR more general noise maker
-   *  Draw that 8 bit waveshape?
+*  LSFR more general noise maker (sort of started in the ChipSym)
 *  Multi-nome plugin (learn about gates some more before I do this obvs)
 *  CleverClipper (branch "CleverClipper" already exists on mac and in dbox)
 *  Musical Arpeggiator
-
+*  Lilypond or ABC-like music phrase generator
 
   
 Widgets:
