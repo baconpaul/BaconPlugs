@@ -17,7 +17,7 @@ SOURCES += $(wildcard src/*.cpp)
 
 # Add files to the ZIP package when running `make dist`
 # The compiled plugin is automatically added.
-DISTRIBUTABLES += $(wildcard LICENSE*) res doc patches README.md
+DISTRIBUTABLES += $(wildcard LICENSE*) res docs patches README.md
 
 # Include the VCV plugin Makefile framework
 RACK_DIR ?= ../..
@@ -25,3 +25,16 @@ include $(RACK_DIR)/plugin.mk
 
 shadist:	dist
 	openssl sha256 dist/$(SLUG)-$(VERSION)-$(ARCH).zip > dist/$(SLUG)-$(VERSION)-$(ARCH).zip.sha256
+
+COMMUNITY_ISSUE=https://github.com/VCVRack/community/issues/433
+
+issue_blurb:	dist
+	# Make sure we're committed
+	git diff --exit-code
+	git diff --cached --exit-code
+	@echo
+	@echo "Paste this into github issue " $(COMMUNITY_ISSUE)
+	@echo
+	@echo "* Version: v$(VERSION)"
+	@echo "* Transaction: " `git rev-parse HEAD`
+	@echo "* Branch: " `git rev-parse --abbrev-ref HEAD`
