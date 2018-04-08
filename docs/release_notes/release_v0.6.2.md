@@ -1,10 +1,9 @@
 # BaconMusic v0.6.2 Release Notes
 
-* Added sound samples for the following modules in the README: QuantEyes
+* Added sound samples for most of the modules in the README.
 
 
 (aspirational)
-* sound for everything else
 * gates in quanteyes
 * Karplus Strong Poly
 * Karplus Strong Mono

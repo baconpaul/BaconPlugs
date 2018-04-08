@@ -39,7 +39,12 @@ like a minor 3rd. It spans plus or minus one octave, and is controlled by toggle
 The toggles are additive. So if you want a fourth, choose a major third and a half step 
 both. You get the idea. 
 
-![Example HarMoNee patch](docs/HarMoNee.png)
+<a href="https://baconpaul.github.io/audio/HarMoNee.mp3">
+<img src="docs/HarMoNee.png" alt="ExampleQuanteyes Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Head HarMoNee Sample">
+</a>
+
 
 ### Glissinator
 
@@ -49,7 +54,12 @@ in the input CV. It never jumps discontinuously, so if the CV changes "target" v
 mid-gliss, the whole thing turns around. The slider will give you between 0 and 1 seconds
 of gliss time. Here's a sample patch.
 
-![Example Glissinator Patch](docs/Glissinator.png)
+<a href="https://baconpaul.github.io/audio/Glissinator.mp3">
+<img src="docs/Glissinator.png" alt="ExampleQuanteyes Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Head Glissinator Sample">
+</a>
+
 
 ### QuantEyes
 
@@ -155,7 +165,12 @@ I basically use an implementation of a softmax, eye-balling the parameters to ro
 paper. The only control is a wet/dry mix (where wet is the signal modulated by carrier
 and dry is just the signal). Sloppy, sure, but it sounds kinda cool. Here's a sample patch.
 
-![Example ALingADing Patch](docs/ALingADing.png)
+<a href="https://baconpaul.github.io/audio/ALingADing.mp3">
+<img src="docs/ALingADing.png" alt="ExampleQuanteyes Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Head ALingADing Sample">
+</a>
+
 
 ### Bitulator
 
