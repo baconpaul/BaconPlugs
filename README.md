@@ -96,7 +96,12 @@ is all done for you.
 Basically, it just works like an oscillator. Drop it in and go chip crazy. The sample
 patch runs it mixed along with a VCO-1 so I could check tuning. Here's how I did it.
 
-![Example ChipWaves Patch](docs/ChipWaves.png)
+<a href="https://baconpaul.github.io/audio/ChipWaves.mp3">
+<img src="docs/ChipWaves.png" alt="Example ChipWaves Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear ChipWaves Sample">
+</a>
+
 
 
 ### ChipNoise
@@ -112,7 +117,11 @@ The module just outputs the noise with a switch to change the mode and a knob to
 frequency. The knob is also exposed to CV. And yes, it really sounds like an NES. Here's a simple
 patch.
 
-![Example ChipNoise Patch](docs/ChipNoise.png)
+<a href="https://baconpaul.github.io/audio/ChipNoise.mp3">
+<img src="docs/ChipNoise.png" alt="Example ChipNoise Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear ChipNoise Sample">
+</a>
 
 ### ChipYourWaves
 

@@ -24,4 +24,6 @@ void init(rack::Plugin *p) {
   p->addModel( modelChipNoise );
   p->addModel( modelChipWaves );
   p->addModel( modelChipYourWave );
+
+  p->addModel( modelPolyGnome );
 }
