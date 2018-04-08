@@ -69,7 +69,12 @@ and then twiddle the root note.
 Here's a (pretty cool sounding, I think) patch which combines QuantEyes with the 
 Glissinator and HarMoNee modules.
 
-![Example QuantEyes Patch](docs/QuantEyes.png)
+<a href="https://baconpaul.github.io/audio/QuantEyes.mp3">
+<img src="docs/QuantEyes.png" alt="ExampleQuanteyes Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Head QuantEyes Sample">
+</a>
+
 
 ## 8-bit-y stuff and chip emulators and the like
 

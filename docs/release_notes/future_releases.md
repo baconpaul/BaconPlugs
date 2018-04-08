@@ -1,10 +1,8 @@
-ToDo: Master Branch
+Things for future releases perhaps?
 
 Plugins:
 *  LSFR more general noise maker (sort of started in the ChipSym)
-*  Multi-nome plugin (learn about gates some more before I do this obvs)
 *  CleverClipper (branch "CleverClipper" already exists on mac and in dbox)
-*  Musical Arpeggiator
 *  Lilypond or ABC-like music phrase generator
 
   
