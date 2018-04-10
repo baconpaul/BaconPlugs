@@ -23,7 +23,8 @@ struct PolyGnome : virtual Module {
   };
 
   enum LightIds {
-    
+    LIGHT_NUMERATOR_1,
+    LIGHT_0_FIX = LIGHT_NUMERATOR_1 + NUM_CLOCKS,
     NUM_LIGHTS
   };
 
@@ -48,6 +49,11 @@ struct PolyGnome : virtual Module {
     }
     gateIn = (phase < 0.5f);
     outputs[ CLOCK_GATE_0 ].value = gateIn ? 10.0f : 0.0f;
+
+    for( int i=0; i<NUM_CLOCKS; ++i )
+      {
+        lights[ LIGHT_NUMERATOR_1 + i ].value = (int)params[ CLOCK_NUMERATOR_1 + i ].value;
+      }
   }
 };
 
@@ -57,19 +63,48 @@ struct PolyGnomeWidget : ModuleWidget {
 
 PolyGnomeWidget::PolyGnomeWidget( PolyGnome *module ) : ModuleWidget( module )
 {
-  box.size = Vec( SCREW_WIDTH * 13, RACK_HEIGHT );
+  box.size = Vec( SCREW_WIDTH * 12, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "PolyGnome" );
   addChild( bg->wrappedInFramebuffer());
 
   for( size_t i=0; i<= NUM_CLOCKS; ++i )
     {
-      Vec outP = Vec( box.size.x - 50, 100 + 55 * i );
-      bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "g" );
+      Vec outP = Vec( box.size.x - 45, 90 + 48 * i );
+      if( i == 0 )
+        {
+          bg->addLabel( Vec( 17, outP.y + 21 ), "Quarter note (1/4) clock", 13, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM );
+        }
+      else
+        {
+          int yoff = 2;
+          // knob light knob light
+          addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 17, outP.y + yoff ),
+                                                                module,
+                                                                PolyGnome::CLOCK_NUMERATOR_1 + (i-1),
+                                                                1, 8, 1 ) );
+          addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 48, outP.y + yoff ),
+                                                                                    module,
+                                                                                    PolyGnome::LIGHT_NUMERATOR_1 + (i-1) ) );
+
+          int mv = 47 + 7 + 14 - 16;
+          addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 16 + mv, outP.y + yoff ),
+                                                                module,
+                                                                PolyGnome::CLOCK_DENOMINATOR_1 + (i-1),
+                                                                1, 8, 1 ) );
+          addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + mv, outP.y + yoff ),
+                                                                                    module,
+                                                                                    PolyGnome::LIGHT_0_FIX ) );
+          addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + 14 + mv, outP.y + yoff ),
+                                                                                    module,
+                                                                                    PolyGnome::LIGHT_0_FIX ) );
+
+        }
       addOutput( Port::create< PJ301MPort >( outP,
                                              Port::OUTPUT,
                                              module,
                                              PolyGnome::CLOCK_GATE_0 + i ) );
+      bg->addRoundedBorder( Vec( 12, outP.y - 4 ), Vec( box.size.x - 24, 36 ) );
     }
 
 }
