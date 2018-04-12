@@ -82,7 +82,7 @@ namespace ChipSym
 
 
   public:
-    NESTriangle( float imin, float imax, uint sampleRate )
+    NESTriangle( float imin, float imax, unsigned int sampleRate )
       :
       NESBase( imin, imax ), cpu( sampleRate, NESNTSCCPURate )
     {
@@ -108,21 +108,21 @@ namespace ChipSym
 
     void setWavelengthInSeconds( float seconds )
     {
-      setDigWavelength( (uint)( seconds * NESNTSCCPURate * 1000 * 1000 / 32 ) );
+      setDigWavelength( (unsigned int)( seconds * NESNTSCCPURate * 1000 * 1000 / 32 ) );
     }
   };
 
   class NESArbitraryWaveform : public NESTriangle {
   public:
-    NESArbitraryWaveform( float imin, float imax, uint sampleRate ) : NESTriangle( imin, imax, sampleRate ) { }
+    NESArbitraryWaveform( float imin, float imax, unsigned int sampleRate ) : NESTriangle( imin, imax, sampleRate ) { }
 
-    void setWaveformPoint( uint pos,  // 0->31
-                           uint val ) // 0->15
+    void setWaveformPoint( unsigned int pos,  // 0->31
+                           unsigned int val ) // 0->15
     {
       waveForm[ pos  ] = val / 15.0f;
     }
 
-    uint getWaveformPoint( uint pos ) { return waveForm[ pos ] * 15.0f; }
+    unsigned int getWaveformPoint( unsigned int pos ) { return waveForm[ pos ] * 15.0f; }
   };
 
   class NESPulse : public NESBase // http://wiki.nesdev.com/w/index.php/APU_Pulse
@@ -177,7 +177,7 @@ namespace ChipSym
 
     void setWavelengthInSeconds( float seconds )
     {
-      setDigWavelength( (uint)( seconds * NESNTSCCPURate * 1000 * 1000 / 2.0 / 8.0) );
+      setDigWavelength( (unsigned int)( seconds * NESNTSCCPURate * 1000 * 1000 / 2.0 / 8.0) );
     }
 
     void setDutyCycle( int dc )
@@ -225,7 +225,7 @@ namespace ChipSym
       if( mf ) xorBit = 6;
       else xorBit = 1;
     }
-    void setPeriod( uint c ) // 0 - 15
+    void setPeriod( unsigned int c ) // 0 - 15
     {
       if( c > 15 ) c = 8;
       switch( c ) {
@@ -284,6 +284,7 @@ namespace ChipSym
     }
   };
 
+#if 0
   class LFSRGeneralImpl
   {
   public:
@@ -293,9 +294,10 @@ namespace ChipSym
     void setActivetBits( size_t aBits ) // < 24 please
     {
     }
-    void setTapsAsInt( uint taps ) // so 1 << 16 & 1 << 14 & 1 << 7 type thing
+    void setTapsAsInt( unsigned int taps ) // so 1 << 16 & 1 << 14 & 1 << 7 type thing
     {
     }
-    
   };
+#endif
+  
 };
