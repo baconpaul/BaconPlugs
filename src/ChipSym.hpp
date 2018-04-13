@@ -274,7 +274,7 @@ namespace ChipSym
 
           // Do the LFSR Shift
           short bit  = ((shiftRegister >> 0) ^ (shiftRegister >> xorBit)) & 1;
-          shiftRegister =  (shiftRegister >> 1) | (bit << 13);
+          shiftRegister =  (shiftRegister >> 1) | (bit << 14); // thanks https://github.com/baconpaul/BaconPlugs/issues/6
 
           currentOutput = shiftRegister & 1;
         }
