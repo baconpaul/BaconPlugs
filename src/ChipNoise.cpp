@@ -43,9 +43,9 @@ struct ChipNoise : virtual Module {
     lights[ NOISE_FROM_KNOB ].value  = !inputs[ NOISE_LENGTH_INPUT ].active;
     lights[ NOISE_FROM_INPUT ].value =  inputs[ NOISE_LENGTH_INPUT ].active;
 
-    uint nl = clamp( params[ NOISE_LENGTH ].value, 0.0f, 15.0f );
+    unsigned int nl = (unsigned int)clamp( params[ NOISE_LENGTH ].value, 0.0f, 15.0f );
     if( inputs[ NOISE_LENGTH_INPUT ].active )
-      nl = clamp( inputs[ NOISE_LENGTH_INPUT ].value * 1.5, 0.0f, 15.0f );
+      nl = (unsigned int)clamp( inputs[ NOISE_LENGTH_INPUT ].value * 1.5, 0.0f, 15.0f );
     
     lights[ NOISE_LENGTH_ONES ].value = nl % 10;
     lights[ NOISE_LENGTH_TENS ].value = nl / 10;
