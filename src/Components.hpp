@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <tuple>
+#include <functional>
 
 #include "GraduatedFader.hpp"
 #include "BufferedDrawFunction.hpp"
@@ -353,5 +354,135 @@ struct RedGreenFromMiddleColorModel
     }
   }
 };
+
+#include <iostream>
+// Think hard about dirty state management ... later
+// Pixel Sizing
+// Share fontdata
+struct DotMatrixLightTextWidget : public Component // Thanks http://scruss.com/blog/tag/font/
+{
+ 
+  typedef std::function< std::string( Module * )> stringGetter;
+  typedef std::function< bool( Module * )> stringDirtyGetter;
+
+  BufferedDrawFunctionWidget<DotMatrixLightTextWidget> *buffer;
+
+  int charCount;
+  std::string currentText;
+
+  typedef std::map< char, std::vector< bool > > fontData_t;
+  fontData_t fontData;
+
+  float ledSize, padSize;
   
+
+  DotMatrixLightTextWidget() : Component(), buffer( NULL ), currentText( "" )
+  {
+  }
+
+  void setup()
+  {
+    ledSize = 2;
+    padSize = 1;
+    box.size = Vec( charCount * ( 5 * ledSize + padSize ) + 2 * padSize, 7 * ledSize + 4.5 * padSize );  // 5 x 7 data structure
+    buffer = new BufferedDrawFunctionWidget< DotMatrixLightTextWidget >( Vec( 0, 0 ), this->box.size, this,
+                                                                         &DotMatrixLightTextWidget::drawText );
+
+    info( "BaconMusic loading DMP json: %s\n", assetPlugin( plugin, "res/Keypunch029.json" ).c_str() );
+    
+    json_t *json;
+    json_error_t error;
+    
+    json = json_load_file(assetPlugin( plugin, "res/Keypunch029.json" ).c_str(), 0, &error);
+    if(!json) {
+      info( "JSON FILE not loaded\n" );
+    }
+    const char* key;
+    json_t *value;
+    json_object_foreach( json, key, value ) {
+      fontData_t::mapped_type valmap;
+      size_t index;
+      json_t *aval;
+      json_array_foreach( value, index, aval ) {
+        std::string s( json_string_value( aval ) );
+        for( const char* c = s.c_str(); *c != 0; ++c ) {
+          valmap.push_back( *c == '#' );
+        }
+      }
+      fontData[ key[ 0 ] ] = valmap;
+    }
+  }
+  
+  // create takes a function
+  static DotMatrixLightTextWidget *create( Vec pos, Module *module, int charCount, stringDirtyGetter dgf, stringGetter gf )
+  {
+    DotMatrixLightTextWidget *r = Component::create<DotMatrixLightTextWidget>( pos, module );
+    r->getfn = gf;
+    r->dirtyfn = dgf;
+    r->charCount = charCount;
+    r->setup();
+    return r;
+  }
+
+  stringDirtyGetter dirtyfn;
+  stringGetter getfn;
+  
+  void draw( NVGcontext *vg ) override
+  {
+    if( dirtyfn( this->module ) )
+      {
+        currentText = getfn( this->module );
+        buffer->dirty = true;
+      }
+    if( buffer )
+      buffer->draw( vg );
+  }
+
+  void drawChar( NVGcontext *vg, Vec pos, char c )
+  {
+    fontData_t::iterator k = fontData.find( c );
+    if( k != fontData.end() ) {
+      fontData_t::mapped_type blist = k->second;
+      int row=0, col=0;
+      for( auto v = blist.begin(); v != blist.end(); ++v )
+        {
+          if( *v )
+            {
+              float xo = (col+0.5) * ledSize + pos.x;
+              float yo = (row+0.5) * ledSize + pos.y;
+              nvgBeginPath( vg );
+              nvgRect( vg, xo, yo, ledSize, ledSize );
+              nvgFillColor( vg, COLOR_BLUE ); // Thanks for having such a nice blue, Rack!!
+              nvgFill( vg );
+            }
+          
+          col++;
+          if( col == 5 ) {
+            col = 0;
+            row ++;
+          }
+        }
+    }
+    else {
+    }
+  }
+  
+  void drawText( NVGcontext *vg ) 
+  {
+    nvgBeginPath( vg );
+    nvgRect( vg, 0, 0, box.size.x, box.size.y );
+    nvgFillColor( vg, nvgRGBA( 15, 15, 55, 255 ) );
+    nvgFill( vg );
+
+    Vec cpos = Vec( padSize, padSize );
+    for( const char* c = currentText.c_str(); *c != 0; ++c ) {
+      drawChar( vg, cpos, *c );
+      cpos.x += ledSize * 5 + padSize;
+    }
+  }
+
+};
+
+
+
 #endif

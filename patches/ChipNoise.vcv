@@ -222,7 +222,7 @@
     },
     {
       "plugin": "BaconMusic",
-      "version": "0.6.1",
+      "version": "0.6.2_cand_donotrelease",
       "model": "ChipNoise",
       "pos": [
         22,
@@ -235,7 +235,7 @@
         },
         {
           "paramId": 1,
-          "value": 0.0
+          "value": 1.0
         }
       ]
     },

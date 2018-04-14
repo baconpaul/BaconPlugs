@@ -31,4 +31,6 @@ extern Model *modelChipWaves;
 extern Model *modelChipYourWave;
 
 extern Model *modelPolyGnome;
+
+extern Model *modelKarplusStrongPoly;
 #endif
