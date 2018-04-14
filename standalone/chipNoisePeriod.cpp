@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <map>
 #include <set>
+#include <cassert>
 
 int main( int argc, char ** argv )
 {
@@ -11,9 +12,26 @@ int main( int argc, char ** argv )
   noise.setPeriod( 2 );
   noise.setModeFlag( true );
 
+  for( int i=0; i<5; ++i )
+    {
+      // So lets start by testing if 31 gives us 31 and 93 gives us 93
+      int ct = 0;
+      noise.setShortLength( ChipSym::NESNoise::SHORT_31 );
+      unsigned short target = noise.getRegister();
+      do { ct ++; noise.advanceRegister(); } while( noise.getRegister() != target );
+      assert( ct == 31 );
+
+      noise.setShortLength( ChipSym::NESNoise::SHORT_93 );
+      target = noise.getRegister();
+      ct = 0;
+      do { ct ++; noise.advanceRegister(); } while( noise.getRegister() != target && ct < 100 );
+      assert( ct == 93 );
+    }
+  
   std::map< int, std::pair< unsigned short, int > > resultMap;
   std::map< unsigned short, int > sequenceMap;
   int sequenceID = 0;
+
   
   for( unsigned short iRegister=1; iRegister < 0x7FFF; iRegister ++ )
     {

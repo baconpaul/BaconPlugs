@@ -5,6 +5,7 @@ struct ChipNoise : virtual Module {
   enum ParamIds {
     NOISE_LENGTH,
     LONG_MODE,
+    SHORT_LEN,
     NUM_PARAMS
   };
 
@@ -29,13 +30,16 @@ struct ChipNoise : virtual Module {
   };
 
   ChipSym::NESNoise noise;
+  int prior_shortlen;
   
   ChipNoise() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ),
                 noise( -5.0, 5.0, engineGetSampleRate() )
                 
   {
     params[ LONG_MODE ].value = 1;
-    params[ NOISE_LENGTH ].value = 9; 
+    params[ NOISE_LENGTH ].value = 9;
+    params[ SHORT_LEN ].value = 1;
+    prior_shortlen = 1;
   }
 
   void step() override
@@ -55,6 +59,22 @@ struct ChipNoise : virtual Module {
       noise.setModeFlag( false );
     else
       noise.setModeFlag( true );
+
+    if( params[ SHORT_LEN ].value != prior_shortlen )
+      {
+        prior_shortlen = params[SHORT_LEN].value;
+        std::cout << "Reseting seed through shortlen to ";
+        if( prior_shortlen == 1 )
+          {
+            noise.setShortLength( ChipSym::NESNoise::SHORT_93 );
+            std::cout << "93\n";
+          }
+        else
+          {
+            noise.setShortLength( ChipSym::NESNoise::SHORT_31 );
+            std::cout << "31\n";
+          }
+      }
         
     
     outputs[ NOISE_OUTPUT ].value = noise.step();
@@ -97,12 +117,16 @@ ChipNoiseWidget::ChipNoiseWidget( ChipNoise *module ) : ModuleWidget( module )
                                                                             ChipNoise::NOISE_LENGTH_ONES ) );
 
 
-  bg->addRoundedBorder( Vec( 8, 170 ), Vec( SCREW_WIDTH * 6 - 16, 80 ) );
-  bg->addLabel( Vec( 13, 205 ), "pattern", 11, NVG_ALIGN_LEFT | NVG_ALIGN_TOP );
-  addParam( ParamWidget::create< NKK >( Vec( bg->cx() + 3, 190 ), module, ChipNoise::LONG_MODE, 0, 1, 1 ) );
-  bg->addLabel( Vec( bg->cx() + 18, 175 ), "long", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
-  bg->addLabel( Vec( bg->cx() + 18, 237 ), "short", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
-  
+  bg->addRoundedBorder( Vec( 8, 150 ), Vec( SCREW_WIDTH * 6 - 16, 100 ) );
+  bg->addLabel( Vec( bg->cx(), 170 ), "Sequence", 13, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+  addParam( ParamWidget::create< NKK >( Vec( bg->cx() - 32, 190 ), module, ChipNoise::LONG_MODE, 0, 1, 1 ) );
+  addParam( ParamWidget::create< NKK >( Vec( bg->cx() + 2, 190 ), module, ChipNoise::SHORT_LEN, 0, 1, 1 ) );
+  bg->addLabel( Vec( bg->cx() + 16 - 32, 175 ), "long", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() + 16 - 32, 237 ), "short", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
+
+  bg->addLabel( Vec( bg->cx() + 16 + 2, 175 ), "93", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() + 16 + 2, 237 ), "31", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
+
   // Output port
   Vec outP = Vec( bg->cx( 24 ), RACK_HEIGHT - 15 - 43 );
   bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );

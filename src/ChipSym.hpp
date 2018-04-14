@@ -207,6 +207,8 @@ namespace ChipSym
     unsigned short shiftRegister;
     unsigned short currentOutput;
     unsigned short xorBit;
+
+    unsigned short next93key;
     
   public:
 
@@ -218,6 +220,7 @@ namespace ChipSym
       shiftRegister = 0x07;
       currentOutput = shiftRegister & 1;
       xorBit = 1;
+      next93key = 1;
     }
 
     void setModeFlag( bool mf )
@@ -225,6 +228,29 @@ namespace ChipSym
       if( mf ) xorBit = 6;
       else xorBit = 1;
     }
+
+    typedef enum ShortPeriods
+      {
+        SHORT_31,
+        SHORT_93
+      } ShortPeriods;
+    
+    void setShortLength( ShortPeriods p )
+    {
+      if( p == SHORT_31 )
+        {
+          setRegister( 0x0737 );
+        }
+      else
+        {
+          // A little state so we don't always land on the same one
+          setRegister( next93key );
+          next93key += 2;
+          if( next93key >= 0x737 )
+            next93key = 1;
+        }
+    }
+    
     void setPeriod( unsigned int c ) // 0 - 15
     {
       if( c > 15 ) c = 8;
