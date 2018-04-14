@@ -204,9 +204,9 @@ namespace ChipSym
   {
   private:
     CPUStepper cpu;
-    short shiftRegister;
-    short currentOutput;
-    short xorBit;
+    unsigned short shiftRegister;
+    unsigned short currentOutput;
+    unsigned short xorBit;
     
   public:
 
@@ -264,6 +264,13 @@ namespace ChipSym
       }
     }
 
+    void advanceRegister()
+    {
+      // Do the LFSR Shift
+      unsigned short bit  = ((shiftRegister >> 0) ^ (shiftRegister >> xorBit)) & 1;
+      shiftRegister =  (shiftRegister >> 1) | (bit << 14); // thanks https://github.com/baconpaul/BaconPlugs/issues/6
+    }
+    
     float step()
     {
       int ticks = cpu.nextStepCPUTicks();
@@ -271,17 +278,17 @@ namespace ChipSym
       if( t < 0 )
         {
           t += digWavelength;
-
-          // Do the LFSR Shift
-          short bit  = ((shiftRegister >> 0) ^ (shiftRegister >> xorBit)) & 1;
-          shiftRegister =  (shiftRegister >> 1) | (bit << 14); // thanks https://github.com/baconpaul/BaconPlugs/issues/6
-
+          advanceRegister();
+    
           currentOutput = shiftRegister & 1;
         }
       
       return currentOutput * wfMinToMax + wfMin;
 
     }
+
+    void setRegister( unsigned short r ) { shiftRegister = r; }
+    unsigned short getRegister() { return shiftRegister; }
   };
 
 #if 0
