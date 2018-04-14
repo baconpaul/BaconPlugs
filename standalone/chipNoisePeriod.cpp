@@ -100,7 +100,17 @@ int main( int argc, char ** argv )
       std::cout << "\n";
     }
 
-
+  // Finally dump the c structure
+  std::cout << "unsigned short start_for_93s[] = {\n    ";
+  int ct = 0;
+  for( auto imapKey = inverseSequenceMap.begin(); imapKey != inverseSequenceMap.end(); ++imapKey, ++ct )
+    {
+      if( imapKey->second.size() == 93 )
+        std::cout << std::setbase( 10 ) <<  *( imapKey->second.begin() ) << ", ";
+      if( (ct+1) % 15 == 0 )
+        std::cout << "\n    ";
+    }
+  std::cout << " 0 };\n";
    
   
 }

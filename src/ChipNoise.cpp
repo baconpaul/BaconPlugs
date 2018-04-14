@@ -6,6 +6,7 @@ struct ChipNoise : virtual Module {
     NOISE_LENGTH,
     LONG_MODE,
     SHORT_LEN,
+    PERIOD_93,
     NUM_PARAMS
   };
 
@@ -25,12 +26,17 @@ struct ChipNoise : virtual Module {
 
     NOISE_LENGTH_ONES,
     NOISE_LENGTH_TENS,
+
+    PERIOD_93_ONES,
+    PERIOD_93_TENS,
+    PERIOD_93_HUNDREDS,
     
     NUM_LIGHTS
   };
 
   ChipSym::NESNoise noise;
   int prior_shortlen;
+  bool prior_longmode;
   
   ChipNoise() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ),
                 noise( -5.0, 5.0, engineGetSampleRate() )
@@ -39,7 +45,9 @@ struct ChipNoise : virtual Module {
     params[ LONG_MODE ].value = 1;
     params[ NOISE_LENGTH ].value = 9;
     params[ SHORT_LEN ].value = 1;
+    params[ PERIOD_93 ].value = 1;
     prior_shortlen = 1;
+    prior_longmode = false;
   }
 
   void step() override
@@ -55,27 +63,32 @@ struct ChipNoise : virtual Module {
     lights[ NOISE_LENGTH_TENS ].value = nl / 10;
     noise.setPeriod(nl);
 
-    if( params[ LONG_MODE ].value == 1 )
-      noise.setModeFlag( false );
-    else
-      noise.setModeFlag( true );
+    int p93 = (int)params[ PERIOD_93 ].value;
+    lights[ PERIOD_93_ONES ].value = p93 % 10;
+    lights[ PERIOD_93_TENS ].value = (p93 / 10) % 10;
+    lights[ PERIOD_93_HUNDREDS ].value = p93 / 100;
+    noise.set93Key( p93 );
+    
+
+    bool tmpNoiseFlag = ( params[ LONG_MODE ].value == 0 );
+    if ( tmpNoiseFlag != prior_longmode )
+      {
+        prior_longmode = tmpNoiseFlag;
+        noise.setModeFlag( prior_longmode );
+      }
 
     if( params[ SHORT_LEN ].value != prior_shortlen )
       {
         prior_shortlen = params[SHORT_LEN].value;
-        std::cout << "Reseting seed through shortlen to ";
         if( prior_shortlen == 1 )
           {
             noise.setShortLength( ChipSym::NESNoise::SHORT_93 );
-            std::cout << "93\n";
           }
         else
           {
             noise.setShortLength( ChipSym::NESNoise::SHORT_31 );
-            std::cout << "31\n";
           }
       }
-        
     
     outputs[ NOISE_OUTPUT ].value = noise.step();
   }
@@ -117,15 +130,32 @@ ChipNoiseWidget::ChipNoiseWidget( ChipNoise *module ) : ModuleWidget( module )
                                                                             ChipNoise::NOISE_LENGTH_ONES ) );
 
 
-  bg->addRoundedBorder( Vec( 8, 150 ), Vec( SCREW_WIDTH * 6 - 16, 100 ) );
-  bg->addLabel( Vec( bg->cx(), 170 ), "Sequence", 13, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
-  addParam( ParamWidget::create< NKK >( Vec( bg->cx() - 32, 190 ), module, ChipNoise::LONG_MODE, 0, 1, 1 ) );
-  addParam( ParamWidget::create< NKK >( Vec( bg->cx() + 2, 190 ), module, ChipNoise::SHORT_LEN, 0, 1, 1 ) );
-  bg->addLabel( Vec( bg->cx() + 16 - 32, 175 ), "long", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
-  bg->addLabel( Vec( bg->cx() + 16 - 32, 237 ), "short", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
+  bg->addRoundedBorder( Vec( 8, 135 ), Vec( SCREW_WIDTH * 6 - 16, 160 ) );
+  bg->addLabel( Vec( bg->cx(), 155 ), "Sequence", 13, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+  addParam( ParamWidget::create< NKK >( Vec( bg->cx() - 32, 175 ), module, ChipNoise::LONG_MODE, 0, 1, 1 ) );
+  addParam( ParamWidget::create< NKK >( Vec( bg->cx() + 2, 175 ), module, ChipNoise::SHORT_LEN, 0, 1, 1 ) );
+  bg->addLabel( Vec( bg->cx() + 16 - 32, 160 ), "long", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() + 16 - 32, 223 ), "short", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
 
-  bg->addLabel( Vec( bg->cx() + 16 + 2, 175 ), "93", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
-  bg->addLabel( Vec( bg->cx() + 16 + 2, 237 ), "31", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() + 16 + 2, 160 ), "93", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP );
+  bg->addLabel( Vec( bg->cx() + 16 + 2, 223 ), "31", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
+
+
+  bg->addLabel( Vec( bg->cx(), 258 ), "Which 93 seq?", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 50-14, 262 ),
+                                                                            module,
+                                                                            ChipNoise::PERIOD_93_HUNDREDS ) );
+  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 50, 262 ),
+                                                                            module,
+                                                                            ChipNoise::PERIOD_93_TENS ) );
+  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 50 + 14, 262 ),
+                                                                            module,
+                                                                            ChipNoise::PERIOD_93_ONES ) );
+  addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 11, 262 ),
+                                                        module,
+                                                        ChipNoise::PERIOD_93,
+                                                        0, 351, 17 ) );
+  
 
   // Output port
   Vec outP = Vec( bg->cx( 24 ), RACK_HEIGHT - 15 - 43 );
