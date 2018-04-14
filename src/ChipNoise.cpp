@@ -30,6 +30,8 @@ struct ChipNoise : virtual Module {
     PERIOD_93_ONES,
     PERIOD_93_TENS,
     PERIOD_93_HUNDREDS,
+
+    USING_93,
     
     NUM_LIGHTS
   };
@@ -67,7 +69,15 @@ struct ChipNoise : virtual Module {
     lights[ PERIOD_93_ONES ].value = p93 % 10;
     lights[ PERIOD_93_TENS ].value = (p93 / 10) % 10;
     lights[ PERIOD_93_HUNDREDS ].value = p93 / 100;
-    noise.set93Key( p93 );
+    if( params[ LONG_MODE ].value == 0 && params[ SHORT_LEN ].value == 1 )
+      {
+        noise.set93Key( p93 );
+        lights[ USING_93 ].value = 1;
+      }
+    else
+      {
+        lights[ USING_93 ].value = 0;
+      }
     
 
     bool tmpNoiseFlag = ( params[ LONG_MODE ].value == 0 );
@@ -141,7 +151,7 @@ ChipNoiseWidget::ChipNoiseWidget( ChipNoise *module ) : ModuleWidget( module )
   bg->addLabel( Vec( bg->cx() + 16 + 2, 223 ), "31", 11, NVG_ALIGN_CENTER| NVG_ALIGN_TOP );
 
 
-  bg->addLabel( Vec( bg->cx(), 258 ), "Which 93 seq?", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+  bg->addLabel( Vec( bg->cx(), 258 ), "Which 93 seq", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
   addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 50-14, 262 ),
                                                                             module,
                                                                             ChipNoise::PERIOD_93_HUNDREDS ) );
@@ -155,6 +165,7 @@ ChipNoiseWidget::ChipNoiseWidget( ChipNoise *module ) : ModuleWidget( module )
                                                         module,
                                                         ChipNoise::PERIOD_93,
                                                         0, 351, 17 ) );
+  addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( Vec( 12, 249 ), module, ChipNoise::USING_93 ) );
   
 
   // Output port
