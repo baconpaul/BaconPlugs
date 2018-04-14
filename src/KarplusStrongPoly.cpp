@@ -1,9 +1,12 @@
 
 #include "BaconPlugs.hpp"
 #include <sstream>
+#include <vector>
+#include <string>
 
 struct KarplusStrongPoly : virtual Module {
   enum ParamIds {
+    INITIAL_PACKET,
     NUM_PARAMS
   };
 
@@ -19,22 +22,32 @@ struct KarplusStrongPoly : virtual Module {
     NUM_LIGHTS
   };
 
+  std::vector< std::string > initialPackets;
   KarplusStrongPoly() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS )
   {
     filterString = std::string( "First time around" );
     filterStringDirty = true;
     dumbcount = 0;
+
+    initialPackets.push_back( "random" );
+    initialPackets.push_back( "square" );
+    initialPackets.push_back( "saw" );
+    initialPackets.push_back( "noisysaw" );
+    initialPackets.push_back( "sin" );
+    initialPackets.push_back( "sinchirp" );
+    currentInitialPacket = -1;
   }
 
+  int getNumPackets() { return initialPackets.size(); }
+  int currentInitialPacket;
+  
   void step() override
   {
-    dumbcount ++;
-    if( dumbcount % 44100 == 0 )
+    if( (int)( params[ INITIAL_PACKET ].value ) != currentInitialPacket )
       {
         filterStringDirty = true;
-        std::ostringstream os;
-        os << "BLIMP " << dumbcount;
-        filterString = os.str();
+        currentInitialPacket = params[ INITIAL_PACKET ].value;
+        filterString = initialPackets[ currentInitialPacket ];
       }
   }
 
@@ -65,7 +78,8 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
   BaconBackground *bg = new BaconBackground( box.size, "KarplusStrongPoly" );
   addChild( bg->wrappedInFramebuffer());
 
-  addChild( DotMatrixLightTextWidget::create( Vec( 20, 40 ), module, 15, KarplusStrongPoly::getFilterStringDirty, KarplusStrongPoly::getFilterString ) );
+  addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 20, 40 ), module, KarplusStrongPoly::INITIAL_PACKET, 0, module->getNumPackets()-1, 0 ) );
+  addChild( DotMatrixLightTextWidget::create( Vec( 50, 42 ), module, 8, KarplusStrongPoly::getFilterStringDirty, KarplusStrongPoly::getFilterString ) );
 }
 
 Model *modelKarplusStrongPoly = Model::create<KarplusStrongPoly, KarplusStrongPolyWidget>("Bacon Music", "KarplusStrongPoly", "KarplusStrongPoly", OSCILLATOR_TAG );

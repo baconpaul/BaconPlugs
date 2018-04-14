@@ -15,6 +15,6 @@
 * Karplus Strong Poly
 * Karplus Strong Mono
 * Polyrythgmic Metrocnome Clock
-
+* Seven segment multi digit light which isn't such a pain.
 
 

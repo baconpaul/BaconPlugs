@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 #include <functional>
+#include <locale>
 
 #include "GraduatedFader.hpp"
 #include "BufferedDrawFunction.hpp"
@@ -440,7 +441,7 @@ struct DotMatrixLightTextWidget : public Component // Thanks http://scruss.com/b
 
   void drawChar( NVGcontext *vg, Vec pos, char c )
   {
-    fontData_t::iterator k = fontData.find( c );
+    fontData_t::iterator k = fontData.find( std::toupper( c ) );
     if( k != fontData.end() ) {
       fontData_t::mapped_type blist = k->second;
       int row=0, col=0;
