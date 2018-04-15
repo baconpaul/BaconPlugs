@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <math.h>
+#include <cstdlib>
 
 class KSSynth {
 public:
@@ -73,7 +75,7 @@ public:
     sampleRate( sampleRateIn ), wfMin( minv ), wfMax( maxv ),
     packet( RANDOM ),
     filter( WEIGHTED_ONE_SAMPLE ),
-    filtAtten( 0.1f ),
+    filtAtten( 3.0f ),
     filtParamA( 0.5f ),
     filtParamB( 0.0f ),
     filtParamC( 0.0f ),
@@ -85,20 +87,24 @@ public:
   void setFreq( float f )
   {
     freq = f;
-    burstLen = (int)( ( sampleRate / freq + 0.5 ) * 2 );
+    burstLen = (int)( ( 1.0f  * sampleRate / freq + 0.5 ) * 2 );
     filtAttenScaled = filtAtten / 100 / ( freq / 440 );
     delay.resize( burstLen );
   }
 
   void trigger( float f )
   {
+    // remember: Interally we work on the range [-1.0f, 1.0f] to match the python (but different from
+    // the ChipSym which works on [ 0 1.0f ]
     setFreq( f );
+    pos = 1;
     switch( packet )
       {
       case RANDOM:
         for( int i=0; i<burstLen; ++i )
           {
-            delay[ i ] = rand() * 1.0f / RAND_MAX;
+            delay[ i ] = (float)rand() * 1.0 / RAND_MAX;
+            delay[ i ] = delay[ i ] * 2.0 - 1.0;
           }
         break;
       default:
@@ -107,12 +113,13 @@ public:
       }
   }
   
-  int step()
+  float step()
   {
     int dpos = pos % burstLen;
     int dpnext = ( pos + 1 ) % burstLen;
     int dpfill = ( pos - 1 ) % burstLen;
     pos++;
+
 
     float filtval;
     switch( filter )
@@ -124,7 +131,7 @@ public:
         break;
       }
     delay[ dpfill ] = filtval;
-    return filtval * ( wfMax - wfMin ) - wfMin;
+    return ( ( filtval + 1.0 ) * 0.5 ) * ( wfMax - wfMin ) + wfMin;
   }
   
 };

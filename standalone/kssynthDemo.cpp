@@ -6,7 +6,7 @@
 struct KSGen : StepHandler
 {
   KSSynth s;
-  KSGen() : s( 44100, -1, 1 ) { }
+  KSGen() : s( 44100, -0.9, 0.9 ) { }
 
   virtual int dostep( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
                       double streamTime, RtAudioStreamStatus status ) override
@@ -28,7 +28,6 @@ int main( int argc, char **argv )
   
   std::cout << "packets " << gen.s.numInitPackets() << "\n";
 
-  gen.s.trigger( 220 );
-  
+  gen.s.trigger( 440 );
   gen.playAudioUntilEnterPressed();
 }
