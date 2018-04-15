@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
 #include <math.h>
 #include <cstdlib>
 
@@ -52,16 +51,18 @@ public:
     return WEIGHTED_ONE_SAMPLE + 1;
   }
 
-private:
+public:
   // here's my interior state
   InitPacket packet;
   FilterType filter;
 
-  float filtParamA, filtParamB, filtParamC, filtAtten, filtAttenScaled;
+  float filtParamA, filtParamB, filtParamC, filtAtten;
 
+private:
   float freq;
   int burstLen;
   int sampleRate;
+  float filtAttenScaled;
 
   long pos;
   std::vector< float > delay;
@@ -70,7 +71,7 @@ private:
 
 public:
 
-  KSSynth( int sampleRateIn, float minv, float maxv )
+  KSSynth( float minv, float maxv, int sampleRateIn )
     :
     sampleRate( sampleRateIn ), wfMin( minv ), wfMax( maxv ),
     packet( RANDOM ),
@@ -101,15 +102,63 @@ public:
     switch( packet )
       {
       case RANDOM:
-        for( int i=0; i<burstLen; ++i )
-          {
-            delay[ i ] = (float)rand() * 1.0 / RAND_MAX;
-            delay[ i ] = delay[ i ] * 2.0 - 1.0;
-          }
-        break;
-      default:
-        // BLOW UP (so remove this later)
-        break;
+        {
+          for( int i=0; i<burstLen; ++i )
+            {
+              delay[ i ] = (float)rand() * 1.0 / RAND_MAX;
+              delay[ i ] = delay[ i ] * 2.0 - 1.0;
+            }
+          break;
+        }
+      case SQUARE:
+        {
+          int xo = (int)burstLen / 2.0;
+          for( int i=0; i<burstLen; ++i )
+            {
+              delay[ i ] = ( i <= xo ? 1.0 : -1.0 );
+            }
+          break;
+        }
+      case SAW:
+        {
+          int xo = (int)burstLen / 2.0;
+          for( int i=0; i<burstLen; ++i )
+            {
+              delay[ i ] = ( i * 2.0f / burstLen ) - 1.0;
+            }
+          break;
+        }
+
+      case NOISYSAW:
+        {
+          int xo = (int)burstLen / 2.0;
+          for( int i=0; i<burstLen; ++i )
+            {
+              delay[ i ] = ( i * 1.0f / burstLen ) - 0.5;
+              delay[ i ] += (float)rand() * 1.0f / RAND_MAX - 0.5;
+            }
+          break;
+        }
+
+      case SIN:
+        {
+          float scale = 2.0 * M_PI / burstLen;
+          for( int i=0; i<burstLen; ++i )
+            {
+              delay[ i ] = sin( i * scale );
+            }
+          break;
+        }
+      case SINCHIRP:
+        {
+          for( int i=0; i<burstLen; ++i )
+            {
+              float ls = 1.0f * i / burstLen;
+              float lse = exp( ls * 2 ) * 3;
+              delay[ i ] = sin( lse * 2 * M_PI );
+            }
+          break;
+        }
       }
   }
   
