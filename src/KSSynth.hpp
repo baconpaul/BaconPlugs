@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 class KSSynth {
 public:
@@ -72,7 +73,7 @@ public:
     sampleRate( sampleRateIn ), wfMin( minv ), wfMax( maxv ),
     packet( RANDOM ),
     filter( WEIGHTED_ONE_SAMPLE ),
-    filtAtten( 3.0f ),
+    filtAtten( 0.1f ),
     filtParamA( 0.5f ),
     filtParamB( 0.0f ),
     filtParamC( 0.0f ),
@@ -96,7 +97,9 @@ public:
       {
       case RANDOM:
         for( int i=0; i<burstLen; ++i )
-          delay[ i ] = rand();
+          {
+            delay[ i ] = rand() * 1.0f / RAND_MAX;
+          }
         break;
       default:
         // BLOW UP (so remove this later)
@@ -117,11 +120,11 @@ public:
       case WEIGHTED_ONE_SAMPLE:
         float ftw = filtParamA;
         float fta = filtAttenScaled;
-        filtval = ( ftw * delay[ dpos ] + ( 1.0 - ftw ) * delay[ dpos ] ) * ( 1.0 - fta );
+        filtval = ( ftw * delay[ dpos ] + ( 1.0 - ftw ) * delay[ dpnext ] ) * ( 1.0 - fta );
         break;
       }
     delay[ dpfill ] = filtval;
-    return (filtval - wfMin ) / ( wfMax - wfMin );
+    return filtval * ( wfMax - wfMin ) - wfMin;
   }
   
 };
