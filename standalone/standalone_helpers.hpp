@@ -1,5 +1,6 @@
 
 #include "RtAudio.h"
+#include <unistd.h>
 
 struct StepHandler
 {
@@ -14,7 +15,7 @@ struct StepHandler
     return sh->dostep( outputBuffer, inputBuffer, nBufferFrames, streamTime, status );
   }
 
-  int playAudioUntilEnterPressed()
+  RtAudio startDac()
   {
     RtAudio dac;
     if ( dac.getDeviceCount() < 1 ) {
@@ -39,10 +40,11 @@ struct StepHandler
       e.printMessage();
       exit( 0 );
     }
-  
-    char input;
-    std::cout << "\nPlaying ... press <enter> to quit.\n";
-    std::cin.get( input );
+    return dac;
+  }
+
+  void stopDac( RtAudio dac )
+  {
     try {
       // Stop the stream
       dac.stopStream();
@@ -51,6 +53,32 @@ struct StepHandler
       e.printMessage();
     }
     if ( dac.isStreamOpen() ) dac.closeStream();
+  }
+
+  int playAudioUntilStepsDone()
+  {
+    RtAudio dac = startDac();
+    
+    while( dac.isStreamRunning() )
+      {
+        usleep( 100 );
+      }
+
+    if ( dac.isStreamOpen() ) dac.closeStream();
+
+    return 0;
+  }
+  
+  int playAudioUntilEnterPressed()
+  {
+    RtAudio dac = startDac();
+    
+    char input;
+    std::cout << "\nPlaying ... press <enter> to quit.\n";
+    std::cin.get( input );
+
+    stopDac( dac );
+    
     return 0;
   }
 };

@@ -58,10 +58,14 @@ public:
 
   float filtParamA, filtParamB, filtParamC, filtAtten;
 
+  float sumDelaySquared; // This is updated about 100 times a second, not per sample
+
+  bool active;
+  
 private:
   float freq;
   int burstLen;
-  int sampleRate;
+  int sampleRate, sampleRateBy100;
   float filtAttenScaled;
 
   long pos;
@@ -73,14 +77,16 @@ public:
 
   KSSynth( float minv, float maxv, int sampleRateIn )
     :
-    sampleRate( sampleRateIn ), wfMin( minv ), wfMax( maxv ),
+    sampleRate( sampleRateIn ), sampleRateBy100( (int)( sampleRate / 100 ) ),
+    wfMin( minv ), wfMax( maxv ),
     packet( RANDOM ),
     filter( WEIGHTED_ONE_SAMPLE ),
     filtAtten( 3.0f ),
     filtParamA( 0.5f ),
     filtParamB( 0.0f ),
     filtParamC( 0.0f ),
-    pos( 0 )
+    pos( 0 ),
+    active( false )
   {
     setFreq( 220 );
   }
@@ -97,6 +103,7 @@ public:
   {
     // remember: Interally we work on the range [-1.0f, 1.0f] to match the python (but different from
     // the ChipSym which works on [ 0 1.0f ]
+    active = true;
     setFreq( f );
     pos = 1;
     switch( packet )
@@ -160,13 +167,33 @@ public:
           break;
         }
       }
+    updateSumDelaySquared();
+  }
+
+  void updateSumDelaySquared()
+  {
+    sumDelaySquared = 0;
+    for( int i=0; i<burstLen; ++i )
+      {
+        sumDelaySquared += delay[ i ] * delay[ i ];
+      }
+    sumDelaySquared /= burstLen;
+
   }
   
   float step()
   {
+    if( ! active ) return 0;
+    
     int dpos = pos % burstLen;
     int dpnext = ( pos + 1 ) % burstLen;
     int dpfill = ( pos - 1 ) % burstLen;
+    if( pos % sampleRateBy100 == 0 )
+      {
+        updateSumDelaySquared();
+        if( sumDelaySquared < 1e-7 ) // think about this threshold some
+          active = false;
+      }
     pos++;
 
 

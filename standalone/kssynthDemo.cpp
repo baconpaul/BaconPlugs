@@ -17,6 +17,8 @@ struct KSGen : StepHandler
     for ( i=0; i<nBufferFrames; i++ ) {
       *buffer++ = s.step();
     }
+    if( ! s.active )
+      return 1;
     return 0;
     
   }
@@ -28,10 +30,15 @@ int main( int argc, char **argv )
   
   std::cout << "packets " << gen.s.numInitPackets() << "\n";
 
-  gen.s.filtAtten = 1.0;
+  gen.s.filtAtten = 3.0;
   gen.s.filtParamA = 0.3;
-  gen.s.packet = KSSynth::SINCHIRP;
-  gen.s.trigger( 440 );
-
-  gen.playAudioUntilEnterPressed();
+  gen.s.packet = KSSynth::RANDOM;
+  float freq = 440;
+  for( int i=0; i<=12; ++i )
+    {
+      float mul = pow( 2.0, i / 12.0f );
+      gen.s.trigger( freq * mul );
+      
+      gen.playAudioUntilStepsDone();
+    }
 }
