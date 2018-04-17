@@ -9,6 +9,7 @@
 #include <tuple>
 #include <functional>
 #include <locale>
+#include <thread>
 
 #include "GraduatedFader.hpp"
 #include "BufferedDrawFunction.hpp"
@@ -232,7 +233,7 @@ struct BaconBackground : virtual TransparentWidget
   
   BaconBackground( Vec size, const char* lab );
   ~BaconBackground() { }
-  
+
   BaconBackground *addLabel( Vec pos, const char* lab, int px )
   {
     return addLabel( pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
@@ -267,6 +268,32 @@ struct BaconBackground : virtual TransparentWidget
   void draw( NVGcontext *vg ) override;
 
   FramebufferWidget *wrappedInFramebuffer();
+};
+
+struct BaconHelpButton : public SVGButton
+{
+  std::string url;
+  BaconHelpButton( std::string urli ) : url( urli )
+  {
+    box.pos = Vec( 0, 0 );
+    box.size = Vec( 20, 20 );
+    setSVGs( SVG::load( assetPlugin( plugin, "res/HelpActiveSmall.svg" ) ), NULL );
+    url = "https://github.com/baconpaul/BaconPlugs/blob/";
+#ifdef RELEASE_BRANCH
+    url += TO_STRING( RELEASE_BRANCH );
+#else
+    url += "master/";
+#endif
+    url += urli;
+    info( "Help button configured to: %s", url.c_str() );
+  }
+
+  void onAction( EventAction &e ) override {
+    std::thread t( [this]() {
+        systemOpenBrowser(url.c_str() );
+      } );
+    t.detach();
+  }
 };
 
 template< int NSteps, typename ColorModel >
@@ -445,7 +472,7 @@ struct DotMatrixLightTextWidget : public Component // Thanks http://scruss.com/b
     buffer = new BufferedDrawFunctionWidget< DotMatrixLightTextWidget >( Vec( 0, 0 ), this->box.size, this,
                                                                          &DotMatrixLightTextWidget::drawText );
 
-    info( "BaconMusic loading DMP json: %s\n", assetPlugin( plugin, "res/Keypunch029.json" ).c_str() );
+    info( "BaconMusic loading DMP json: %s", assetPlugin( plugin, "res/Keypunch029.json" ).c_str() );
     
     json_t *json;
     json_error_t error;

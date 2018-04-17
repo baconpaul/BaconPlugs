@@ -5,7 +5,6 @@
 #include <string>
 
 #include "KSSynth.hpp"
-#include "dsp/digital.hpp"
 
 struct KarplusStrongPoly : virtual Module {
   enum ParamIds {
@@ -133,8 +132,10 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
   box.size = Vec( SCREW_WIDTH * 20, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "KarplusStrongPoly" );
+ 
+  
   addChild( bg->wrappedInFramebuffer());
-
+  
   addInput( Port::create< PJ301MPort >( Vec( 20, 200 ),
                                         Port::INPUT,
                                         module,

@@ -97,7 +97,9 @@ GlissinatorWidget::GlissinatorWidget( Glissinator *model ) : ModuleWidget( model
   BaconBackground *bg = new BaconBackground( box.size, "Glissinator" );
 
   addChild( bg->wrappedInFramebuffer() );
-
+  // FIXME - spacing
+  // addChild( new BaconHelpButton( "README.md#glissinator" ) );
+  
   ParamWidget *slider = ParamWidget::create< GraduatedFader< 255 > >( Vec( bg->cx( 29 ), 43 ),
                                                               module,
                                                               Glissinator::GLISS_TIME,

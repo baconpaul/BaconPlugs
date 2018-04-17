@@ -81,7 +81,6 @@ struct InternalPlugLabel : virtual TransparentWidget
 
 void BaconBackground::draw( NVGcontext *vg )
 {
-  // printf( "Drawing bg: %s\n", title.c_str() );
   if( memFont < 0 )
     memFont = InternalFontMgr::get( vg, "res/Monitorica-Bd.ttf" );
 
@@ -113,9 +112,8 @@ void BaconBackground::draw( NVGcontext *vg )
   nvgTextAlign( vg, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
   nvgText( vg, box.size.x / 2, 5, title.c_str(), NULL );
 
-  for( auto it = children.begin(); it != children.end(); ++it )
+  for( auto w : children )
     {
-      Widget *w = *it;
       nvgTranslate( vg, w->box.pos.x, w->box.pos.y );
       w->draw( vg );
       nvgTranslate( vg, -w->box.pos.x, -w->box.pos.y );
@@ -223,6 +221,7 @@ BaconBackground *BaconBackground::addRoundedBorder( Vec pos, Vec sz )
   return this;
 }
 
+
 NVGcolor BaconBackground::bg = nvgRGBA( 220, 220, 210, 255 );
 NVGcolor BaconBackground::bgOutline = nvgRGBA( 180, 180, 170, 255 );
 NVGcolor BaconBackground::highlight = nvgRGBA( 90, 90, 60, 255 );
@@ -240,6 +239,7 @@ FramebufferWidget* BaconBackground::wrappedInFramebuffer()
   fb->addChild( this );
   return fb;
 }
+
 
 
 BaconBackground *BaconBackground::addLabelsForHugeKnob( Vec topLabelPos,
