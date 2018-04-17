@@ -24,12 +24,9 @@ struct ChipNoise : virtual Module {
     NOISE_FROM_INPUT,
     NOISE_FROM_KNOB,
 
-    NOISE_LENGTH_ONES,
-    NOISE_LENGTH_TENS,
+    NOISE_LENGTH_LIGHT,
 
-    PERIOD_93_ONES,
-    PERIOD_93_TENS,
-    PERIOD_93_HUNDREDS,
+    PERIOD_93_LIGHT,
 
     USING_93,
     
@@ -61,14 +58,11 @@ struct ChipNoise : virtual Module {
     if( inputs[ NOISE_LENGTH_INPUT ].active )
       nl = (unsigned int)clamp( inputs[ NOISE_LENGTH_INPUT ].value * 1.5, 0.0f, 15.0f );
     
-    lights[ NOISE_LENGTH_ONES ].value = nl % 10;
-    lights[ NOISE_LENGTH_TENS ].value = nl / 10;
+    lights[ NOISE_LENGTH_LIGHT ].value = nl;
     noise.setPeriod(nl);
 
     int p93 = (int)params[ PERIOD_93 ].value;
-    lights[ PERIOD_93_ONES ].value = p93 % 10;
-    lights[ PERIOD_93_TENS ].value = (p93 / 10) % 10;
-    lights[ PERIOD_93_HUNDREDS ].value = p93 / 100;
+    lights[ PERIOD_93_LIGHT ].value = p93;
     if( params[ LONG_MODE ].value == 0 && params[ SHORT_LEN ].value == 1 )
       {
         noise.set93Key( p93 );
@@ -132,12 +126,9 @@ ChipNoiseWidget::ChipNoiseWidget( ChipNoise *module ) : ModuleWidget( module )
                                                         ChipNoise::NOISE_LENGTH,
                                                         0, 15, 7 ) );
   addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( Vec( 16-4, ybot - 3 - 28 -4 ), module, ChipNoise::NOISE_FROM_KNOB ) );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47, ybot - 5 - 24 ),
-                                                                            module,
-                                                                            ChipNoise::NOISE_LENGTH_TENS ) );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + 14, ybot - 5 - 24 ),
-                                                                            module,
-                                                                            ChipNoise::NOISE_LENGTH_ONES ) );
+  addChild( MultiDigitSevenSegmentLight< BlueLight, 2, 2 >::create( Vec( 47, ybot - 5 - 24 ),
+                                                                    module,
+                                                                    ChipNoise::NOISE_LENGTH_LIGHT ) );
 
 
   bg->addRoundedBorder( Vec( 8, 135 ), Vec( SCREW_WIDTH * 6 - 16, 160 ) );
@@ -152,15 +143,11 @@ ChipNoiseWidget::ChipNoiseWidget( ChipNoise *module ) : ModuleWidget( module )
 
 
   bg->addLabel( Vec( bg->cx(), 258 ), "Which 93 seq", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 50-14, 262 ),
-                                                                            module,
-                                                                            ChipNoise::PERIOD_93_HUNDREDS ) );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 50, 262 ),
-                                                                            module,
-                                                                            ChipNoise::PERIOD_93_TENS ) );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 50 + 14, 262 ),
-                                                                            module,
-                                                                            ChipNoise::PERIOD_93_ONES ) );
+
+  addChild( MultiDigitSevenSegmentLight< BlueLight, 2, 3 >::create( Vec( 50 - 14, 262 ),
+                                                                    module,
+                                                                    ChipNoise::PERIOD_93_LIGHT ) );
+  
   addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 11, 262 ),
                                                         module,
                                                         ChipNoise::PERIOD_93,

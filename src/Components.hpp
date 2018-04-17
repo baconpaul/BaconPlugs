@@ -33,8 +33,12 @@ struct SevenSegmentLight : T {
     { 1, 1, 1, 1, 0, 1, 1 }
   };
 
+  const static int sx = px * 6 + 2;
+  const static int sy = px * 10 + 2; // match with lx-1 and ly-1 below
   int pvalue;
 
+  int decimalPos;
+  
   BufferedDrawFunctionWidget<SevenSegmentLight<T, px>> *buffer;
   
   SevenSegmentLight( )
@@ -42,8 +46,9 @@ struct SevenSegmentLight : T {
     lx = 7;
     ly = 11;
     ppl = px;
-    pvalue = -1;
-    this->box.size = Vec( ppl * (lx-1) + 2, ppl * (ly-1) + 2 );
+    pvalue = 0;
+    this->box.size = Vec( sx, sy );
+    decimalPos = 1;
 
     // https://en.wikipedia.org/wiki/Seven-segment_display#/media/File:7_segment_display_labeled.svg
     unscaledLoc.push_back( Rect( Vec( 2, 1 ), Vec( 3, 1 ) ) );
@@ -63,9 +68,12 @@ struct SevenSegmentLight : T {
   void draw( NVGcontext *vg ) override
   {
     float fvalue = this->module->lights[ this->firstLightId ].value;
-    int value = clamp( fvalue, 0.0f, 9.0f );
+    int value = int( fvalue / decimalPos ) % 10;
+
     if( value != pvalue )
-      buffer->dirty = true;
+      {
+        buffer->dirty = true;
+      }
 
     pvalue = value;
     
@@ -85,10 +93,10 @@ struct SevenSegmentLight : T {
     
     
     int i=0;
-    float fvalue = this->module->lights[ this->firstLightId ].value;
-    int value = clamp( fvalue, 0.0f, 9.0f );
+    // float fvalue = this->module->lights[ this->firstLightId ].value;
+    // int value = clamp( fvalue, 0.0f, 9.0f );
 
-    int *ebn = elementsByNum[ value ];
+    int *ebn = elementsByNum[ pvalue ];
 
     NVGcolor oncol = this->baseColors[ 0 ];
     
@@ -144,6 +152,54 @@ struct SevenSegmentLight : T {
       }
     
   }
+
+  static SevenSegmentLight< T, px > *create(Vec pos, Module *module, int firstLightId, int decimal) {
+    auto *o = ModuleLightWidget::create<SevenSegmentLight<T,px>>(pos, module, firstLightId);
+    o->decimalPos = decimal;
+    return o;
+  }
+
+};
+
+template <typename colorClass, int px, int digits>
+struct MultiDigitSevenSegmentLight : ModuleLightWidget
+{
+  typedef SevenSegmentLight< colorClass, px > LtClass;
+  
+  MultiDigitSevenSegmentLight() : ModuleLightWidget()
+  {
+    this->box.size = Vec( digits * LtClass::sx, LtClass::sy );
+  }
+
+  static MultiDigitSevenSegmentLight< colorClass, px, digits > *create(Vec pos, Module *module, int firstLightId) {
+    auto *o = ModuleLightWidget::create<MultiDigitSevenSegmentLight<colorClass, px ,digits>>(pos, module, firstLightId);
+    o->layout();
+    return o;
+  }
+
+  void layout()
+  {
+    int dp = 1;
+    for( int i=0; i<digits-1; ++i ) dp *= 10;
+    
+    for( int i=0; i<digits; ++i )
+      {
+        addChild(  LtClass::create( Vec( i * LtClass::sx, 0 ), module, firstLightId, dp ) );
+        dp /= 10;
+      }
+  }
+
+  void draw( NVGcontext *vg ) override
+  {
+    for( auto it = children.begin(); it != children.end(); ++it )
+      {
+        nvgSave( vg );
+        nvgTranslate( vg, (*it)->box.pos.x, (*it)->box.pos.y );
+        (*it)->draw( vg );
+        nvgRestore( vg );
+      }
+  }
+
 };
 
 struct BaconBackground : virtual TransparentWidget
@@ -452,7 +508,14 @@ struct DotMatrixLightTextWidget : public Component // Thanks http://scruss.com/b
               float xo = (col+0.5) * ledSize + pos.x;
               float yo = (row+0.5) * ledSize + pos.y;
               nvgBeginPath( vg );
-              nvgRect( vg, xo, yo, ledSize, ledSize );
+              // nvgRect( vg, xo, yo, ledSize, ledSize );
+              nvgCircle( vg, xo + ledSize/2.0f, yo + ledSize/2.0f, ledSize/2.0f * 1.1 );
+              nvgFillColor( vg, nvgRGBA( 25, 35, 25, 255 ) );
+              nvgFill( vg );
+              
+              nvgBeginPath( vg );
+              // nvgRect( vg, xo, yo, ledSize, ledSize );
+              nvgCircle( vg, xo + ledSize/2.0f, yo + ledSize/2.0f, ledSize/2.0f );
               nvgFillColor( vg, COLOR_BLUE ); // Thanks for having such a nice blue, Rack!!
               nvgFill( vg );
             }
@@ -481,6 +544,12 @@ struct DotMatrixLightTextWidget : public Component // Thanks http://scruss.com/b
       cpos.x += ledSize * 5 + padSize;
     }
   }
+
+  void onZoom( EventZoom &e ) override
+  {
+    buffer->dirty = true;
+  }
+
 
 };
 

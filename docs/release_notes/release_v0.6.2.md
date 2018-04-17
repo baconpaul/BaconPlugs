@@ -8,6 +8,7 @@
   * For more, see https://github.com/baconpaul/BaconPlugs/issues/6
 
 * I added a DMP Text Widget using Stewart C. Russell's Keypunch029 font (see README.md for license and links).
+* As well as a single digit, there's a multi digit sevent segment light. Take a look at ChipNoise for how to use it.
 
 (aspirational)
 * Update doc for ChipNoise
@@ -15,6 +16,5 @@
 * Karplus Strong Poly
 * Karplus Strong Mono
 * Polyrythgmic Metrocnome Clock
-* Seven segment multi digit light which isn't such a pain.
-
+* Link on face panel to documentation at https://github.com/baconpaul/BaconPlugs/blob/master/README.md#harmonee and so on
 

@@ -25,8 +25,7 @@ struct QuantEyes : virtual Module {
   };
 
   enum LightIds {
-    ROOT_LIGHT_ONES,
-    ROOT_LIGHT_TENS,
+    ROOT_LIGHT,
     ACTIVE_NOTE_LIGHTS,
     SCALE_LIGHTS = ACTIVE_NOTE_LIGHTS + 3 * SCALE_LENGTH,
     NUM_LIGHTS = SCALE_LIGHTS + SCALE_LENGTH
@@ -44,8 +43,7 @@ struct QuantEyes : virtual Module {
   void step() override
   {
     int root = clamp( params[ ROOT_STEP ].value, 0.0f, 12.0f );
-    lights[ ROOT_LIGHT_ONES ].value = root % 10;
-    lights[ ROOT_LIGHT_TENS ].value = root / 10;
+    lights[ ROOT_LIGHT ].value = root;
 
     for( int i=0; i<SCALE_LENGTH; ++i )
       {
@@ -174,12 +172,9 @@ QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
                                                 module,
                                                 QuantEyes::ROOT_STEP,
                                                 0, 12, 0 ) );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47, ybot - 5 - 24 ),
-                                                           module,
-                                                           QuantEyes::ROOT_LIGHT_TENS ) );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + 14, ybot - 5 - 24 ),
-                                                           module,
-                                                           QuantEyes::ROOT_LIGHT_ONES ) );
+  addChild( MultiDigitSevenSegmentLight< BlueLight, 2, 2 >::create( Vec( 47, ybot - 5 - 24 ),
+                                                                    module,
+                                                                    QuantEyes::ROOT_LIGHT ) );
 
 }
 

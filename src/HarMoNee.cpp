@@ -31,8 +31,7 @@ struct HarMoNee : Module {
     FIFTH_LIGHT,
     OCTAVE_LIGHT,
 
-    DIGIT_LIGHT_ONES,
-    DIGIT_LIGHT_TENS,
+    DIGIT_LIGHT,
     
     NUM_LIGHTS
   };
@@ -93,8 +92,7 @@ void HarMoNee::step() {
           lights[ i + ld ].value = 0.0;
         }
     }
-  lights[ DIGIT_LIGHT_ONES ].value = (int)offsetI % 10;
-  lights[ DIGIT_LIGHT_TENS ].value = (int)( offsetI / 10 );
+  lights[ DIGIT_LIGHT ].value = offsetI;
   
   offsetI = uod * offsetI / 12.0;
 
@@ -188,13 +186,10 @@ HarMoNeeWidget::HarMoNeeWidget( HarMoNee *model ) : ModuleWidget( model )
   addChild( ModuleLightWidget::create< MediumLight< RedLight >>( Vec( 70, 26 + 22 - 4 + 5 ), module, HarMoNee::DOWN_LIGHT ) );
 
 
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight > >( Vec( 10, 30 ),
-                                             module,
-                                             HarMoNee::DIGIT_LIGHT_TENS ) );
+  addChild( MultiDigitSevenSegmentLight< BlueLight, 4, 2 >::create( Vec( 10, 30 ),
+                                                                    module,
+                                                                    HarMoNee::DIGIT_LIGHT ) );
 
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight > >( Vec( 36, 30 ),
-                                             module,
-                                             HarMoNee::DIGIT_LIGHT_ONES ) );
 
   int x = 80; int y = 26 + 45; float v = -1;
   int ld = HarMoNee::HALF_STEP_LIGHT - HarMoNee::HALF_STEP;
