@@ -73,7 +73,7 @@ struct KarplusStrongPoly : virtual Module {
     if( newVoice )
       {
         // find voice
-        KSSynth *voice;
+        KSSynth *voice = NULL;
         for( auto syn: voices )
           if( ! syn->active )
             {
@@ -81,6 +81,21 @@ struct KarplusStrongPoly : virtual Module {
               break;
             }
 
+        if( voice == NULL )
+          {
+            // info( "All voices are active: Running voice steal" );
+            voice = voices[ 0 ];
+            float ds = voice->sumDelaySquared;
+            for( auto syn: voices )
+              {
+                if( syn->sumDelaySquared < ds )
+                  {
+                    ds = syn->sumDelaySquared;
+                    voice = syn;
+                  }
+              }
+          }
+        
         // Capture parameters onto this voice and trigger it
         voice->packet = currentInitialPacket;
         voice->trigger( 440 );
