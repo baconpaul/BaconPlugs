@@ -65,28 +65,32 @@ public:
 private:
   float freq;
   int burstLen;
+  float wfMin, wfMax;
   int sampleRate, sampleRateBy100;
   float filtAttenScaled;
 
   long pos;
   std::vector< float > delay;
 
-  float wfMin, wfMax;
 
 public:
 
   KSSynth( float minv, float maxv, int sampleRateIn )
     :
-    sampleRate( sampleRateIn ), sampleRateBy100( (int)( sampleRate / 100 ) ),
-    wfMin( minv ), wfMax( maxv ),
     packet( RANDOM ),
     filter( WEIGHTED_ONE_SAMPLE ),
-    filtAtten( 3.0f ),
+
     filtParamA( 0.5f ),
     filtParamB( 0.0f ),
     filtParamC( 0.0f ),
-    pos( 0 ),
-    active( false )
+    filtAtten( 3.0f ),
+
+    active( false ),
+
+    wfMin( minv ), wfMax( maxv ),
+    sampleRate( sampleRateIn ),
+    sampleRateBy100( (int)( sampleRate / 100 ) ),
+    pos( 0 )
   {
     setFreq( 220 );
   }
@@ -128,7 +132,6 @@ public:
         }
       case SAW:
         {
-          int xo = (int)burstLen / 2.0;
           for( int i=0; i<burstLen; ++i )
             {
               delay[ i ] = ( i * 2.0f / burstLen ) - 1.0;
@@ -138,7 +141,6 @@ public:
 
       case NOISYSAW:
         {
-          int xo = (int)burstLen / 2.0;
           for( int i=0; i<burstLen; ++i )
             {
               delay[ i ] = ( i * 1.0f / burstLen ) - 0.5;
