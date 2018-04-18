@@ -60,21 +60,24 @@ struct QuantEyes : virtual Module {
 
     for( int i=0; i<3; ++i )
       {
-        float in = inputs[ CV_INPUT + i ].value;
-        double octave, note;
-        note = modf( in, &octave );
-        float noteF = ( floor( note * SCALE_LENGTH ) + root );
-        int noteI = (int)noteF % SCALE_LENGTH;
-
-        if( noteF > SCALE_LENGTH-1 ) octave += 1.0;
+        if( inputs[ CV_INPUT + i ].active )
+          {
+            float in = inputs[ CV_INPUT + i ].value;
+            double octave, note;
+            note = modf( in, &octave );
+            float noteF = ( floor( note * SCALE_LENGTH ) + root );
+            int noteI = (int)noteF % SCALE_LENGTH;
+            
+            if( noteF > SCALE_LENGTH-1 ) octave += 1.0;
+            
+            
+            while( scaleState[ noteI ] == 0 && noteI > 0 ) noteI --;
+            
+            lights[ ACTIVE_NOTE_LIGHTS + i * SCALE_LENGTH + noteI ].value = 1;
         
-        
-        while( scaleState[ noteI ] == 0 && noteI > 0 ) noteI --;
-        
-        lights[ ACTIVE_NOTE_LIGHTS + i * SCALE_LENGTH + noteI ].value = 1;
-        
-        float out = 1.0 * noteI / SCALE_LENGTH + octave;
-        outputs[ QUANTIZED_OUT + i ].value = out;
+            float out = 1.0 * noteI / SCALE_LENGTH + octave;
+            outputs[ QUANTIZED_OUT + i ].value = out;
+          }
       }
   }
 
