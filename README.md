@@ -118,14 +118,22 @@ patch runs it mixed along with a VCO-1 so I could check tuning. Here's how I did
 
 ChipNoise implements the NES noise generator without the NES envelope. It would have been
 impossible to implement without the careful description of the noise algorithm at
-[the NES Dev WIKI](http://wiki.nesdev.com/w/index.php/APU_Noise).
+[the NES Dev WIKI](http://wiki.nesdev.com/w/index.php/APU_Noise). I also appreciate the
+[lengthy conversation with @alto77](https://github.com/baconpaul/BaconPlugs/issues/6) which helped
+identify a bug in the 0.6.1 release and add a new feature.
 
 The NES noise system has 16 different frequencies; and two modes. The two modes generate either
-a long pseudo-random pattern or (one of two) short pseudo-random patterns.
+a long pseudo-random pattern or a set of short pseudo-random patterns. That long pattern is just 
+long, but the short patterns are either 93 or 31 bits long. There are 351 distinct 93 bit patterns
+and a single 31 bit pattern. 
 
-The module just outputs the noise with a switch to change the mode and a knob to select the
-frequency. The knob is also exposed to CV. And yes, it really sounds like an NES. Here's a simple
-patch.
+The sequence controls allow you to pick these patterns. If set at "long" then you choose the longest
+pattern. If set at short, then either you have the 31 long pattern or one of the 93 patterns. Which of
+the 93 patterns you pick is chosen by the "which 93 seq" knob. 
+
+This is a lot of information. If you just play with it you'll get the idea.
+
+Here's a simple patch.
 
 <a href="https://baconpaul.github.io/audio/ChipNoise.mp3">
 <img src="docs/ChipNoise.png" alt="Example ChipNoise Patch">

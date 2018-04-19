@@ -6,6 +6,7 @@
   * Fixed an important bit length bug that @alto777 found. 
   * Added control of short sequence selection; either the 31 long or which of the 93s.
   * For more, see https://github.com/baconpaul/BaconPlugs/issues/6
+  * Update doc for ChipNoise
 
 * QuantEyes
   * Don't trigger lights if there is no input
@@ -14,11 +15,9 @@
 * As well as a single digit, there's a multi digit sevent segment light. Take a look at ChipNoise for how to use it.
 
 (required)
-* Update doc for ChipNoise
 
 (aspirational)
 * gates in quanteyes
 * Karplus Strong Poly
-* Karplus Strong Mono
 * Polyrythgmic Metrocnome Clock
 * Add appropriate BaconHelpButtons to everything
