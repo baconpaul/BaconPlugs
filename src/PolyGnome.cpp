@@ -1,6 +1,9 @@
 
 #include "BaconPlugs.hpp"
 
+#include <vector>
+#include <algorithm>
+
 #define NUM_CLOCKS 4
 
 struct PolyGnome : virtual Module {
@@ -24,35 +27,52 @@ struct PolyGnome : virtual Module {
 
   enum LightIds {
     LIGHT_NUMERATOR_1,
-    LIGHT_0_FIX = LIGHT_NUMERATOR_1 + NUM_CLOCKS,
-    NUM_LIGHTS
+    LIGHT_DENOMINATOR_1 = LIGHT_NUMERATOR_1 + NUM_CLOCKS,
+    NUM_LIGHTS = LIGHT_DENOMINATOR_1 + NUM_CLOCKS
   };
 
   float phase;
-  long nticks;
   
   PolyGnome() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS )
   {
-    phase = 0.f;
-    nticks = 0;
+    phase = 0.0f;
   }
 
+  inline int numi( int i ) { return (int)params[ CLOCK_NUMERATOR_1 + i ].value; }
+  inline int deni( int i ) { return (int)params[ CLOCK_DENOMINATOR_1 + i ].value; }
   void step() override
   {
-    bool gateIn = false;
-    float clockTime = powf(2.0f, params[CLOCK_PARAM].value + inputs[CLOCK_INPUT].value);
-    
-    phase += clockTime * engineGetSampleTime();
-    if (phase >= 1.0f) {
-      phase -= 1.0f;
-      nticks ++;
-    }
-    gateIn = (phase < 0.5f);
-    outputs[ CLOCK_GATE_0 ].value = gateIn ? 10.0f : 0.0f;
+    // this is all completely wrong it turns out
+    int denprod = 1;
+    for( int i=0; i<NUM_CLOCKS; ++i )
+      if( outputs[ CLOCK_GATE_0 + i + 1 ].active )
+        denprod *= deni( i );
 
+    float clockTime = powf(2.0f, params[CLOCK_PARAM].value + inputs[CLOCK_INPUT].value);
+    phase += clockTime * engineGetSampleTime();
+    //    while( phase > denprod)
+    // phase -= denprod;
+    
+    for( int i=0; i<NUM_CLOCKS+1 ; ++i )
+      {
+        bool gateIn = false;
+        float lphase;
+        if( i == 0 )
+          lphase = phase;
+        else
+          lphase = phase / ( 1.0f * numi( i - 1 ) / deni( i - 1 ) );
+
+        double ipart;
+        float fractPhase = modf( lphase, &ipart );
+        gateIn = (fractPhase < 0.5f);
+        
+        outputs[ CLOCK_GATE_0 + i ].value = gateIn ? 10.0f : 0.0f;
+      }
+    
     for( int i=0; i<NUM_CLOCKS; ++i )
       {
         lights[ LIGHT_NUMERATOR_1 + i ].value = (int)params[ CLOCK_NUMERATOR_1 + i ].value;
+        lights[ LIGHT_DENOMINATOR_1 + i ].value = (int)params[ CLOCK_DENOMINATOR_1 + i ].value;
       }
   }
 };
@@ -70,10 +90,10 @@ PolyGnomeWidget::PolyGnomeWidget( PolyGnome *module ) : ModuleWidget( module )
 
   for( size_t i=0; i<= NUM_CLOCKS; ++i )
     {
-      Vec outP = Vec( box.size.x - 45, 90 + 48 * i );
+      Vec outP = Vec( box.size.x - 45, 100 + 48 * i );
       if( i == 0 )
         {
-          bg->addLabel( Vec( 17, outP.y + 21 ), "Quarter note (1/4) clock", 13, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM );
+          bg->addLabel( Vec( 17, outP.y + 21 ), "Unit (1/1) clock", 13, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM );
         }
       else
         {
@@ -91,14 +111,10 @@ PolyGnomeWidget::PolyGnomeWidget( PolyGnome *module ) : ModuleWidget( module )
           addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 16 + mv, outP.y + yoff ),
                                                                 module,
                                                                 PolyGnome::CLOCK_DENOMINATOR_1 + (i-1),
-                                                                1, 8, 1 ) );
-          addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + mv, outP.y + yoff ),
-                                                                                    module,
-                                                                                    PolyGnome::LIGHT_0_FIX ) );
-          addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + 14 + mv, outP.y + yoff ),
-                                                                                    module,
-                                                                                    PolyGnome::LIGHT_0_FIX ) );
-
+                                                                1, 16, 1 ) );
+          addChild( MultiDigitSevenSegmentLight< BlueLight, 2, 2 >::create( Vec( 47 + mv, outP.y + yoff ),
+                                                                            module,
+                                                                            PolyGnome::LIGHT_DENOMINATOR_1 + (i-1) ) );
         }
       addOutput( Port::create< PJ301MPort >( outP,
                                              Port::OUTPUT,
