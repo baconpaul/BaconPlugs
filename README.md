@@ -4,9 +4,8 @@
 [VCVRack](http://www.vcvrack.com). The modules are mostly inspired by me noodling around, and 
 they sort of fall into a few groups: 
 
-* Control voltage manipulation on 1v/oct signals to do things like glissando and musical quantization;
-* 8-bit-y digital chip-like synthesis, doing things like NES replication and 
-various simple noise algorithms;
+* Control voltage manipulation on 1v/oct signals to do things like glissando and musical quantization and a polyrhytmic clock;
+* Classic synth algorithms, including an implementation of the NES oscillators and a Karplus Strong implementation.
 * and finally, not very useful modulations and  distortions and stuff.
 
 
@@ -28,7 +27,7 @@ on the github here.
 
 I hope you enjoy the plugins! 
 
-## Control Voltage Manipulation
+## Control Voltage Manipulation and Clocks
 
 ### HarMoNee
 
@@ -42,7 +41,7 @@ both. You get the idea.
 <a href="https://baconpaul.github.io/audio/HarMoNee.mp3">
 <img src="docs/HarMoNee.png" alt="ExampleQuanteyes Patch">
 <br>
-<img src="docs/SpeakerIconSmall.png" alt="Head HarMoNee Sample">
+<img src="docs/SpeakerIconSmall.png" alt="Hear HarMoNee Sample">
 </a>
 
 
@@ -57,7 +56,7 @@ of gliss time. Here's a sample patch.
 <a href="https://baconpaul.github.io/audio/Glissinator.mp3">
 <img src="docs/Glissinator.png" alt="ExampleQuanteyes Patch">
 <br>
-<img src="docs/SpeakerIconSmall.png" alt="Head Glissinator Sample">
+<img src="docs/SpeakerIconSmall.png" alt="Hear Glissinator Sample">
 </a>
 
 
@@ -82,11 +81,29 @@ Glissinator and HarMoNee modules.
 <a href="https://baconpaul.github.io/audio/QuantEyes.mp3">
 <img src="docs/QuantEyes.png" alt="ExampleQuanteyes Patch">
 <br>
-<img src="docs/SpeakerIconSmall.png" alt="Head QuantEyes Sample">
+<img src="docs/SpeakerIconSmall.png" alt="Hear QuantEyes Sample">
 </a>
 
 
-## 8-bit-y stuff and chip emulators and the like
+### PolyGnome
+
+PolyGnome is a polyrhytmic clock generator. It can output up to 5 clock signals with strict 
+fractional relationships between them. There is one clock which is the "1/1" clock controlled by
+the speed settings implemented exactly like the clock rate controls in SEQ3. Then there are 4
+other clocks which are fractionally adjusted clocks. This way you can do a 1/1 vs a 5/3 vs a 4/5
+polyrhythm easily in your rack.
+
+Here's an example which uses this to drive 3 independent oscillator / envelope sets all of which have
+pitch set through the QuantEyes module.
+
+<a href="https://baconpaul.github.io/audio/PolyGnome.mp3">
+<img src="docs/PolyGnome.png" alt="Example PolyGnome Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear PolyGnome Sample">
+</a>
+
+
+## Classic and 8-bit algorithms
 
 ### ChipWaves
 
@@ -176,7 +193,7 @@ and dry is just the signal). Sloppy, sure, but it sounds kinda cool. Here's a sa
 <a href="https://baconpaul.github.io/audio/ALingADing.mp3">
 <img src="docs/ALingADing.png" alt="ExampleQuanteyes Patch">
 <br>
-<img src="docs/SpeakerIconSmall.png" alt="Head ALingADing Sample">
+<img src="docs/SpeakerIconSmall.png" alt="Hear ALingADing Sample">
 </a>
 
 

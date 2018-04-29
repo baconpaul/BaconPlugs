@@ -11,13 +11,13 @@
 * QuantEyes
   * Don't trigger lights if there is no input
 
+* PolyGnome
+  * Added this new widget which allows for exact fractional polyrhythms in clocks.
+
 * I added a DMP Text Widget using Stewart C. Russell's Keypunch029 font (see README.md for license and links).
 * As well as a single digit, there's a multi digit sevent segment light. Take a look at ChipNoise for how to use it.
 
-(required)
 
 (aspirational)
-* gates in quanteyes
 * Karplus Strong Poly
-* Polyrythgmic Metrocnome Clock
 * Add appropriate BaconHelpButtons to everything
