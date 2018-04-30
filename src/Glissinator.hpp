@@ -74,7 +74,7 @@ struct Glissinator : public TBase {
         
       }
 
-    if( offsetCount == shift_time )
+    if( offsetCount >= shift_time )
       {
         offsetCount = 0;
         priorIn = thisIn;
