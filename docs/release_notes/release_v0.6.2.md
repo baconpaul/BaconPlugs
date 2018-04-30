@@ -14,6 +14,10 @@
 * PolyGnome
   * Added this new widget which allows for exact fractional polyrhythms in clocks.
 
+* Glissinator
+  * Fixed a bug found by @alto777 where a rapid decrease in the shift time would lock the module
+  * Refactored to allow standalone tests of the stepper
+
 * I added a DMP Text Widget using Stewart C. Russell's Keypunch029 font (see README.md for license and links).
 * As well as a single digit, there's a multi digit sevent segment light. Take a look at ChipNoise for how to use it.
 

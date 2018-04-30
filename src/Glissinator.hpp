@@ -83,8 +83,11 @@ struct Glissinator : public TBase {
         // starting point.
         if( thisIn != targetIn )
           {
-            float lastKnown = ( ( shift_time - offsetCount ) * priorIn +
-                                offsetCount * targetIn) / shift_time;
+            // This "-1" is here because we want to know the LAST known step - so at the prior
+            // offset count. Without this a turnaround will tick above the turnaround point for one
+            // sample.
+            float lastKnown = ( ( shift_time - (offsetCount-1) ) * priorIn +
+                                (offsetCount-1) * targetIn) / shift_time;
             targetIn = thisIn;
             priorIn = lastKnown;
             offsetCount = 0;
