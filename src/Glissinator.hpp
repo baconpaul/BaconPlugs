@@ -26,20 +26,26 @@ struct Glissinator : public TBase {
   float targetIn;
   int offsetCount;
 
+  // Hey thanks https://stackoverflow.com/a/4643091
+  using TBase::params;
+  using TBase::inputs;
+  using TBase::outputs;
+  using TBase::lights;
+
   Glissinator() : TBase( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ) {
     offsetCount = -1;
-    this->params[ GLISS_TIME ].value = 0.1;
+    params[ GLISS_TIME ].value = 0.1;
   }
 
 
   
   void step() override
   {
-    float glist_sec = this->params[ GLISS_TIME ].value;
+    float glist_sec = params[ GLISS_TIME ].value;
     int shift_time = engineGetSampleRate() * glist_sec;
     if( shift_time < 10 ) shift_time = 10;
     
-    float thisIn = this->inputs[ SOURCE_INPUT ].value;
+    float thisIn = inputs[ SOURCE_INPUT ].value;
 
     // This means I am being intialized
     if( offsetCount < 0 )
@@ -101,7 +107,7 @@ struct Glissinator : public TBase {
         offsetCount ++;
       }
 
-    this->lights[ SLIDING_LIGHT ].value = inGliss ? 1 : 0;
-    this->outputs[ SLID_OUTPUT ].value = thisOut;
+    lights[ SLIDING_LIGHT ].value = inGliss ? 1 : 0;
+    outputs[ SLID_OUTPUT ].value = thisOut;
   }
 };
