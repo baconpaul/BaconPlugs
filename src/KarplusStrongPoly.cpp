@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include "dsp/digital.hpp"
 
 #include "KSSynth.hpp"
 
@@ -10,11 +11,14 @@ struct KarplusStrongPoly : virtual Module {
   enum ParamIds {
     INITIAL_PACKET,
     FILTER_TYPE,
+    FREQ_KNOB,
     NUM_PARAMS
   };
 
   enum InputIds {
     TRIGGER_GATE,
+    INITIAL_PACKET_INPUT,
+    FREQ_CV,
     NUM_INPUTS
   };
 
@@ -27,6 +31,8 @@ struct KarplusStrongPoly : virtual Module {
     NUM_LIGHTS
   };
 
+
+  SchmittTrigger voiceTrigger;
 
   std::vector< KSSynth *> voices;
   const static int nVoices = 32;
@@ -43,7 +49,6 @@ struct KarplusStrongPoly : virtual Module {
     currentFilter = KSSynth::WEIGHTED_ONE_SAMPLE;
     filterString = voices[ 0 ]->filterTypeName( currentFilter );
 
-    pgate = 0;
   }
 
   virtual ~KarplusStrongPoly()
@@ -58,8 +63,6 @@ struct KarplusStrongPoly : virtual Module {
   int getNumFilters() { return voices[ 0 ]->numFilterTypes(); }
   KSSynth::FilterType currentFilter;
   
-  float pgate;
-  
   void step() override
   {
     if( (int)( params[ INITIAL_PACKET ].value ) != currentInitialPacket )
@@ -71,12 +74,10 @@ struct KarplusStrongPoly : virtual Module {
 
     // Check a trigger here and find a voice
     bool newVoice = false;
-    if( pgate == 0 && inputs[ TRIGGER_GATE ].value > 1 )
+    if( voiceTrigger.process( inputs[ TRIGGER_GATE ].value ) )
       {
-        pgate = 10;
         newVoice = true;
       }
-    if( pgate == 10 && inputs[ TRIGGER_GATE ].value < 1 ) pgate = 0;
 
     if( newVoice )
       {
@@ -105,8 +106,10 @@ struct KarplusStrongPoly : virtual Module {
           }
         
         // Capture parameters onto this voice and trigger it
+        float pitch = params[ FREQ_KNOB ].value + 12.0f * inputs[ FREQ_CV ].value;
+        float freq = 261.262f * powf( 2.0f, pitch / 12.0f );
         voice->packet = currentInitialPacket;
-        voice->trigger( 440 );
+        voice->trigger( freq );
       }
     
     float out = 0.0f;
@@ -150,31 +153,94 @@ struct KarplusStrongPolyWidget : ModuleWidget {
 
 KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : ModuleWidget( module )
 {
-  box.size = Vec( SCREW_WIDTH * 20, RACK_HEIGHT );
+  box.size = Vec( SCREW_WIDTH * 15, RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "KarplusStrongPoly" );
  
   
   addChild( bg->wrappedInFramebuffer());
+
+  float outy;
+  float yh;
+  int margin = 4;
+  int obuf = 10;
   
-  addInput( Port::create< PJ301MPort >( Vec( 20, 200 ),
+  outy = 40;
+
+  auto brd = [&](float ys)
+    {
+      bg->addRoundedBorder( Vec( obuf, outy - margin ), Vec( box.size.x - 2 * obuf, ys + 2 * margin ) );
+    };
+  auto cl = [&](std::string lab, float ys)
+    {
+      bg->addLabel( Vec( obuf + margin, outy + ys / 2 ), lab.c_str(), 13, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT );
+    };
+
+  yh = SizeTable<PJ301MPort>::Y;
+  brd( yh );
+  cl( "Trigger", yh );
+  addInput( Port::create< PJ301MPort >( Vec( box.size.x - obuf - margin - SizeTable<PJ301MPort>::X, outy ),
                                         Port::INPUT,
                                         module,
                                         KarplusStrongPoly::TRIGGER_GATE ) );
 
-  addOutput( Port::create< PJ301MPort >( Vec( 100, 200 ),
-                                         Port::OUTPUT,
-                                         module,
-                                         KarplusStrongPoly::SYNTH_OUTPUT ) );
+  outy += yh + 3 * margin;
+  yh = SizeTable<RoundBlackKnob >::Y;
+  brd( yh );
+  cl( "Freq", yh );
+  int xp = box.size.x - margin - obuf - SizeTable<PJ301MPort>::X;
+  addInput( Port::create< PJ301MPort >( Vec( xp, outy + diffY2c< RoundBlackKnob, PJ301MPort >() ),
+                                        Port::INPUT,
+                                        module,
+                                        KarplusStrongPoly::FREQ_CV ) );
 
-  
-  addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( 20, 40 ), module, KarplusStrongPoly::INITIAL_PACKET, 0, module->getNumPackets()-1, 0 ) );
-  addChild( DotMatrixLightTextWidget::create( Vec( 55, 42 ), module, 8,
+  xp -= SizeTable<RoundBlackKnob>::X + margin;
+  addParam( ParamWidget::create< RoundBlackKnob >( Vec( xp, outy ), module,
+                                                       KarplusStrongPoly::FREQ_KNOB,
+                                                       -54.0f, 54.0f, 0.0f ) );
+
+
+
+  outy += yh + 3 * margin;
+
+
+  yh = SizeTable<RoundBlackSnapKnob>::Y;
+  std::cout << "YH=" << yh << "\n";
+  brd( yh );
+  cl( "Packet", yh );
+
+  xp = 55;
+
+  addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( xp, outy ),
+                                                       module,
+                                                       KarplusStrongPoly::INITIAL_PACKET,
+                                                       0,
+                                                       module->getNumPackets()-1, 0 ) );
+
+
+  xp += SizeTable<RoundBlackSnapKnob>::X + margin;
+  addInput( Port::create<PJ301MPort>( Vec( xp, outy + diffY2c<RoundBlackSnapKnob,PJ301MPort>() ),
+                                      Port::INPUT, module, KarplusStrongPoly::INITIAL_PACKET_INPUT ) );
+  xp += SizeTable<PJ301MPort>::X + margin;
+  addChild( DotMatrixLightTextWidget::create( Vec( xp, outy + diffY2c<RoundBlackSnapKnob,DotMatrixLightTextWidget>() ),
+                                              module, 8,
                                               KarplusStrongPoly::getInitialPacketStringDirty,
                                               KarplusStrongPoly::getInitialPacketString ) );
 
-  addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( 20, 60 ), module, KarplusStrongPoly::FILTER_TYPE, 0, module->getNumFilters()-1, 0 ) );
-  addChild( DotMatrixLightTextWidget::create( Vec( 55, 62 ), module, 8, KarplusStrongPoly::getFilterStringDirty, KarplusStrongPoly::getFilterString ) );
+  /*
+
+  addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( 20, 65 ), module, KarplusStrongPoly::FILTER_TYPE, 0, module->getNumFilters()-1, 0 ) );
+  addChild( DotMatrixLightTextWidget::create( Vec( 55, 67 ), module, 8, KarplusStrongPoly::getFilterStringDirty, KarplusStrongPoly::getFilterString ) );
+  */
+
+
+  outy = 300;
+  brd( SizeTable<PJ301MPort>::Y );
+  cl( "Output", SizeTable<PJ301MPort>::Y );
+  addOutput( Port::create< PJ301MPort >( Vec( box.size.x - obuf - margin - SizeTable<PJ301MPort>::X, outy ),
+                                         Port::OUTPUT,
+                                         module,
+                                         KarplusStrongPoly::SYNTH_OUTPUT ) );
 
 }
 
