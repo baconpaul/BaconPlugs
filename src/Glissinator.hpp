@@ -14,6 +14,7 @@ struct Glissinator : public TBase {
 
   enum OutputIds {
     SLID_OUTPUT,
+    GLISSING_GATE,
     NUM_OUTPUTS
   };
 
@@ -109,5 +110,6 @@ struct Glissinator : public TBase {
 
     lights[ SLIDING_LIGHT ].value = inGliss ? 1 : 0;
     outputs[ SLID_OUTPUT ].value = thisOut;
+    outputs[ GLISSING_GATE ].value = inGliss ? 10 : 0;
   }
 };

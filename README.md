@@ -51,7 +51,12 @@ Glissinator takes a control voltage which is undergoing change and smooths out t
 change with a linear glissando. It is not triggered by a gate, just by differences
 in the input CV. It never jumps discontinuously, so if the CV changes "target" value
 mid-gliss, the whole thing turns around. The slider will give you between 0 and 1 seconds
-of gliss time. Here's a sample patch.
+of gliss time. There is a gate output which is +10v when the module is glissing and
+0 when it isn't. Note that the Glissinator is a constant time gliss, not a constant
+slope gliss (which is what a slew limiter would do). A future version may have a switch
+to pick between the modes.
+
+Here's a sample patch.
 
 <a href="https://baconpaul.github.io/audio/Glissinator.mp3">
 <img src="docs/Glissinator.png" alt="ExampleQuanteyes Patch">

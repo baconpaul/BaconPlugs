@@ -15,7 +15,7 @@ GlissinatorWidget::GlissinatorWidget( Glissinator<Module> *model ) : ModuleWidge
   // FIXME - spacing
   // addChild( new BaconHelpButton( "README.md#glissinator" ) );
   
-  ParamWidget *slider = ParamWidget::create< GraduatedFader< 255 > >( Vec( bg->cx( 29 ), 43 ),
+  ParamWidget *slider = ParamWidget::create< GraduatedFader< 230 > >( Vec( bg->cx( 29 ), 23 ),
                                                               module,
                                                               G::GLISS_TIME,
                                                               0,
@@ -37,8 +37,13 @@ GlissinatorWidget::GlissinatorWidget( Glissinator<Module> *model ) : ModuleWidge
   addOutput( Port::create< PJ301MPort >( outP, Port::OUTPUT,
                                          module,
                                          G::SLID_OUTPUT ) );
-  addChild( ModuleLightWidget::create< MediumLight< BlueLight > >( Vec( box.size.x/2 - 4.5 , 27 ),
+
+  bg->addRoundedBorder( Vec( 5, RACK_HEIGHT - 120 ), Vec( box.size.x - 10, 38 ), BaconBackground::highlight );
+  bg->addLabel( Vec( 10, RACK_HEIGHT - 102 ), "gliss", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM, COLOR_WHITE );
+  bg->addLabel( Vec( 10, RACK_HEIGHT - 90 ), "gate", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM, COLOR_WHITE );
+  addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( Vec( bg->cx() - 4 , RACK_HEIGHT - 120 + 38 / 2 - 3 ),
                                                     module, G::SLIDING_LIGHT ) );
+  addOutput( Port::create< PJ301MPort >( Vec( bg->cx() + 5, RACK_HEIGHT - 114 ), Port::OUTPUT, module, G::GLISSING_GATE ) );
 }
 
 Model *modelGlissinator = Model::create<Glissinator<Module>,GlissinatorWidget>("Bacon Music", "Glissinator", "Glissinator", EFFECT_TAG); 

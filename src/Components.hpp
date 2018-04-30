@@ -236,15 +236,20 @@ struct BaconBackground : virtual TransparentWidget
 
   BaconBackground *addLabel( Vec pos, const char* lab, int px )
   {
-    return addLabel( pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+    return addLabel( pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM, COLOR_BLACK );
   }
-  BaconBackground *addLabel( Vec pos, const char* lab, int px, int align );
+  BaconBackground *addLabel( Vec pos, const char* lab, int px, int align )
+  {
+    return addLabel( pos, lab, px, align, COLOR_BLACK );
+  }
+  BaconBackground *addLabel( Vec pos, const char* lab, int px, int align, NVGcolor col );
 
   BaconBackground *addPlugLabel( Vec plugPos, LabelStyle s, const char* ilabel ) {
     return addPlugLabel( plugPos, LabelAt::ABOVE, s, ilabel );
   }
   BaconBackground *addPlugLabel( Vec plugPos, LabelAt l, LabelStyle s, const char* ilabel );
   BaconBackground *addRoundedBorder( Vec pos, Vec sz );
+  BaconBackground *addRoundedBorder( Vec pos, Vec sz, NVGcolor fill );
 
   BaconBackground *addLabelsForHugeKnob( Vec topLabelPos, const char* knobLabel, const char* zeroLabel, const char* oneLabel, Vec &putKnobHere );
   BaconBackground *addLabelsForLargeKnob( Vec topLabelPos, const char* knobLabel, const char* zeroLabel, const char* oneLabel, Vec &putKnobHere );

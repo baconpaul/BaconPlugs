@@ -19,16 +19,34 @@ std::map< std::string, int > InternalFontMgr::fontMap;
 
 struct InternalRoundedBorder : virtual TransparentWidget
 {
+  bool doFill;
+  NVGcolor fillColor;
+
+  InternalRoundedBorder( Vec pos, Vec sz, NVGcolor fc )
+  {
+    box.pos = pos;
+    box.size = sz;
+    doFill = true;
+    fillColor = fc;
+  }
+
   InternalRoundedBorder( Vec pos, Vec sz )
   {
     box.pos = pos;
     box.size = sz;
+    doFill = false;
   }
 
   void draw( NVGcontext *vg ) override
   {
     nvgBeginPath( vg );
     nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 );
+    if( doFill )
+      {
+        nvgFillColor( vg, fillColor );
+        nvgFill( vg );
+      }
+        
     nvgStrokeColor( vg, COLOR_BLACK );
     nvgStroke( vg );
   }
@@ -40,13 +58,9 @@ struct InternalTextLabel : virtual TransparentWidget
   std::string label;
   int pxSize;
   int align;
-  InternalTextLabel( Vec pos, const char* lab, int px ) : label( lab ), pxSize( px )
-  {
-    align = NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE;
-    box.pos = pos;
-  }
+  NVGcolor color;
 
-  InternalTextLabel( Vec pos, const char* lab, int px, int al ) : label( lab ), pxSize( px ), align( al )
+  InternalTextLabel( Vec pos, const char* lab, int px, int al, NVGcolor col ) : label( lab ), pxSize( px ), align( al ), color( col )
   {
     box.pos = pos;
   }
@@ -58,7 +72,7 @@ struct InternalTextLabel : virtual TransparentWidget
     nvgBeginPath( vg );
     nvgFontFaceId( vg, memFont );
     nvgFontSize( vg, pxSize );
-    nvgFillColor( vg, COLOR_BLACK );
+    nvgFillColor( vg, color );
     nvgTextAlign( vg, align );
     nvgText( vg, 0, 0, label.c_str(), NULL );
   }
@@ -203,9 +217,9 @@ void InternalPlugLabel::draw( NVGcontext *vg )
 
 
 
-BaconBackground *BaconBackground::addLabel( Vec pos, const char* lab, int px, int align )
+BaconBackground *BaconBackground::addLabel( Vec pos, const char* lab, int px, int align, NVGcolor col )
 {
-  addChild( new InternalTextLabel( pos, lab, px, align ) );
+  addChild( new InternalTextLabel( pos, lab, px, align, col ) );
   return this;
 }
 
@@ -218,6 +232,12 @@ BaconBackground *BaconBackground::addPlugLabel( Vec plugPos, LabelAt l, LabelSty
 BaconBackground *BaconBackground::addRoundedBorder( Vec pos, Vec sz )
 {
   addChild( new InternalRoundedBorder( pos, sz ) );
+  return this;
+}
+
+BaconBackground *BaconBackground::addRoundedBorder( Vec pos, Vec sz, NVGcolor fill )
+{
+  addChild( new InternalRoundedBorder( pos, sz, fill ) );
   return this;
 }
 

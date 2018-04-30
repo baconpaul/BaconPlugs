@@ -6,7 +6,7 @@
       "version": "master",
       "model": "AudioInterface",
       "pos": [
-        54,
+        47,
         0
       ],
       "params": [],
@@ -26,7 +26,7 @@
       "version": "0.6.0",
       "model": "VCO",
       "pos": [
-        34,
+        27,
         0
       ],
       "params": [
@@ -233,7 +233,7 @@
       "version": "0.6.0",
       "model": "VCMixer",
       "pos": [
-        44,
+        37,
         0
       ],
       "params": [
@@ -270,9 +270,56 @@
       "params": [
         {
           "paramId": 0,
-          "value": 0.412500173
+          "value": 0.223000005
         }
       ]
+    },
+    {
+      "plugin": "Fundamental",
+      "version": "0.6.0",
+      "model": "Scope",
+      "pos": [
+        57,
+        0
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 1.0
+        },
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 2,
+          "value": -1.0
+        },
+        {
+          "paramId": 3,
+          "value": -10.0
+        },
+        {
+          "paramId": 4,
+          "value": -6.67499542
+        },
+        {
+          "paramId": 5,
+          "value": 0.0
+        },
+        {
+          "paramId": 6,
+          "value": 0.0
+        },
+        {
+          "paramId": 7,
+          "value": 0.0
+        }
+      ],
+      "data": {
+        "lissajous": 0,
+        "external": 0
+      }
     }
   ],
   "wires": [
@@ -346,6 +393,30 @@
       "outputModuleId": 3,
       "outputId": 0,
       "inputModuleId": 0,
+      "inputId": 1
+    },
+    {
+      "color": {
+        "r": 0.0470588282,
+        "g": 0.556862772,
+        "b": 0.0823529437,
+        "a": 1.0
+      },
+      "outputModuleId": 4,
+      "outputId": 0,
+      "inputModuleId": 5,
+      "inputId": 0
+    },
+    {
+      "color": {
+        "r": 0.788235366,
+        "g": 0.717647076,
+        "b": 0.054901965,
+        "a": 1.0
+      },
+      "outputModuleId": 4,
+      "outputId": 1,
+      "inputModuleId": 5,
       "inputId": 1
     }
   ]
