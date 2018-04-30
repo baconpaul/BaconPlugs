@@ -1,97 +1,12 @@
 #include "BaconPlugs.hpp"
-
-struct Glissinator : Module {
-  enum ParamIds {
-    GLISS_TIME,
-
-    NUM_PARAMS
-  };
-
-  enum InputIds {
-    SOURCE_INPUT,
-    NUM_INPUTS
-  };
-
-  enum OutputIds {
-    SLID_OUTPUT,
-    NUM_OUTPUTS
-  };
-
-  enum LightIds {
-    SLIDING_LIGHT,
-    NUM_LIGHTS
-  };
-
-  float priorIn;
-  float targetIn;
-  int offsetCount;
-
-  Glissinator() : Module( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS ) {
-    offsetCount = -1;
-    params[ GLISS_TIME ].value = 0.1;
-  }
-
-
-  
-  void step() override
-  {
-    float glist_sec = params[ GLISS_TIME ].value;
-    int shift_time = engineGetSampleRate() * glist_sec;
-    if( shift_time < 10 ) shift_time = 10;
-    
-    float thisIn = inputs[ SOURCE_INPUT ].value;
-    if( offsetCount < 0 )
-      {
-        priorIn = thisIn;
-        offsetCount = 0;
-      }
-
-    bool inGliss = offsetCount != 0;
-    float thisOut = thisIn;
-    if( ! inGliss )
-      {
-        if( thisIn != priorIn )
-          {
-            targetIn = thisIn;
-            offsetCount = 1;
-            inGliss = true;
-          }
-      }
-
-    if( inGliss )
-      {
-        if( thisIn != targetIn )
-          {
-            float lastKnown = ( ( shift_time - offsetCount ) * priorIn +
-                                offsetCount * targetIn) / shift_time;
-            targetIn = thisIn;
-            priorIn = lastKnown;
-            offsetCount = 0;
-          }
-        thisOut = ( ( shift_time - offsetCount ) * priorIn +
-                    offsetCount * thisIn ) / shift_time;
-        offsetCount ++;
-        
-      }
-
-    if( offsetCount == shift_time )
-      {
-        offsetCount = 0;
-        priorIn = thisIn;
-        targetIn  = thisIn;
-        inGliss = false;
-      }
-
-    lights[ SLIDING_LIGHT ].value = inGliss ? 1 : 0;
-    outputs[ SLID_OUTPUT ].value = thisOut;
-  }
-};
+#include "Glissinator.hpp"
 
 struct GlissinatorWidget : ModuleWidget {
-  GlissinatorWidget( Glissinator *model );
+  typedef Glissinator< Module > G;
+  GlissinatorWidget( Glissinator<Module> *model );
 };
 
-GlissinatorWidget::GlissinatorWidget( Glissinator *model ) : ModuleWidget( model )
+GlissinatorWidget::GlissinatorWidget( Glissinator<Module> *model ) : ModuleWidget( model )
 {
   box.size = Vec( SCREW_WIDTH * 5, RACK_HEIGHT );
   BaconBackground *bg = new BaconBackground( box.size, "Glissinator" );
@@ -102,7 +17,7 @@ GlissinatorWidget::GlissinatorWidget( Glissinator *model ) : ModuleWidget( model
   
   ParamWidget *slider = ParamWidget::create< GraduatedFader< 255 > >( Vec( bg->cx( 29 ), 43 ),
                                                               module,
-                                                              Glissinator::GLISS_TIME,
+                                                              G::GLISS_TIME,
                                                               0,
                                                               1,
                                                               0.1 );
@@ -115,15 +30,15 @@ GlissinatorWidget::GlissinatorWidget( Glissinator *model ) : ModuleWidget( model
   bg->addPlugLabel( inP, BaconBackground::SIG_IN, "in" );
   addInput( Port::create< PJ301MPort >( inP, Port::INPUT,
                                        module,
-                                       Glissinator::SOURCE_INPUT ) );
+                                       G::SOURCE_INPUT ) );
 
   bg->addPlugLabel( outP, BaconBackground::SIG_OUT, "out" );
   
   addOutput( Port::create< PJ301MPort >( outP, Port::OUTPUT,
                                          module,
-                                         Glissinator::SLID_OUTPUT ) );
+                                         G::SLID_OUTPUT ) );
   addChild( ModuleLightWidget::create< MediumLight< BlueLight > >( Vec( box.size.x/2 - 4.5 , 27 ),
-                                                    module, Glissinator::SLIDING_LIGHT ) );
+                                                    module, G::SLIDING_LIGHT ) );
 }
 
-Model *modelGlissinator = Model::create<Glissinator,GlissinatorWidget>("Bacon Music", "Glissinator", "Glissinator", EFFECT_TAG); 
+Model *modelGlissinator = Model::create<Glissinator<Module>,GlissinatorWidget>("Bacon Music", "Glissinator", "Glissinator", EFFECT_TAG); 

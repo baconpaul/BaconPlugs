@@ -147,7 +147,7 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
                                          KarplusStrongPoly::SYNTH_OUTPUT ) );
 
   
-  addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( 20, 40 ), module, KarplusStrongPoly::INITIAL_PACKET, 0, module->getNumPackets()-1, 0 ) );
+  addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( 20, 40 ), module, KarplusStrongPoly::INITIAL_PACKET, 0, module->getNumPackets()-1, 0 ) );
   addChild( DotMatrixLightTextWidget::create( Vec( 50, 42 ), module, 8, KarplusStrongPoly::getFilterStringDirty, KarplusStrongPoly::getFilterString ) );
 }
 

@@ -2,6 +2,8 @@
 #include "RtAudio.h"
 #include <unistd.h>
 
+int engineGetSampleRate() { return 44100; }
+
 struct StepHandler
 {
   virtual ~StepHandler() { };
@@ -83,3 +85,27 @@ struct StepHandler
   }
 };
 
+struct StandaloneModule
+{
+  struct thing
+  {
+    float value;
+    bool active;
+  };
+
+  std::vector< thing > params;
+  std::vector< thing > lights;
+  std::vector< thing > inputs;
+  std::vector< thing > outputs;
+
+  StandaloneModule( int nparam, int ninp, int nout, int nlight )
+  {
+    params.resize( nparam );
+    lights.resize( nlight );
+    inputs.resize( ninp );
+    outputs.resize( nout );
+  }
+
+  
+  virtual void step() { };
+};

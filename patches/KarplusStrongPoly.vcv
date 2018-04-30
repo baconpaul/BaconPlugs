@@ -2,63 +2,39 @@
   "version": "master",
   "modules": [
     {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "KarplusStrongPoly",
+      "pos": [
+        22,
+        0
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 0.0
+        }
+      ]
+    },
+    {
       "plugin": "Core",
       "version": "master",
       "model": "AudioInterface",
       "pos": [
-        54,
+        64,
         0
       ],
       "params": [],
       "data": {
         "audio": {
           "driver": 5,
-          "deviceName": "Apple Inc.: Built-in Output",
+          "deviceName": "Apple Inc.: DisplayPort",
           "offset": 0,
           "maxChannels": 8,
           "sampleRate": 44100,
           "blockSize": 256
         }
       }
-    },
-    {
-      "plugin": "Fundamental",
-      "version": "0.6.0",
-      "model": "VCO",
-      "pos": [
-        34,
-        0
-      ],
-      "params": [
-        {
-          "paramId": 0,
-          "value": 1.0
-        },
-        {
-          "paramId": 1,
-          "value": 1.0
-        },
-        {
-          "paramId": 2,
-          "value": 0.0
-        },
-        {
-          "paramId": 3,
-          "value": 0.0
-        },
-        {
-          "paramId": 5,
-          "value": 0.5
-        },
-        {
-          "paramId": 4,
-          "value": 0.0
-        },
-        {
-          "paramId": 6,
-          "value": 0.0
-        }
-      ]
     },
     {
       "plugin": "Fundamental",
@@ -71,7 +47,7 @@
       "params": [
         {
           "paramId": 0,
-          "value": 0.691997111
+          "value": 2.0
         },
         {
           "paramId": 1,
@@ -87,7 +63,7 @@
         },
         {
           "paramId": 4,
-          "value": 0.404999971
+          "value": 0.0
         },
         {
           "paramId": 12,
@@ -103,7 +79,7 @@
         },
         {
           "paramId": 5,
-          "value": 2.06999969
+          "value": 0.0
         },
         {
           "paramId": 13,
@@ -119,7 +95,7 @@
         },
         {
           "paramId": 6,
-          "value": 2.41499972
+          "value": 0.0
         },
         {
           "paramId": 14,
@@ -135,7 +111,7 @@
         },
         {
           "paramId": 7,
-          "value": 0.704999983
+          "value": 0.0
         },
         {
           "paramId": 15,
@@ -151,7 +127,7 @@
         },
         {
           "paramId": 8,
-          "value": 2.98499894
+          "value": 0.0
         },
         {
           "paramId": 16,
@@ -167,7 +143,7 @@
         },
         {
           "paramId": 9,
-          "value": 0.839999795
+          "value": 0.0
         },
         {
           "paramId": 17,
@@ -183,7 +159,7 @@
         },
         {
           "paramId": 10,
-          "value": 3.76500082
+          "value": 0.0
         },
         {
           "paramId": 18,
@@ -199,7 +175,7 @@
         },
         {
           "paramId": 11,
-          "value": 1.66499984
+          "value": 0.0
         },
         {
           "paramId": 19,
@@ -227,67 +203,9 @@
           1
         ]
       }
-    },
-    {
-      "plugin": "Fundamental",
-      "version": "0.6.0",
-      "model": "VCMixer",
-      "pos": [
-        44,
-        0
-      ],
-      "params": [
-        {
-          "paramId": 0,
-          "value": 0.286999851
-        },
-        {
-          "paramId": 1,
-          "value": 0.13350001
-        },
-        {
-          "paramId": 2,
-          "value": 0.23699975
-        },
-        {
-          "paramId": 3,
-          "value": 0.0
-        },
-        {
-          "paramId": 4,
-          "value": 1.0
-        }
-      ]
-    },
-    {
-      "plugin": "BaconMusic",
-      "version": "0.6.2_cand_donotrelease",
-      "model": "Glissinator",
-      "pos": [
-        22,
-        0
-      ],
-      "params": [
-        {
-          "paramId": 0,
-          "value": 0.412500173
-        }
-      ]
     }
   ],
   "wires": [
-    {
-      "color": {
-        "r": 0.0470588282,
-        "g": 0.556862772,
-        "b": 0.0823529437,
-        "a": 1.0
-      },
-      "outputModuleId": 1,
-      "outputId": 0,
-      "inputModuleId": 3,
-      "inputId": 1
-    },
     {
       "color": {
         "r": 0.0352941193,
@@ -295,10 +213,10 @@
         "b": 0.678431392,
         "a": 1.0
       },
-      "outputModuleId": 1,
-      "outputId": 1,
-      "inputModuleId": 3,
-      "inputId": 2
+      "outputModuleId": 0,
+      "outputId": 0,
+      "inputModuleId": 1,
+      "inputId": 0
     },
     {
       "color": {
@@ -308,45 +226,9 @@
         "a": 1.0
       },
       "outputModuleId": 2,
-      "outputId": 1,
-      "inputModuleId": 4,
-      "inputId": 0
-    },
-    {
-      "color": {
-        "r": 0.788235366,
-        "g": 0.0941176564,
-        "b": 0.278431386,
-        "a": 1.0
-      },
-      "outputModuleId": 3,
       "outputId": 0,
       "inputModuleId": 0,
       "inputId": 0
-    },
-    {
-      "color": {
-        "r": 0.0470588282,
-        "g": 0.556862772,
-        "b": 0.0823529437,
-        "a": 1.0
-      },
-      "outputModuleId": 4,
-      "outputId": 0,
-      "inputModuleId": 1,
-      "inputId": 0
-    },
-    {
-      "color": {
-        "r": 0.0352941193,
-        "g": 0.525490224,
-        "b": 0.678431392,
-        "a": 1.0
-      },
-      "outputModuleId": 3,
-      "outputId": 0,
-      "inputModuleId": 0,
-      "inputId": 1
     }
   ]
 }
