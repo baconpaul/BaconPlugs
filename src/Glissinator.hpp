@@ -40,6 +40,8 @@ struct Glissinator : public TBase {
     if( shift_time < 10 ) shift_time = 10;
     
     float thisIn = this->inputs[ SOURCE_INPUT ].value;
+
+    // This means I am being intialized
     if( offsetCount < 0 )
       {
         priorIn = thisIn;
@@ -48,8 +50,24 @@ struct Glissinator : public TBase {
 
     bool inGliss = offsetCount != 0;
     float thisOut = thisIn;
+
+    // When I begin the cycle, the shift_time may be a different shift_time than the
+    // prior cycle. This is not a problem unless the shift time is now shorter than
+    // the offset_time. If that's the case we have basically finished the gliss.
+    // This check used to be at the end of the loop but that lead to one bad value
+    // even with the >=
+    if( offsetCount >= shift_time )
+      {
+        offsetCount = 0;
+        priorIn = thisIn;
+        targetIn  = thisIn;
+        inGliss = false;
+      }
+
+    // I am not glissing
     if( ! inGliss )
       {
+        // But I have a new target, so start glissing by setting offset count to 1.
         if( thisIn != priorIn )
           {
             targetIn = thisIn;
@@ -58,8 +76,11 @@ struct Glissinator : public TBase {
           }
       }
 
+    // I am glissing (note this is NOT in an else since inGliss can be reset above)
     if( inGliss )
       {
+        // OK this means my note has changed underneath me so I have to simulate my
+        // starting point.
         if( thisIn != targetIn )
           {
             float lastKnown = ( ( shift_time - offsetCount ) * priorIn +
@@ -68,18 +89,13 @@ struct Glissinator : public TBase {
             priorIn = lastKnown;
             offsetCount = 0;
           }
+
+        // Then the output is just the weighted sum of the prior input and this input.
         thisOut = ( ( shift_time - offsetCount ) * priorIn +
                     offsetCount * thisIn ) / shift_time;
-        offsetCount ++;
-        
-      }
 
-    if( offsetCount >= shift_time )
-      {
-        offsetCount = 0;
-        priorIn = thisIn;
-        targetIn  = thisIn;
-        inGliss = false;
+        // and step along one.
+        offsetCount ++;
       }
 
     this->lights[ SLIDING_LIGHT ].value = inGliss ? 1 : 0;

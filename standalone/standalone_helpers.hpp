@@ -93,10 +93,22 @@ struct StandaloneModule
     bool active;
   };
 
-  std::vector< thing > params;
-  std::vector< thing > lights;
-  std::vector< thing > inputs;
-  std::vector< thing > outputs;
+  typedef std::vector< thing > values_t;
+  typedef std::vector< values_t > results_t;
+
+  void multiStep( size_t stepCount, results_t &into )
+  {
+    for( size_t i=0; i<stepCount; ++i )
+      {
+        step();
+        into.push_back( outputs );
+      }
+  }
+  
+  values_t params;
+  values_t lights;
+  values_t inputs;
+  values_t outputs;
 
   StandaloneModule( int nparam, int ninp, int nout, int nlight )
   {
