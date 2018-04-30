@@ -9,6 +9,7 @@
 struct KarplusStrongPoly : virtual Module {
   enum ParamIds {
     INITIAL_PACKET,
+    FILTER_TYPE,
     NUM_PARAMS
   };
 
@@ -34,9 +35,13 @@ struct KarplusStrongPoly : virtual Module {
   {
     for( int i=0; i<nVoices; ++i ) voices.push_back( new KSSynth(-2.0f, 2.0f, engineGetSampleRate() ) );
     
-    filterStringDirty = true;
+    initPacketStringDirty = true;
     currentInitialPacket = KSSynth::RANDOM;
-    filterString = voices[ 0 ]->initPacketName( currentInitialPacket );
+    initPacketString = voices[ 0 ]->initPacketName( currentInitialPacket );
+
+    filterStringDirty = true;
+    currentFilter = KSSynth::WEIGHTED_ONE_SAMPLE;
+    filterString = voices[ 0 ]->filterTypeName( currentFilter );
 
     pgate = 0;
   }
@@ -49,15 +54,19 @@ struct KarplusStrongPoly : virtual Module {
   
   int getNumPackets() { return voices[ 0 ]->numInitPackets(); }
   KSSynth::InitPacket currentInitialPacket;
+
+  int getNumFilters() { return voices[ 0 ]->numFilterTypes(); }
+  KSSynth::FilterType currentFilter;
+  
   float pgate;
   
   void step() override
   {
     if( (int)( params[ INITIAL_PACKET ].value ) != currentInitialPacket )
       {
-        filterStringDirty = true;
+        initPacketStringDirty = true;
         currentInitialPacket = (KSSynth::InitPacket)( (int)params[ INITIAL_PACKET ].value );
-        filterString = voices[ 0 ]->initPacketName( currentInitialPacket );
+        initPacketString = voices[ 0 ]->initPacketName( currentInitialPacket );
       }
 
     // Check a trigger here and find a voice
@@ -108,9 +117,21 @@ struct KarplusStrongPoly : virtual Module {
     outputs[ SYNTH_OUTPUT ].value = out;
   }
 
+  bool initPacketStringDirty;
+  std::string initPacketString;
+  
+  static bool getInitialPacketStringDirty( Module *that )
+  {
+    return dynamic_cast<KarplusStrongPoly *>(that)->initPacketStringDirty;
+  }
+  static std::string getInitialPacketString( Module *that )
+  {
+    dynamic_cast<KarplusStrongPoly *>(that)->initPacketStringDirty = false;
+    return dynamic_cast<KarplusStrongPoly *>(that)->initPacketString;
+  }
+
   bool filterStringDirty;
   std::string filterString;
-  
   static bool getFilterStringDirty( Module *that )
   {
     return dynamic_cast<KarplusStrongPoly *>(that)->filterStringDirty;
@@ -148,7 +169,13 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
 
   
   addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( 20, 40 ), module, KarplusStrongPoly::INITIAL_PACKET, 0, module->getNumPackets()-1, 0 ) );
-  addChild( DotMatrixLightTextWidget::create( Vec( 50, 42 ), module, 8, KarplusStrongPoly::getFilterStringDirty, KarplusStrongPoly::getFilterString ) );
+  addChild( DotMatrixLightTextWidget::create( Vec( 55, 42 ), module, 8,
+                                              KarplusStrongPoly::getInitialPacketStringDirty,
+                                              KarplusStrongPoly::getInitialPacketString ) );
+
+  addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( 20, 60 ), module, KarplusStrongPoly::FILTER_TYPE, 0, module->getNumFilters()-1, 0 ) );
+  addChild( DotMatrixLightTextWidget::create( Vec( 55, 62 ), module, 8, KarplusStrongPoly::getFilterStringDirty, KarplusStrongPoly::getFilterString ) );
+
 }
 
 Model *modelKarplusStrongPoly = Model::create<KarplusStrongPoly, KarplusStrongPolyWidget>("Bacon Music", "KarplusStrongPoly", "KarplusStrongPoly", OSCILLATOR_TAG );
