@@ -11,11 +11,11 @@ void init(rack::Plugin *p) {
 #endif
   p->website = "https://github.com/baconpaul/Bacon Music";
   
-  p->addModel( modelALingADing );
   p->addModel( modelHarMoNee );
   p->addModel( modelGlissinator );
-  p->addModel( modelBitulator );
+  p->addModel( modelPolyGnome );
   p->addModel( modelQuantEyes );
+  p->addModel( modelSampleDelay );
   
 #ifdef BUILD_SORTACHORUS
   p->addModel( modelSortaChorus );
@@ -25,7 +25,10 @@ void init(rack::Plugin *p) {
   p->addModel( modelChipWaves );
   p->addModel( modelChipYourWave );
 
-  p->addModel( modelPolyGnome );
 
   p->addModel( modelKarplusStrongPoly );
+  
+  p->addModel( modelALingADing );
+  p->addModel( modelBitulator );
+
 }

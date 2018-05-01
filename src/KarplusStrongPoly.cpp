@@ -12,6 +12,7 @@ struct KarplusStrongPoly : virtual Module {
     INITIAL_PACKET,
     FILTER_TYPE,
     FREQ_KNOB,
+    ATTEN_KNOB,
     NUM_PARAMS
   };
 
@@ -19,6 +20,7 @@ struct KarplusStrongPoly : virtual Module {
     TRIGGER_GATE,
     INITIAL_PACKET_INPUT,
     FREQ_CV,
+    ATTEN_CV,
     NUM_INPUTS
   };
 
@@ -108,6 +110,7 @@ struct KarplusStrongPoly : virtual Module {
         // Capture parameters onto this voice and trigger it
         float pitch = params[ FREQ_KNOB ].value + 12.0f * inputs[ FREQ_CV ].value;
         float freq = 261.262f * powf( 2.0f, pitch / 12.0f );
+
         voice->packet = currentInitialPacket;
         voice->trigger( freq );
       }
@@ -227,14 +230,31 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
                                               KarplusStrongPoly::getInitialPacketStringDirty,
                                               KarplusStrongPoly::getInitialPacketString ) );
 
-  /*
 
-  addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( 20, 65 ), module, KarplusStrongPoly::FILTER_TYPE, 0, module->getNumFilters()-1, 0 ) );
-  addChild( DotMatrixLightTextWidget::create( Vec( 55, 67 ), module, 8, KarplusStrongPoly::getFilterStringDirty, KarplusStrongPoly::getFilterString ) );
-  */
+  outy += yh + 3 * margin;
+
+  yh = SizeTable<RoundBlackSnapKnob>::Y + SizeTable<RoundBlackKnob>::Y + margin;
+  brd( yh );
+  cl( "Filter", SizeTable<RoundBlackKnob>::Y );
 
 
-  outy = 300;
+  outy += yh + 3 * margin;
+  yh = SizeTable< RoundBlackKnob >::Y;
+  brd( yh );
+  cl( "Atten", yh );
+  xp = box.size.x - margin - obuf - SizeTable<PJ301MPort>::X;
+  addInput( Port::create< PJ301MPort >( Vec( xp, outy + diffY2c< RoundBlackKnob, PJ301MPort >() ),
+                                        Port::INPUT,
+                                        module,
+                                        KarplusStrongPoly::ATTEN_CV ) );
+
+  xp -= SizeTable<RoundBlackKnob>::X + margin;
+  addParam( ParamWidget::create< RoundBlackKnob >( Vec( xp, outy ), module,
+                                                   KarplusStrongPoly::ATTEN_KNOB,
+                                                   0, 1, 0.5 ) );
+
+
+  outy += yh + 3 * margin;
   brd( SizeTable<PJ301MPort>::Y );
   cl( "Output", SizeTable<PJ301MPort>::Y );
   addOutput( Port::create< PJ301MPort >( Vec( box.size.x - obuf - margin - SizeTable<PJ301MPort>::X, outy ),

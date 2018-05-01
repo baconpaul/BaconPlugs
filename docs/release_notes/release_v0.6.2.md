@@ -26,4 +26,5 @@
 
 (aspirational)
 * Karplus Strong Poly
+* Sample Delay
 * Add appropriate BaconHelpButtons to everything

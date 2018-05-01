@@ -62,7 +62,7 @@ public:
 
   bool active;
   
-private:
+  //private:
   float freq;
   int burstLen;
   float wfMin, wfMax;
