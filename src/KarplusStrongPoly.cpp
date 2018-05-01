@@ -19,6 +19,7 @@ struct KarplusStrongPoly : virtual Module {
   enum InputIds {
     TRIGGER_GATE,
     INITIAL_PACKET_INPUT,
+    FILTER_INPUT,
     FREQ_CV,
     ATTEN_CV,
     NUM_INPUTS
@@ -30,6 +31,10 @@ struct KarplusStrongPoly : virtual Module {
   };
 
   enum LightIds {
+    LIGHT_PACKET_KNOB,
+    LIGHT_PACKET_CV,
+    LIGHT_FILTER_KNOB,
+    LIGHT_FILTER_CV,
     NUM_LIGHTS
   };
 
@@ -67,10 +72,29 @@ struct KarplusStrongPoly : virtual Module {
   
   void step() override
   {
-    if( (int)( params[ INITIAL_PACKET ].value ) != currentInitialPacket )
+    int nextInitialPacket = currentInitialPacket;
+    float ipi, ipiS;
+    lights[ LIGHT_PACKET_CV ].value = inputs[INITIAL_PACKET_INPUT].active;
+    lights[ LIGHT_PACKET_KNOB ].value = !inputs[INITIAL_PACKET_INPUT].active;
+
+    lights[ LIGHT_FILTER_CV ].value = inputs[FILTER_INPUT].active;
+    lights[ LIGHT_FILTER_KNOB ].value = !inputs[FILTER_INPUT].active;
+    
+    if( inputs[ INITIAL_PACKET_INPUT ].active )
+      {
+        ipi = inputs[ INITIAL_PACKET_INPUT ].value;
+        ipiS = ipi * getNumPackets() / 10.0;
+        nextInitialPacket = (int)(ipiS);
+      }
+    else
+      {
+        nextInitialPacket = (int)( params[ INITIAL_PACKET ].value );
+      }
+    
+    if( nextInitialPacket != currentInitialPacket )
       {
         initPacketStringDirty = true;
-        currentInitialPacket = (KSSynth::InitPacket)( (int)params[ INITIAL_PACKET ].value );
+        currentInitialPacket = (KSSynth::InitPacket)( nextInitialPacket );
         initPacketString = voices[ 0 ]->initPacketName( currentInitialPacket );
       }
 
@@ -111,7 +135,10 @@ struct KarplusStrongPoly : virtual Module {
         float pitch = params[ FREQ_KNOB ].value + 12.0f * inputs[ FREQ_CV ].value;
         float freq = 261.262f * powf( 2.0f, pitch / 12.0f );
 
+
+        float atten = params[ ATTEN_KNOB ].value + inputs[ ATTEN_CV ].value;
         voice->packet = currentInitialPacket;
+        voice->filtAtten = atten;
         voice->trigger( freq );
       }
     
@@ -214,6 +241,9 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
 
   xp = 55;
 
+  addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( Vec( xp - 2, outy - 2 ),
+                                                                  module,
+                                                                  KarplusStrongPoly::LIGHT_PACKET_KNOB ) );
   addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( xp, outy ),
                                                        module,
                                                        KarplusStrongPoly::INITIAL_PACKET,
@@ -222,6 +252,10 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
 
 
   xp += SizeTable<RoundBlackSnapKnob>::X + margin;
+  addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( Vec( xp - 2, outy - 2 + diffY2c<RoundBlackSnapKnob,PJ301MPort>()),
+                                                                  module,
+                                                                  KarplusStrongPoly::LIGHT_PACKET_CV ) );
+
   addInput( Port::create<PJ301MPort>( Vec( xp, outy + diffY2c<RoundBlackSnapKnob,PJ301MPort>() ),
                                       Port::INPUT, module, KarplusStrongPoly::INITIAL_PACKET_INPUT ) );
   xp += SizeTable<PJ301MPort>::X + margin;
@@ -236,6 +270,30 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
   yh = SizeTable<RoundBlackSnapKnob>::Y + SizeTable<RoundBlackKnob>::Y + margin;
   brd( yh );
   cl( "Filter", SizeTable<RoundBlackKnob>::Y );
+  xp = 55;
+
+  addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( Vec( xp - 2, outy - 2 ),
+                                                                  module,
+                                                                  KarplusStrongPoly::LIGHT_FILTER_KNOB ) );
+  addParam( ParamWidget::create< RoundBlackSnapKnob >( Vec( xp, outy ),
+                                                       module,
+                                                       KarplusStrongPoly::FILTER_TYPE,
+                                                       0,
+                                                       module->getNumFilters()-1, 0 ) );
+
+
+  xp += SizeTable<RoundBlackSnapKnob>::X + margin;
+  addChild( ModuleLightWidget::create< SmallLight< BlueLight > >( Vec( xp - 2, outy - 2 + diffY2c<RoundBlackSnapKnob,PJ301MPort>()),
+                                                                  module,
+                                                                  KarplusStrongPoly::LIGHT_FILTER_CV ) );
+
+  addInput( Port::create<PJ301MPort>( Vec( xp, outy + diffY2c<RoundBlackSnapKnob,PJ301MPort>() ),
+                                      Port::INPUT, module, KarplusStrongPoly::FILTER_INPUT ) );
+  xp += SizeTable<PJ301MPort>::X + margin;
+  addChild( DotMatrixLightTextWidget::create( Vec( xp, outy + diffY2c<RoundBlackSnapKnob,DotMatrixLightTextWidget>() ),
+                                              module, 8,
+                                              KarplusStrongPoly::getFilterStringDirty,
+                                              KarplusStrongPoly::getFilterString ) );
 
 
   outy += yh + 3 * margin;
@@ -251,7 +309,7 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
   xp -= SizeTable<RoundBlackKnob>::X + margin;
   addParam( ParamWidget::create< RoundBlackKnob >( Vec( xp, outy ), module,
                                                    KarplusStrongPoly::ATTEN_KNOB,
-                                                   0, 1, 0.5 ) );
+                                                   0.1, 4, 1.95 ) );
 
 
   outy += yh + 3 * margin;
