@@ -6,7 +6,7 @@
       "version": "master",
       "model": "AudioInterface",
       "pos": [
-        71,
+        87,
         0
       ],
       "params": [],
@@ -194,7 +194,7 @@
       "version": "0.6.0",
       "model": "VCO",
       "pos": [
-        37,
+        53,
         0
       ],
       "params": [
@@ -233,7 +233,7 @@
       "version": "0.6.0",
       "model": "ADSR",
       "pos": [
-        47,
+        63,
         0
       ],
       "params": [
@@ -260,7 +260,7 @@
       "version": "0.6.0",
       "model": "VCA",
       "pos": [
-        55,
+        71,
         0
       ],
       "params": [
@@ -279,7 +279,7 @@
       "version": "0.6.2_cand_donotrelease",
       "model": "KarplusStrongPoly",
       "pos": [
-        22,
+        38,
         0
       ],
       "params": [
@@ -293,7 +293,7 @@
         },
         {
           "paramId": 3,
-          "value": 0.5
+          "value": 0.427999973
         }
       ]
     },
@@ -302,7 +302,7 @@
       "version": "0.6.0",
       "model": "VCMixer",
       "pos": [
-        61,
+        77,
         0
       ],
       "params": [
@@ -316,7 +316,7 @@
         },
         {
           "paramId": 2,
-          "value": 0.621999979
+          "value": 0.53850019
         },
         {
           "paramId": 3,
@@ -327,6 +327,100 @@
           "value": 1.0
         }
       ]
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "SampleDelay",
+      "pos": [
+        33,
+        0
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 6.0
+        }
+      ]
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "QuantEyes",
+      "pos": [
+        22,
+        0
+      ],
+      "params": [
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 2,
+          "value": 0.0
+        },
+        {
+          "paramId": 3,
+          "value": 0.0
+        },
+        {
+          "paramId": 4,
+          "value": 0.0
+        },
+        {
+          "paramId": 5,
+          "value": 0.0
+        },
+        {
+          "paramId": 6,
+          "value": 0.0
+        },
+        {
+          "paramId": 7,
+          "value": 0.0
+        },
+        {
+          "paramId": 8,
+          "value": 0.0
+        },
+        {
+          "paramId": 9,
+          "value": 0.0
+        },
+        {
+          "paramId": 10,
+          "value": 0.0
+        },
+        {
+          "paramId": 11,
+          "value": 0.0
+        },
+        {
+          "paramId": 12,
+          "value": 0.0
+        },
+        {
+          "paramId": 0,
+          "value": 0.0
+        }
+      ],
+      "data": {
+        "scaleState": [
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
     }
   ],
   "wires": [
@@ -416,15 +510,15 @@
     },
     {
       "color": {
-        "r": 0.0470588282,
-        "g": 0.556862772,
-        "b": 0.0823529437,
+        "r": 0.0352941193,
+        "g": 0.525490224,
+        "b": 0.678431392,
         "a": 1.0
       },
-      "outputModuleId": 1,
-      "outputId": 1,
-      "inputModuleId": 2,
-      "inputId": 0
+      "outputModuleId": 8,
+      "outputId": 0,
+      "inputModuleId": 5,
+      "inputId": 2
     },
     {
       "color": {
@@ -433,10 +527,22 @@
         "b": 0.678431392,
         "a": 1.0
       },
+      "outputModuleId": 8,
+      "outputId": 0,
+      "inputModuleId": 2,
+      "inputId": 0
+    },
+    {
+      "color": {
+        "r": 0.788235366,
+        "g": 0.717647076,
+        "b": 0.054901965,
+        "a": 1.0
+      },
       "outputModuleId": 1,
       "outputId": 1,
-      "inputModuleId": 5,
-      "inputId": 2
+      "inputModuleId": 8,
+      "inputId": 0
     },
     {
       "color": {
@@ -446,6 +552,18 @@
         "a": 1.0
       },
       "outputModuleId": 1,
+      "outputId": 0,
+      "inputModuleId": 7,
+      "inputId": 0
+    },
+    {
+      "color": {
+        "r": 0.0352941193,
+        "g": 0.525490224,
+        "b": 0.678431392,
+        "a": 1.0
+      },
+      "outputModuleId": 7,
       "outputId": 0,
       "inputModuleId": 5,
       "inputId": 0

@@ -45,9 +45,12 @@ struct SampleDelay : virtual TBase {
   void step() override
   {
     int del = params[ DELAY_KNOB ].value - 1;
-    int dpos = ( (int)pos - del ) % ringSize;
+    int dpos = ( (int)pos - del );
+    if( dpos < 0 ) dpos += ringSize;
+
     ring[ pos ] = inputs[ SIGNAL_IN ].value;
     outputs[ SIGNAL_OUT ].value = ring[ dpos ];
+    lights[ DELAY_VALUE_LIGHT ].value = del + 1;
 
     pos++;
     if( pos >= ringSize ) pos = 0;
