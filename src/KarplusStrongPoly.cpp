@@ -13,7 +13,10 @@ struct KarplusStrongPoly : virtual Module {
     FILTER_TYPE,
     FREQ_KNOB,
     ATTEN_KNOB,
-    NUM_PARAMS
+    FILTER_KNOB_A,
+    FILTER_KNOB_B,
+    FILTER_KNOB_C,
+    NUM_PARAMS 
   };
 
   enum InputIds {
@@ -22,7 +25,10 @@ struct KarplusStrongPoly : virtual Module {
     FILTER_INPUT,
     FREQ_CV,
     ATTEN_CV,
-    NUM_INPUTS
+    FILTER_CV_A,
+    FILTER_CV_B,
+    FILTER_CV_C,
+    NUM_INPUTS 
   };
 
   enum OutputIds {
@@ -35,6 +41,11 @@ struct KarplusStrongPoly : virtual Module {
     LIGHT_PACKET_CV,
     LIGHT_FILTER_KNOB,
     LIGHT_FILTER_CV,
+
+    LIGHT_FILTER_A,
+    LIGHT_FILTER_B,
+    LIGHT_FILTER_C,
+    
     NUM_LIGHTS
   };
 
@@ -193,13 +204,42 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
   float outy;
   float yh;
   int margin = 4;
+  float gap = 13;
   int obuf = 10;
   
-  outy = 40;
+  outy = 35;
+
+  float scale = 1.0;
+  bool last = false;
 
   auto brd = [&](float ys)
     {
-      bg->addRoundedBorder( Vec( obuf, outy - margin ), Vec( box.size.x - 2 * obuf, ys + 2 * margin ) );
+      // Add a downward pointing triangle here which means I need a draw glyph
+      if( ! last )
+        {
+          int w = 70;
+          addChild( new BufferedDrawLambdaWidget( Vec( bg->cx() - w/2, outy + ys + margin ),
+                                                  Vec( w, gap ),
+                                                  [=](NVGcontext *vg)
+                                                  {
+                                                    nvgBeginPath( vg );
+                                                    nvgMoveTo( vg, 0, 0 );
+                                                    nvgLineTo( vg, w/2, gap );
+                                                    nvgLineTo( vg, w, 0 );
+                                                    nvgClosePath( vg );
+                                                    nvgStrokeColor( vg, COLOR_BLACK );
+                                                    nvgStroke( vg );
+                                                    nvgFillColor( vg, nvgRGB( 240 * scale, 240 * scale, 200 * scale ) );
+                                                    nvgFill( vg );
+                                                  }
+                                                  )
+                  );
+        }
+      bg->addRoundedBorder( Vec( obuf, outy - margin ),
+                            Vec( box.size.x - 2 * obuf, ys + 2 * margin ),
+                            nvgRGB( 240*scale, 240*scale, 200*scale ) );
+
+      scale *= 0.92;
     };
   auto cl = [&](std::string lab, float ys)
     {
@@ -214,7 +254,7 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
                                         module,
                                         KarplusStrongPoly::TRIGGER_GATE ) );
 
-  outy += yh + 3 * margin;
+  outy += yh + 2 * margin + gap;
   yh = SizeTable<RoundBlackKnob >::Y;
   brd( yh );
   cl( "Freq", yh );
@@ -231,7 +271,7 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
 
 
 
-  outy += yh + 3 * margin;
+  outy += yh + 2 * margin + gap;
 
 
   yh = SizeTable<RoundBlackSnapKnob>::Y;
@@ -265,7 +305,7 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
                                               KarplusStrongPoly::getInitialPacketString ) );
 
 
-  outy += yh + 3 * margin;
+  outy += yh + 2 * margin + gap;
 
   yh = SizeTable<RoundBlackSnapKnob>::Y + SizeTable<RoundBlackKnob>::Y + margin;
   brd( yh );
@@ -296,7 +336,7 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
                                               KarplusStrongPoly::getFilterString ) );
 
 
-  outy += yh + 3 * margin;
+  outy += yh + 2 * margin + gap;
   yh = SizeTable< RoundBlackKnob >::Y;
   brd( yh );
   cl( "Atten", yh );
@@ -312,7 +352,8 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
                                                    0.1, 4, 1.95 ) );
 
 
-  outy += yh + 3 * margin;
+  outy += yh + 2 * margin + gap;
+  last = true;
   brd( SizeTable<PJ301MPort>::Y );
   cl( "Output", SizeTable<PJ301MPort>::Y );
   addOutput( Port::create< PJ301MPort >( Vec( box.size.x - obuf - margin - SizeTable<PJ301MPort>::X, outy ),
