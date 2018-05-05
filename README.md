@@ -184,6 +184,35 @@ see the generated waveform is, indeed, the bits you draw in the LED-like control
 Oh if you have any idea what to put in all that blank space at the top of the module, by the way, please do
 just raise a github issue and let me know!
 
+### KarplusStrongPoly
+
+The [Karplus-Strong algorithm](https://en.m.wikipedia.org/wiki/Karplus–Strong_string_synthesis) is one of the
+earlier methods to simulate plucked string instruments. The KarplusStrongPoly module implements a polyphonic
+voides implementation of this. The module maps to the algorithm fairly cleanly. It's probably easier that you 
+just play with it, using the sample patch shown below.
+
+<a href="https://baconpaul.github.io/audio/KarplusStrongPoly.mp3">
+<img src="docs/KarplusStrongPoly.png" alt="Example ChipNoise Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear ChipNoise Sample">
+</a>
+
+There's one really important thing to know about this module. Unlike more traditional voltage controlled oscillators 
+which always produce output and are then fed into envelopes and stuff, the KarplusStrongPoly module needs to be
+triggered with a gate signal to produce any sound. When it is triggered it will snap all the parameters set on
+the front panel and play that voice until it fades. The system is configured to play upto 32 voices and will
+voice steal beyond that. But since Rack adds a 1 sample delay to all its signals as they go through each module,
+if you trigger from SEQ-3 and use a frequency you have modified, the trigger will "beat" the modified signal.
+So adding a few sample delay to your trigger may be approrpriate. There's a really simple SampleDelay module
+which ships with this plugin set if you want to do that.
+
+I've only implemented one filter so far, so the only control which does anything in the filter space is the "A" 
+knob and CV input. If/as I add more that will get way more rich, kind of like initial packet is now.
+
+Finally I think the algorithm is stable under all possible front panel configurations. There's certainly
+regimes of parameters in the C++ which can break the synthesis, though. So if you get an
+odd or growing sound, let me know the configuration which did it in a github issue and I'll put a check
+in the widget to synth snap appropriately.
 
 ## Distortions and Modulations and so on
 ### ALingADing 
@@ -198,8 +227,9 @@ and dry is just the signal). Sloppy, sure, but it sounds kinda cool. Here's a sa
 <a href="https://baconpaul.github.io/audio/ALingADing.mp3">
 <img src="docs/ALingADing.png" alt="ExampleQuanteyes Patch">
 <br>
-<img src="docs/SpeakerIconSmall.png" alt="Hear ALingADing Sample">
+<img src="docs/SpeakerIconSmall.png" alt="Here QuantEyes">
 </a>
+
 
 
 ### Bitulator
@@ -213,6 +243,14 @@ param. Apply this to a sine wave and turn it up and you get pretty much a perfec
 Combine them for grunky grunk noise. Dumb, but fun. Here's a sample patch.
 
 ![Example Bitulator Patch](docs/Bitulator.png)
+
+### SampleDelay
+
+This is an incredibly simple module. All it does is add an n-sample digital delay at the 
+engine clock speed. Radically non-analog, I know. But it's useful since Rack adds a 1 sample
+delay in each module hop to do things like triggering the Karplus Strong poly.
+
+![Example SampleDelay](docs/SampleDelay.png)
 
 ## Credits and Comments
 

@@ -90,6 +90,12 @@ struct KarplusStrongPoly : virtual Module {
 
     lights[ LIGHT_FILTER_CV ].value = inputs[FILTER_INPUT].active;
     lights[ LIGHT_FILTER_KNOB ].value = !inputs[FILTER_INPUT].active;
+
+    // For now, since we only have one filter, hardcode this
+    lights[ LIGHT_FILTER_A ].value = 1;
+    lights[ LIGHT_FILTER_B ].value = 0;
+    lights[ LIGHT_FILTER_C ].value = 0;
+    
     
     if( inputs[ INITIAL_PACKET_INPUT ].active )
       {
@@ -147,6 +153,11 @@ struct KarplusStrongPoly : virtual Module {
         float freq = 261.262f * powf( 2.0f, pitch / 12.0f );
 
 
+        // For now, since we only have one filter, hardcode this
+        voice->filtParamA = clamp( params[ FILTER_KNOB_A ].value + inputs[ FILTER_CV_A ].value * 0.1, 0.0f, 1.0f );
+        voice->filtParamB = 0;
+        voice->filtParamC = 0;
+        
         float atten = params[ ATTEN_KNOB ].value + inputs[ ATTEN_CV ].value;
         voice->packet = currentInitialPacket;
         voice->filtAtten = atten;
@@ -335,8 +346,34 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
                                               KarplusStrongPoly::getFilterStringDirty,
                                               KarplusStrongPoly::getFilterString ) );
 
+  outy += SizeTable<RoundBlackKnob>::Y + 2 * margin;
 
-  outy += yh + 2 * margin + gap;
+  xp = obuf + 2.5 * margin;
+  for( int i=0; i<3; ++i )
+    {
+      addChild( ModuleLightWidget::create< SmallLight< BlueLight> >( Vec( xp - 2, outy - 2 ),
+                                                                     module,
+                                                                     KarplusStrongPoly::LIGHT_FILTER_A + i ) );
+      bg->addLabel( Vec( xp, outy + SizeTable<RoundSmallBlackKnob>::Y ),
+                    i == 0 ? "A" : i == 1 ? "B" : "C",
+                    12,
+                    NVG_ALIGN_BOTTOM | NVG_ALIGN_RIGHT );
+
+      xp += 3;
+
+      addParam( ParamWidget::create< RoundSmallBlackKnob >( Vec( xp, outy ),
+                                                           module,
+                                                           KarplusStrongPoly::FILTER_KNOB_A + i,
+                                                           0, 1, 0.5 ) );
+      xp += SizeTable<RoundSmallBlackKnob>::X + margin;
+      addInput( Port::create<PJ301MPort>( Vec( xp, outy + diffY2c<RoundSmallBlackKnob,PJ301MPort>() ),
+                                          Port::INPUT, module, KarplusStrongPoly::FILTER_CV_A + i ) );
+      xp += SizeTable<PJ301MPort>::X + 3.5 * margin;
+ 
+    }
+  
+
+  outy += yh - SizeTable<RoundBlackKnob>::Y + gap;
   yh = SizeTable< RoundBlackKnob >::Y;
   brd( yh );
   cl( "Atten", yh );

@@ -50,6 +50,13 @@ struct SizeTable< DotMatrixLightTextWidget >
   constexpr static const float Y = 18.5;
 };
 
+template<>
+struct SizeTable< RoundSmallBlackKnob >
+{
+  constexpr static const float X = 23.6206;
+  constexpr static const float Y = 23.6206;
+};
+
 // Diff Y to center
 template< typename T1, typename T2 >
 float diffY2c()

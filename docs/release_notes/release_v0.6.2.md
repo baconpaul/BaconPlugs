@@ -8,6 +8,9 @@
   * For more, see https://github.com/baconpaul/BaconPlugs/issues/6
   * Update doc for ChipNoise
 
+* KarplusStrongPoly
+  * A new module which implements KarplusStrong plucked instrument synthesis polyphonically.
+
 * QuantEyes
   * Don't trigger lights if there is no input
 
@@ -27,7 +30,5 @@
 * Background got some new features, like colored labels and filled rounded rects in the API
 
 (required)
-* Document SampleDelay
+* Code Review all diffs from master
 
-(aspirational)
-* Karplus Strong Poly

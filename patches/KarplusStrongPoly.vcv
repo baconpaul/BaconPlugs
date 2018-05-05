@@ -296,6 +296,18 @@
           "value": 0.0
         },
         {
+          "paramId": 4,
+          "value": 0.501000583
+        },
+        {
+          "paramId": 5,
+          "value": 0.5
+        },
+        {
+          "paramId": 6,
+          "value": 0.5
+        },
+        {
           "paramId": 3,
           "value": 0.743499339
         }
