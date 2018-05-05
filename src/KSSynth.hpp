@@ -27,6 +27,7 @@ public:
       case SIN: return "sin";
       case SINCHIRP: return "sinchirp";
       }
+    return "";
   }
 
   int numInitPackets()
@@ -44,6 +45,7 @@ public:
       {
       case WEIGHTED_ONE_SAMPLE: return "wgt 1samp";
       }
+    return "";
   }
 
   int numFilterTypes()
@@ -199,7 +201,7 @@ public:
     pos++;
 
 
-    float filtval;
+    float filtval = 0.5;
     switch( filter )
       {
       case WEIGHTED_ONE_SAMPLE:
