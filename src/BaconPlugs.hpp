@@ -18,9 +18,10 @@ extern Plugin *plugin;
 
 extern Model *modelHarMoNee;
 extern Model *modelGlissinator;
-extern Model *modelALingADing;
-extern Model *modelBitulator;
 extern Model *modelQuantEyes;
+extern Model *modelPolyGnome;
+extern Model *modelSampleDelay;
+
 
 #ifdef BUILD_SORTACHORUS
 extern Model *modelSortaChorus;
@@ -29,4 +30,10 @@ extern Model *modelSortaChorus;
 extern Model *modelChipNoise;
 extern Model *modelChipWaves;
 extern Model *modelChipYourWave;
+
+extern Model *modelKarplusStrongPoly;
+
+extern Model *modelALingADing;
+extern Model *modelBitulator;
+
 #endif

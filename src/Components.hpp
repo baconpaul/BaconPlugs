@@ -7,6 +7,9 @@
 #include <vector>
 #include <string>
 #include <tuple>
+#include <functional>
+#include <locale>
+#include <thread>
 
 #include "GraduatedFader.hpp"
 #include "BufferedDrawFunction.hpp"
@@ -31,8 +34,12 @@ struct SevenSegmentLight : T {
     { 1, 1, 1, 1, 0, 1, 1 }
   };
 
+  const static int sx = px * 6 + 2;
+  const static int sy = px * 10 + 2; // match with lx-1 and ly-1 below
   int pvalue;
 
+  int decimalPos;
+  
   BufferedDrawFunctionWidget<SevenSegmentLight<T, px>> *buffer;
   
   SevenSegmentLight( )
@@ -40,8 +47,9 @@ struct SevenSegmentLight : T {
     lx = 7;
     ly = 11;
     ppl = px;
-    pvalue = -1;
-    this->box.size = Vec( ppl * (lx-1) + 2, ppl * (ly-1) + 2 );
+    pvalue = 0;
+    this->box.size = Vec( sx, sy );
+    decimalPos = 1;
 
     // https://en.wikipedia.org/wiki/Seven-segment_display#/media/File:7_segment_display_labeled.svg
     unscaledLoc.push_back( Rect( Vec( 2, 1 ), Vec( 3, 1 ) ) );
@@ -61,9 +69,12 @@ struct SevenSegmentLight : T {
   void draw( NVGcontext *vg ) override
   {
     float fvalue = this->module->lights[ this->firstLightId ].value;
-    int value = clamp( fvalue, 0.0f, 9.0f );
+    int value = int( fvalue / decimalPos ) % 10;
+
     if( value != pvalue )
-      buffer->dirty = true;
+      {
+        buffer->dirty = true;
+      }
 
     pvalue = value;
     
@@ -83,10 +94,10 @@ struct SevenSegmentLight : T {
     
     
     int i=0;
-    float fvalue = this->module->lights[ this->firstLightId ].value;
-    int value = clamp( fvalue, 0.0f, 9.0f );
+    // float fvalue = this->module->lights[ this->firstLightId ].value;
+    // int value = clamp( fvalue, 0.0f, 9.0f );
 
-    int *ebn = elementsByNum[ value ];
+    int *ebn = elementsByNum[ pvalue ];
 
     NVGcolor oncol = this->baseColors[ 0 ];
     
@@ -142,6 +153,54 @@ struct SevenSegmentLight : T {
       }
     
   }
+
+  static SevenSegmentLight< T, px > *create(Vec pos, Module *module, int firstLightId, int decimal) {
+    auto *o = ModuleLightWidget::create<SevenSegmentLight<T,px>>(pos, module, firstLightId);
+    o->decimalPos = decimal;
+    return o;
+  }
+
+};
+
+template <typename colorClass, int px, int digits>
+struct MultiDigitSevenSegmentLight : ModuleLightWidget
+{
+  typedef SevenSegmentLight< colorClass, px > LtClass;
+  
+  MultiDigitSevenSegmentLight() : ModuleLightWidget()
+  {
+    this->box.size = Vec( digits * LtClass::sx, LtClass::sy );
+  }
+
+  static MultiDigitSevenSegmentLight< colorClass, px, digits > *create(Vec pos, Module *module, int firstLightId) {
+    auto *o = ModuleLightWidget::create<MultiDigitSevenSegmentLight<colorClass, px ,digits>>(pos, module, firstLightId);
+    o->layout();
+    return o;
+  }
+
+  void layout()
+  {
+    int dp = 1;
+    for( int i=0; i<digits-1; ++i ) dp *= 10;
+    
+    for( int i=0; i<digits; ++i )
+      {
+        addChild(  LtClass::create( Vec( i * LtClass::sx, 0 ), module, firstLightId, dp ) );
+        dp /= 10;
+      }
+  }
+
+  void draw( NVGcontext *vg ) override
+  {
+    for( auto it = children.begin(); it != children.end(); ++it )
+      {
+        nvgSave( vg );
+        nvgTranslate( vg, (*it)->box.pos.x, (*it)->box.pos.y );
+        (*it)->draw( vg );
+        nvgRestore( vg );
+      }
+  }
+
 };
 
 struct BaconBackground : virtual TransparentWidget
@@ -174,18 +233,23 @@ struct BaconBackground : virtual TransparentWidget
   
   BaconBackground( Vec size, const char* lab );
   ~BaconBackground() { }
-  
+
   BaconBackground *addLabel( Vec pos, const char* lab, int px )
   {
-    return addLabel( pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
+    return addLabel( pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM, COLOR_BLACK );
   }
-  BaconBackground *addLabel( Vec pos, const char* lab, int px, int align );
+  BaconBackground *addLabel( Vec pos, const char* lab, int px, int align )
+  {
+    return addLabel( pos, lab, px, align, COLOR_BLACK );
+  }
+  BaconBackground *addLabel( Vec pos, const char* lab, int px, int align, NVGcolor col );
 
   BaconBackground *addPlugLabel( Vec plugPos, LabelStyle s, const char* ilabel ) {
     return addPlugLabel( plugPos, LabelAt::ABOVE, s, ilabel );
   }
   BaconBackground *addPlugLabel( Vec plugPos, LabelAt l, LabelStyle s, const char* ilabel );
   BaconBackground *addRoundedBorder( Vec pos, Vec sz );
+  BaconBackground *addRoundedBorder( Vec pos, Vec sz, NVGcolor fill );
 
   BaconBackground *addLabelsForHugeKnob( Vec topLabelPos, const char* knobLabel, const char* zeroLabel, const char* oneLabel, Vec &putKnobHere );
   BaconBackground *addLabelsForLargeKnob( Vec topLabelPos, const char* knobLabel, const char* zeroLabel, const char* oneLabel, Vec &putKnobHere );
@@ -209,6 +273,32 @@ struct BaconBackground : virtual TransparentWidget
   void draw( NVGcontext *vg ) override;
 
   FramebufferWidget *wrappedInFramebuffer();
+};
+
+struct BaconHelpButton : public SVGButton
+{
+  std::string url;
+  BaconHelpButton( std::string urli ) : url( urli )
+  {
+    box.pos = Vec( 0, 0 );
+    box.size = Vec( 20, 20 );
+    setSVGs( SVG::load( assetPlugin( plugin, "res/HelpActiveSmall.svg" ) ), NULL );
+    url = "https://github.com/baconpaul/BaconPlugs/blob/";
+#ifdef RELEASE_BRANCH
+    url += TO_STRING( RELEASE_BRANCH );
+#else
+    url += "master/";
+#endif
+    url += urli;
+    info( "Help button configured to: %s", url.c_str() );
+  }
+
+  void onAction( EventAction &e ) override {
+    std::thread t( [this]() {
+        systemOpenBrowser(url.c_str() );
+      } );
+    t.detach();
+  }
 };
 
 template< int NSteps, typename ColorModel >
@@ -353,5 +443,147 @@ struct RedGreenFromMiddleColorModel
     }
   }
 };
+
+#include <iostream>
+// Think hard about dirty state management ... later
+// Pixel Sizing
+// Share fontdata
+struct DotMatrixLightTextWidget : public Component // Thanks http://scruss.com/blog/tag/font/
+{
+ 
+  typedef std::function< std::string( Module * )> stringGetter;
+  typedef std::function< bool( Module * )> stringDirtyGetter;
+
+  BufferedDrawFunctionWidget<DotMatrixLightTextWidget> *buffer;
+
+  int charCount;
+  std::string currentText;
+
+  typedef std::map< char, std::vector< bool > > fontData_t;
+  fontData_t fontData;
+
+  float ledSize, padSize;
   
+
+  DotMatrixLightTextWidget() : Component(), buffer( NULL ), currentText( "" )
+  {
+  }
+
+  void setup()
+  {
+    ledSize = 2;
+    padSize = 1;
+    box.size = Vec( charCount * ( 5 * ledSize + padSize ) + 2 * padSize, 7 * ledSize + 4.5 * padSize );  // 5 x 7 data structure
+    buffer = new BufferedDrawFunctionWidget< DotMatrixLightTextWidget >( Vec( 0, 0 ), this->box.size, this,
+                                                                         &DotMatrixLightTextWidget::drawText );
+
+    info( "BaconMusic loading DMP json: %s", assetPlugin( plugin, "res/Keypunch029.json" ).c_str() );
+    
+    json_t *json;
+    json_error_t error;
+    
+    json = json_load_file(assetPlugin( plugin, "res/Keypunch029.json" ).c_str(), 0, &error);
+    if(!json) {
+      info( "JSON FILE not loaded\n" );
+    }
+    const char* key;
+    json_t *value;
+    json_object_foreach( json, key, value ) {
+      fontData_t::mapped_type valmap;
+      size_t index;
+      json_t *aval;
+      json_array_foreach( value, index, aval ) {
+        std::string s( json_string_value( aval ) );
+        for( const char* c = s.c_str(); *c != 0; ++c ) {
+          valmap.push_back( *c == '#' );
+        }
+      }
+      fontData[ key[ 0 ] ] = valmap;
+    }
+  }
+  
+  // create takes a function
+  static DotMatrixLightTextWidget *create( Vec pos, Module *module, int charCount, stringDirtyGetter dgf, stringGetter gf )
+  {
+    DotMatrixLightTextWidget *r = Component::create<DotMatrixLightTextWidget>( pos, module );
+    r->getfn = gf;
+    r->dirtyfn = dgf;
+    r->charCount = charCount;
+    r->setup();
+    return r;
+  }
+
+  stringDirtyGetter dirtyfn;
+  stringGetter getfn;
+  
+  void draw( NVGcontext *vg ) override
+  {
+    if( dirtyfn( this->module ) )
+      {
+        currentText = getfn( this->module );
+        buffer->dirty = true;
+      }
+    if( buffer )
+      buffer->draw( vg );
+  }
+
+  void drawChar( NVGcontext *vg, Vec pos, char c )
+  {
+    fontData_t::iterator k = fontData.find( std::toupper( c ) );
+    if( k != fontData.end() ) {
+      fontData_t::mapped_type blist = k->second;
+      int row=0, col=0;
+      for( auto v = blist.begin(); v != blist.end(); ++v )
+        {
+          if( *v )
+            {
+              float xo = (col+0.5) * ledSize + pos.x;
+              float yo = (row+0.5) * ledSize + pos.y;
+              nvgBeginPath( vg );
+              // nvgRect( vg, xo, yo, ledSize, ledSize );
+              nvgCircle( vg, xo + ledSize/2.0f, yo + ledSize/2.0f, ledSize/2.0f * 1.1 );
+              nvgFillColor( vg, nvgRGBA( 25, 35, 25, 255 ) );
+              nvgFill( vg );
+              
+              nvgBeginPath( vg );
+              // nvgRect( vg, xo, yo, ledSize, ledSize );
+              nvgCircle( vg, xo + ledSize/2.0f, yo + ledSize/2.0f, ledSize/2.0f );
+              nvgFillColor( vg, COLOR_BLUE ); // Thanks for having such a nice blue, Rack!!
+              nvgFill( vg );
+            }
+          
+          col++;
+          if( col == 5 ) {
+            col = 0;
+            row ++;
+          }
+        }
+    }
+    else {
+    }
+  }
+  
+  void drawText( NVGcontext *vg ) 
+  {
+    nvgBeginPath( vg );
+    nvgRect( vg, 0, 0, box.size.x, box.size.y );
+    nvgFillColor( vg, nvgRGBA( 15, 15, 55, 255 ) );
+    nvgFill( vg );
+
+    Vec cpos = Vec( padSize, padSize );
+    for( const char* c = currentText.c_str(); *c != 0; ++c ) {
+      drawChar( vg, cpos, *c );
+      cpos.x += ledSize * 5 + padSize;
+    }
+  }
+
+  void onZoom( EventZoom &e ) override
+  {
+    buffer->dirty = true;
+  }
+};
+
+#include "SizeTable.hpp"
+
+
 #endif

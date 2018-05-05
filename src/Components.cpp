@@ -19,16 +19,34 @@ std::map< std::string, int > InternalFontMgr::fontMap;
 
 struct InternalRoundedBorder : virtual TransparentWidget
 {
+  bool doFill;
+  NVGcolor fillColor;
+
+  InternalRoundedBorder( Vec pos, Vec sz, NVGcolor fc )
+  {
+    box.pos = pos;
+    box.size = sz;
+    doFill = true;
+    fillColor = fc;
+  }
+
   InternalRoundedBorder( Vec pos, Vec sz )
   {
     box.pos = pos;
     box.size = sz;
+    doFill = false;
   }
 
   void draw( NVGcontext *vg ) override
   {
     nvgBeginPath( vg );
     nvgRoundedRect( vg, 0, 0, box.size.x, box.size.y, 5 );
+    if( doFill )
+      {
+        nvgFillColor( vg, fillColor );
+        nvgFill( vg );
+      }
+        
     nvgStrokeColor( vg, COLOR_BLACK );
     nvgStroke( vg );
   }
@@ -40,13 +58,9 @@ struct InternalTextLabel : virtual TransparentWidget
   std::string label;
   int pxSize;
   int align;
-  InternalTextLabel( Vec pos, const char* lab, int px ) : label( lab ), pxSize( px )
-  {
-    align = NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE;
-    box.pos = pos;
-  }
+  NVGcolor color;
 
-  InternalTextLabel( Vec pos, const char* lab, int px, int al ) : label( lab ), pxSize( px ), align( al )
+  InternalTextLabel( Vec pos, const char* lab, int px, int al, NVGcolor col ) : label( lab ), pxSize( px ), align( al ), color( col )
   {
     box.pos = pos;
   }
@@ -58,7 +72,7 @@ struct InternalTextLabel : virtual TransparentWidget
     nvgBeginPath( vg );
     nvgFontFaceId( vg, memFont );
     nvgFontSize( vg, pxSize );
-    nvgFillColor( vg, COLOR_BLACK );
+    nvgFillColor( vg, color );
     nvgTextAlign( vg, align );
     nvgText( vg, 0, 0, label.c_str(), NULL );
   }
@@ -81,7 +95,6 @@ struct InternalPlugLabel : virtual TransparentWidget
 
 void BaconBackground::draw( NVGcontext *vg )
 {
-  // printf( "Drawing bg: %s\n", title.c_str() );
   if( memFont < 0 )
     memFont = InternalFontMgr::get( vg, "res/Monitorica-Bd.ttf" );
 
@@ -113,9 +126,8 @@ void BaconBackground::draw( NVGcontext *vg )
   nvgTextAlign( vg, NVG_ALIGN_CENTER|NVG_ALIGN_TOP );
   nvgText( vg, box.size.x / 2, 5, title.c_str(), NULL );
 
-  for( auto it = children.begin(); it != children.end(); ++it )
+  for( auto w : children )
     {
-      Widget *w = *it;
       nvgTranslate( vg, w->box.pos.x, w->box.pos.y );
       w->draw( vg );
       nvgTranslate( vg, -w->box.pos.x, -w->box.pos.y );
@@ -205,9 +217,9 @@ void InternalPlugLabel::draw( NVGcontext *vg )
 
 
 
-BaconBackground *BaconBackground::addLabel( Vec pos, const char* lab, int px, int align )
+BaconBackground *BaconBackground::addLabel( Vec pos, const char* lab, int px, int align, NVGcolor col )
 {
-  addChild( new InternalTextLabel( pos, lab, px, align ) );
+  addChild( new InternalTextLabel( pos, lab, px, align, col ) );
   return this;
 }
 
@@ -222,6 +234,13 @@ BaconBackground *BaconBackground::addRoundedBorder( Vec pos, Vec sz )
   addChild( new InternalRoundedBorder( pos, sz ) );
   return this;
 }
+
+BaconBackground *BaconBackground::addRoundedBorder( Vec pos, Vec sz, NVGcolor fill )
+{
+  addChild( new InternalRoundedBorder( pos, sz, fill ) );
+  return this;
+}
+
 
 NVGcolor BaconBackground::bg = nvgRGBA( 220, 220, 210, 255 );
 NVGcolor BaconBackground::bgOutline = nvgRGBA( 180, 180, 170, 255 );
@@ -240,6 +259,7 @@ FramebufferWidget* BaconBackground::wrappedInFramebuffer()
   fb->addChild( this );
   return fb;
 }
+
 
 
 BaconBackground *BaconBackground::addLabelsForHugeKnob( Vec topLabelPos,

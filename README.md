@@ -4,9 +4,8 @@
 [VCVRack](http://www.vcvrack.com). The modules are mostly inspired by me noodling around, and 
 they sort of fall into a few groups: 
 
-* Control voltage manipulation on 1v/oct signals to do things like glissando and musical quantization;
-* 8-bit-y digital chip-like synthesis, doing things like NES replication and 
-various simple noise algorithms;
+* Control voltage manipulation on 1v/oct signals to do things like glissando and musical quantization and a polyrhytmic clock;
+* Classic synth algorithms, including an implementation of the NES oscillators and a Karplus Strong implementation.
 * and finally, not very useful modulations and  distortions and stuff.
 
 
@@ -28,7 +27,7 @@ on the github here.
 
 I hope you enjoy the plugins! 
 
-## Control Voltage Manipulation
+## Control Voltage Manipulation and Clocks
 
 ### HarMoNee
 
@@ -39,7 +38,12 @@ like a minor 3rd. It spans plus or minus one octave, and is controlled by toggle
 The toggles are additive. So if you want a fourth, choose a major third and a half step 
 both. You get the idea. 
 
-![Example HarMoNee patch](docs/HarMoNee.png)
+<a href="https://baconpaul.github.io/audio/HarMoNee.mp3">
+<img src="docs/HarMoNee.png" alt="ExampleQuanteyes Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear HarMoNee Sample">
+</a>
+
 
 ### Glissinator
 
@@ -47,9 +51,19 @@ Glissinator takes a control voltage which is undergoing change and smooths out t
 change with a linear glissando. It is not triggered by a gate, just by differences
 in the input CV. It never jumps discontinuously, so if the CV changes "target" value
 mid-gliss, the whole thing turns around. The slider will give you between 0 and 1 seconds
-of gliss time. Here's a sample patch.
+of gliss time. There is a gate output which is +10v when the module is glissing and
+0 when it isn't. Note that the Glissinator is a constant time gliss, not a constant
+slope gliss (which is what a slew limiter would do). A future version may have a switch
+to pick between the modes.
 
-![Example Glissinator Patch](docs/Glissinator.png)
+Here's a sample patch.
+
+<a href="https://baconpaul.github.io/audio/Glissinator.mp3">
+<img src="docs/Glissinator.png" alt="ExampleQuanteyes Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear Glissinator Sample">
+</a>
+
 
 ### QuantEyes
 
@@ -69,9 +83,32 @@ and then twiddle the root note.
 Here's a (pretty cool sounding, I think) patch which combines QuantEyes with the 
 Glissinator and HarMoNee modules.
 
-![Example QuantEyes Patch](docs/QuantEyes.png)
+<a href="https://baconpaul.github.io/audio/QuantEyes.mp3">
+<img src="docs/QuantEyes.png" alt="ExampleQuanteyes Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear QuantEyes Sample">
+</a>
 
-## 8-bit-y stuff and chip emulators and the like
+
+### PolyGnome
+
+PolyGnome is a polyrhytmic clock generator. It can output up to 5 clock signals with strict 
+fractional relationships between them. There is one clock which is the "1/1" clock controlled by
+the speed settings implemented exactly like the clock rate controls in SEQ3. Then there are 4
+other clocks which are fractionally adjusted clocks. This way you can do a 1/1 vs a 5/3 vs a 4/5
+polyrhythm easily in your rack.
+
+Here's an example which uses this to drive 3 independent oscillator / envelope sets all of which have
+pitch set through the QuantEyes module.
+
+<a href="https://baconpaul.github.io/audio/PolyGnome.mp3">
+<img src="docs/PolyGnome.png" alt="Example PolyGnome Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear PolyGnome Sample">
+</a>
+
+
+## Classic and 8-bit algorithms
 
 ### ChipWaves
 
@@ -91,23 +128,40 @@ is all done for you.
 Basically, it just works like an oscillator. Drop it in and go chip crazy. The sample
 patch runs it mixed along with a VCO-1 so I could check tuning. Here's how I did it.
 
-![Example ChipWaves Patch](docs/ChipWaves.png)
+<a href="https://baconpaul.github.io/audio/ChipWaves.mp3">
+<img src="docs/ChipWaves.png" alt="Example ChipWaves Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear ChipWaves Sample">
+</a>
+
 
 
 ### ChipNoise
 
 ChipNoise implements the NES noise generator without the NES envelope. It would have been
 impossible to implement without the careful description of the noise algorithm at
-[the NES Dev WIKI](http://wiki.nesdev.com/w/index.php/APU_Noise).
+[the NES Dev WIKI](http://wiki.nesdev.com/w/index.php/APU_Noise). I also appreciate the
+[lengthy conversation with @alto77](https://github.com/baconpaul/BaconPlugs/issues/6) which helped
+identify a bug in the 0.6.1 release and add a new feature.
 
 The NES noise system has 16 different frequencies; and two modes. The two modes generate either
-a long pseudo-random pattern or (one of two) short pseudo-random patterns.
+a long pseudo-random pattern or a set of short pseudo-random patterns. That long pattern is just 
+long, but the short patterns are either 93 or 31 bits long. There are 351 distinct 93 bit patterns
+and a single 31 bit pattern. 
 
-The module just outputs the noise with a switch to change the mode and a knob to select the
-frequency. The knob is also exposed to CV. And yes, it really sounds like an NES. Here's a simple
-patch.
+The sequence controls allow you to pick these patterns. If set at "long" then you choose the longest
+pattern. If set at short, then either you have the 31 long pattern or one of the 93 patterns. Which of
+the 93 patterns you pick is chosen by the "which 93 seq" knob. 
 
-![Example ChipNoise Patch](docs/ChipNoise.png)
+This is a lot of information. If you just play with it you'll get the idea.
+
+Here's a simple patch.
+
+<a href="https://baconpaul.github.io/audio/ChipNoise.mp3">
+<img src="docs/ChipNoise.png" alt="Example ChipNoise Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear ChipNoise Sample">
+</a>
 
 ### ChipYourWaves
 
@@ -130,6 +184,35 @@ see the generated waveform is, indeed, the bits you draw in the LED-like control
 Oh if you have any idea what to put in all that blank space at the top of the module, by the way, please do
 just raise a github issue and let me know!
 
+### KarplusStrongPoly
+
+The [Karplus-Strong algorithm](https://en.m.wikipedia.org/wiki/Karplus–Strong_string_synthesis) is one of the
+earlier methods to simulate plucked string instruments. The KarplusStrongPoly module implements a polyphonic
+voides implementation of this. The module maps to the algorithm fairly cleanly. It's probably easier that you 
+just play with it, using the sample patch shown below.
+
+<a href="https://baconpaul.github.io/audio/KarplusStrongPoly.mp3">
+<img src="docs/KarplusStrongPoly.png" alt="Example ChipNoise Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Hear ChipNoise Sample">
+</a>
+
+There's one really important thing to know about this module. Unlike more traditional voltage controlled oscillators 
+which always produce output and are then fed into envelopes and stuff, the KarplusStrongPoly module needs to be
+triggered with a gate signal to produce any sound. When it is triggered it will snap all the parameters set on
+the front panel and play that voice until it fades. The system is configured to play upto 32 voices and will
+voice steal beyond that. But since Rack adds a 1 sample delay to all its signals as they go through each module,
+if you trigger from SEQ-3 and use a frequency you have modified, the trigger will "beat" the modified signal.
+So adding a few sample delay to your trigger may be approrpriate. There's a really simple SampleDelay module
+which ships with this plugin set if you want to do that.
+
+I've only implemented one filter so far, so the only control which does anything in the filter space is the "A" 
+knob and CV input. If/as I add more that will get way more rich, kind of like initial packet is now.
+
+Finally I think the algorithm is stable under all possible front panel configurations. There's certainly
+regimes of parameters in the C++ which can break the synthesis, though. So if you get an
+odd or growing sound, let me know the configuration which did it in a github issue and I'll put a check
+in the widget to synth snap appropriately.
 
 ## Distortions and Modulations and so on
 ### ALingADing 
@@ -141,7 +224,13 @@ I basically use an implementation of a softmax, eye-balling the parameters to ro
 paper. The only control is a wet/dry mix (where wet is the signal modulated by carrier
 and dry is just the signal). Sloppy, sure, but it sounds kinda cool. Here's a sample patch.
 
-![Example ALingADing Patch](docs/ALingADing.png)
+<a href="https://baconpaul.github.io/audio/ALingADing.mp3">
+<img src="docs/ALingADing.png" alt="ExampleQuanteyes Patch">
+<br>
+<img src="docs/SpeakerIconSmall.png" alt="Here QuantEyes">
+</a>
+
+
 
 ### Bitulator
 
@@ -155,9 +244,23 @@ Combine them for grunky grunk noise. Dumb, but fun. Here's a sample patch.
 
 ![Example Bitulator Patch](docs/Bitulator.png)
 
-## Hey, what's with the repo name "BaconPlugs" vs slug "Bacon Music"
+### SampleDelay
 
-So when I made my git repo I had no idea really how anything worked or if I'd write anything. 
+This is an incredibly simple module. All it does is add an n-sample digital delay at the 
+engine clock speed. Radically non-analog, I know. But it's useful since Rack adds a 1 sample
+delay in each module hop to do things like triggering the Karplus Strong poly.
+
+![Example SampleDelay](docs/SampleDelay.png)
+
+## Credits and Comments
+
+The Keypunch font used in the textual display LED widget comes from 
+[Stewart C. Russell's blog](http://scruss.com/blog/2017/03/21/keypunch029-for-all-your-punched-card-font-needs/). 
+The font is Copyright 2017 Stewart C. Russell and is released under 
+the [SIL Open Font License 1.1](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL).
+
+The slug name ('BaconMusic') is different than the repo name ('BaconPlugs'), somewhat confusingly.
+When I made my git repo I had no idea really how anything worked or if I'd write anything. 
 I was thinking "Hey I'm writing a collection of plugins for this software right". When I went
 with my first release, Andrew Rust pointed out that "BaconPlugs" wasn't a very good name for my 
 plugin and it's collected modules. He did it very politely, of course, and so I changed it to "Bacon Music" 

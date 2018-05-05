@@ -25,8 +25,7 @@ struct QuantEyes : virtual Module {
   };
 
   enum LightIds {
-    ROOT_LIGHT_ONES,
-    ROOT_LIGHT_TENS,
+    ROOT_LIGHT,
     ACTIVE_NOTE_LIGHTS,
     SCALE_LIGHTS = ACTIVE_NOTE_LIGHTS + 3 * SCALE_LENGTH,
     NUM_LIGHTS = SCALE_LIGHTS + SCALE_LENGTH
@@ -44,8 +43,7 @@ struct QuantEyes : virtual Module {
   void step() override
   {
     int root = clamp( params[ ROOT_STEP ].value, 0.0f, 12.0f );
-    lights[ ROOT_LIGHT_ONES ].value = root % 10;
-    lights[ ROOT_LIGHT_TENS ].value = root / 10;
+    lights[ ROOT_LIGHT ].value = root;
 
     for( int i=0; i<SCALE_LENGTH; ++i )
       {
@@ -62,21 +60,24 @@ struct QuantEyes : virtual Module {
 
     for( int i=0; i<3; ++i )
       {
-        float in = inputs[ CV_INPUT + i ].value;
-        double octave, note;
-        note = modf( in, &octave );
-        float noteF = ( floor( note * SCALE_LENGTH ) + root );
-        int noteI = (int)noteF % SCALE_LENGTH;
-
-        if( noteF > SCALE_LENGTH-1 ) octave += 1.0;
+        if( inputs[ CV_INPUT + i ].active )
+          {
+            float in = inputs[ CV_INPUT + i ].value;
+            double octave, note;
+            note = modf( in, &octave );
+            float noteF = ( floor( note * SCALE_LENGTH ) + root );
+            int noteI = (int)noteF % SCALE_LENGTH;
+            
+            if( noteF > SCALE_LENGTH-1 ) octave += 1.0;
+            
+            
+            while( scaleState[ noteI ] == 0 && noteI > 0 ) noteI --;
+            
+            lights[ ACTIVE_NOTE_LIGHTS + i * SCALE_LENGTH + noteI ].value = 1;
         
-        
-        while( scaleState[ noteI ] == 0 && noteI > 0 ) noteI --;
-        
-        lights[ ACTIVE_NOTE_LIGHTS + i * SCALE_LENGTH + noteI ].value = 1;
-        
-        float out = 1.0 * noteI / SCALE_LENGTH + octave;
-        outputs[ QUANTIZED_OUT + i ].value = out;
+            float out = 1.0 * noteI / SCALE_LENGTH + octave;
+            outputs[ QUANTIZED_OUT + i ].value = out;
+          }
       }
   }
 
@@ -174,12 +175,9 @@ QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
                                                 module,
                                                 QuantEyes::ROOT_STEP,
                                                 0, 12, 0 ) );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47, ybot - 5 - 24 ),
-                                                           module,
-                                                           QuantEyes::ROOT_LIGHT_TENS ) );
-  addChild( ModuleLightWidget::create< SevenSegmentLight< BlueLight, 2 > >( Vec( 47 + 14, ybot - 5 - 24 ),
-                                                           module,
-                                                           QuantEyes::ROOT_LIGHT_ONES ) );
+  addChild( MultiDigitSevenSegmentLight< BlueLight, 2, 2 >::create( Vec( 47, ybot - 5 - 24 ),
+                                                                    module,
+                                                                    QuantEyes::ROOT_LIGHT ) );
 
 }
 

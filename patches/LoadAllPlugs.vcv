@@ -1,81 +1,167 @@
 {
-  "version": "",
+  "version": "master",
   "modules": [
     {
       "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
       "model": "HarMoNee",
       "pos": [
-        0.0,
-        0.0
+        0,
+        0
       ],
       "params": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
+        {
+          "paramId": 0,
+          "value": 1.0
+        },
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 2,
+          "value": 0.0
+        },
+        {
+          "paramId": 3,
+          "value": 0.0
+        },
+        {
+          "paramId": 4,
+          "value": 0.0
+        },
+        {
+          "paramId": 5,
+          "value": 0.0
+        },
+        {
+          "paramId": 6,
+          "value": 0.0
+        }
       ]
     },
     {
       "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
       "model": "Glissinator",
       "pos": [
-        165.0,
-        0.0
+        11,
+        0
       ],
       "params": [
-        0.30300003290176392
+        {
+          "paramId": 0,
+          "value": 0.303000033
+        }
       ]
     },
     {
       "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
       "model": "ALingADing",
       "pos": [
-        285.0,
-        0.0
+        19,
+        0
       ],
       "params": [
-        1.0
+        {
+          "paramId": 0,
+          "value": 1.0
+        }
       ]
     },
     {
       "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
       "model": "Bitulator",
       "pos": [
-        420.0,
-        0.0
+        28,
+        0
       ],
       "params": [
-        1.0,
-        1.0,
-        6.0,
-        1.0,
-        1.0
+        {
+          "paramId": 0,
+          "value": 1.0
+        },
+        {
+          "paramId": 3,
+          "value": 1.0
+        },
+        {
+          "paramId": 1,
+          "value": 6.0
+        },
+        {
+          "paramId": 4,
+          "value": 1.0
+        },
+        {
+          "paramId": 2,
+          "value": 1.0
+        }
       ]
     },
     {
       "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
       "model": "QuantEyes",
       "pos": [
-        645.0,
-        0.0
+        38,
+        0
       ],
       "params": [
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 2,
+          "value": 0.0
+        },
+        {
+          "paramId": 3,
+          "value": 0.0
+        },
+        {
+          "paramId": 4,
+          "value": 0.0
+        },
+        {
+          "paramId": 5,
+          "value": 0.0
+        },
+        {
+          "paramId": 6,
+          "value": 0.0
+        },
+        {
+          "paramId": 7,
+          "value": 0.0
+        },
+        {
+          "paramId": 8,
+          "value": 0.0
+        },
+        {
+          "paramId": 9,
+          "value": 0.0
+        },
+        {
+          "paramId": 10,
+          "value": 0.0
+        },
+        {
+          "paramId": 11,
+          "value": 0.0
+        },
+        {
+          "paramId": 12,
+          "value": 0.0
+        },
+        {
+          "paramId": 0,
+          "value": 0.0
+        }
       ],
       "data": {
         "scaleState": [
@@ -83,7 +169,7 @@
           1,
           1,
           1,
-          1,
+          0,
           1,
           1,
           1,
@@ -93,6 +179,284 @@
           1
         ]
       }
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "PolyGnome",
+      "pos": [
+        52,
+        0
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 2.0
+        },
+        {
+          "paramId": 1,
+          "value": 1.0
+        },
+        {
+          "paramId": 5,
+          "value": 1.0
+        },
+        {
+          "paramId": 2,
+          "value": 1.0
+        },
+        {
+          "paramId": 6,
+          "value": 1.0
+        },
+        {
+          "paramId": 3,
+          "value": 1.0
+        },
+        {
+          "paramId": 7,
+          "value": 1.0
+        },
+        {
+          "paramId": 4,
+          "value": 1.0
+        },
+        {
+          "paramId": 8,
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "SampleDelay",
+      "pos": [
+        68,
+        0
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "ChipNoise",
+      "pos": [
+        0,
+        1
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 7.0
+        },
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 2,
+          "value": 1.0
+        },
+        {
+          "paramId": 3,
+          "value": 17.0
+        }
+      ]
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "ChipWaves",
+      "pos": [
+        8,
+        1
+      ],
+      "params": [
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 0,
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "ChipYourWave",
+      "pos": [
+        20,
+        1
+      ],
+      "params": [
+        {
+          "paramId": 0,
+          "value": 0.0
+        },
+        {
+          "paramId": 1,
+          "value": 15.0
+        },
+        {
+          "paramId": 2,
+          "value": 14.0
+        },
+        {
+          "paramId": 3,
+          "value": 13.0
+        },
+        {
+          "paramId": 4,
+          "value": 12.0
+        },
+        {
+          "paramId": 5,
+          "value": 11.0
+        },
+        {
+          "paramId": 6,
+          "value": 10.0
+        },
+        {
+          "paramId": 7,
+          "value": 9.0
+        },
+        {
+          "paramId": 8,
+          "value": 8.0
+        },
+        {
+          "paramId": 9,
+          "value": 7.0
+        },
+        {
+          "paramId": 10,
+          "value": 6.0
+        },
+        {
+          "paramId": 11,
+          "value": 5.0
+        },
+        {
+          "paramId": 12,
+          "value": 4.0
+        },
+        {
+          "paramId": 13,
+          "value": 3.0
+        },
+        {
+          "paramId": 14,
+          "value": 2.0
+        },
+        {
+          "paramId": 15,
+          "value": 1.0
+        },
+        {
+          "paramId": 16,
+          "value": 0.0
+        },
+        {
+          "paramId": 17,
+          "value": 0.0
+        },
+        {
+          "paramId": 18,
+          "value": 1.0
+        },
+        {
+          "paramId": 19,
+          "value": 2.0
+        },
+        {
+          "paramId": 20,
+          "value": 3.0
+        },
+        {
+          "paramId": 21,
+          "value": 4.0
+        },
+        {
+          "paramId": 22,
+          "value": 5.0
+        },
+        {
+          "paramId": 23,
+          "value": 6.0
+        },
+        {
+          "paramId": 24,
+          "value": 7.0
+        },
+        {
+          "paramId": 25,
+          "value": 8.0
+        },
+        {
+          "paramId": 26,
+          "value": 9.0
+        },
+        {
+          "paramId": 27,
+          "value": 10.0
+        },
+        {
+          "paramId": 28,
+          "value": 11.0
+        },
+        {
+          "paramId": 29,
+          "value": 12.0
+        },
+        {
+          "paramId": 30,
+          "value": 13.0
+        },
+        {
+          "paramId": 31,
+          "value": 14.0
+        },
+        {
+          "paramId": 32,
+          "value": 15.0
+        }
+      ]
+    },
+    {
+      "plugin": "BaconMusic",
+      "version": "0.6.2_cand_donotrelease",
+      "model": "KarplusStrongPoly",
+      "pos": [
+        48,
+        1
+      ],
+      "params": [
+        {
+          "paramId": 2,
+          "value": 0.0
+        },
+        {
+          "paramId": 0,
+          "value": 0.0
+        },
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 3,
+          "value": 1.95000005
+        }
+      ]
     }
   ],
   "wires": []
