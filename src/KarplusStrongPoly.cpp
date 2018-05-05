@@ -286,7 +286,6 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
 
 
   yh = SizeTable<RoundBlackSnapKnob>::Y;
-  std::cout << "YH=" << yh << "\n";
   brd( yh );
   cl( "Packet", yh );
 

@@ -276,7 +276,7 @@
     },
     {
       "plugin": "BaconMusic",
-      "version": "0.6.2_cand_donotrelease",
+      "version": "0.6.2",
       "model": "KarplusStrongPoly",
       "pos": [
         38,
@@ -346,7 +346,7 @@
     },
     {
       "plugin": "BaconMusic",
-      "version": "0.6.2_cand_donotrelease",
+      "version": "0.6.2",
       "model": "SampleDelay",
       "pos": [
         33,
@@ -361,7 +361,7 @@
     },
     {
       "plugin": "BaconMusic",
-      "version": "0.6.2_cand_donotrelease",
+      "version": "0.6.2",
       "model": "QuantEyes",
       "pos": [
         22,

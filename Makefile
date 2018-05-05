@@ -1,8 +1,8 @@
 
 SLUG = BaconMusic
 
-VERSION = 0.6.2_cand_donotrelease
-RELEASE_BRANCH = candidate_v0.6.2
+VERSION = 0.6.2
+RELEASE_BRANCH = release_0.6.2
 
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
