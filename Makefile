@@ -29,6 +29,9 @@ shadist:	dist
 
 COMMUNITY_ISSUE=https://github.com/VCVRack/community/issues/433
 
+community:
+	open $(COMMUNITY_ISSUE)
+
 issue_blurb:	dist
 	git diff --exit-code
 	git diff --cached --exit-code
