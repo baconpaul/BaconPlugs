@@ -85,6 +85,38 @@ struct StepHandler
   }
 };
 
+struct BufferPlayer : StepHandler
+{
+  float *buf;
+  int nsamps;
+  int pos;
+  BufferPlayer( float *_buf, int _nsamps )
+    :
+    StepHandler(),
+    buf( _buf ),
+    nsamps( _nsamps )
+    // does not take a copy. Please dont' delete
+  {
+    pos = 0;
+  }
+
+  virtual int dostep( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+                      double streamTime, RtAudioStreamStatus status ) override
+  {
+    unsigned int i;
+    double *buffer = (double *) outputBuffer;
+
+    for ( i=0; i<nBufferFrames && pos < nsamps; i++ ) {
+      *buffer++ = buf[ pos++ ];
+    }
+    if( pos >= nsamps )
+      return 1;
+    return 0;
+    
+  }
+
+};
+  
 struct StandaloneModule
 {
   struct thing
@@ -121,3 +153,13 @@ struct StandaloneModule
   
   virtual void step() { };
 };
+
+void fadeIn( float* samp, int ns )
+{
+  int n = 4000;
+  for( auto i=0; i<n; ++i )
+    {
+      samp[ i ] *= i * 1.0 / n;
+      samp[ ns - 1 - i ] *= i * 1.0 / n;
+    }
+}
