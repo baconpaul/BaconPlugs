@@ -99,9 +99,9 @@ struct KarplusStrongPoly : virtual Module {
     
     if( inputs[ INITIAL_PACKET_INPUT ].active )
       {
-        ipi = inputs[ INITIAL_PACKET_INPUT ].value;
+        ipi = clamp( inputs[ INITIAL_PACKET_INPUT ].value, 0.0f, 9.999f );
         ipiS = ipi * getNumPackets() / 10.0;
-        nextInitialPacket = min( (int)(ipiS), getNumPackets() - 1 );
+        nextInitialPacket = (int)(ipiS);
       }
     else
       {
