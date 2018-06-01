@@ -101,7 +101,7 @@ struct KarplusStrongPoly : virtual Module {
       {
         ipi = inputs[ INITIAL_PACKET_INPUT ].value;
         ipiS = ipi * getNumPackets() / 10.0;
-        nextInitialPacket = (int)(ipiS);
+        nextInitialPacket = min( (int)(ipiS), getNumPackets() - 1 );
       }
     else
       {
