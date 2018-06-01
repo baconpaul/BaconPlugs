@@ -65,16 +65,22 @@ struct QuantEyes : virtual Module {
             float in = inputs[ CV_INPUT + i ].value;
             double octave, note;
             note = modf( in, &octave );
+
+            // We need to re-mod note since the root can make our range of the integer note
+            // somewhere other than (0,1) so first push by root
             float noteF = ( floor( note * SCALE_LENGTH ) + root );
+            // Then find the new integer part of the pushed stuff
             int noteI = (int)noteF % SCALE_LENGTH;
-            
+            // and bump the octave if root pushes us up. Note if root==0 this never activates.
             if( noteF > SCALE_LENGTH-1 ) octave += 1.0;
-            
-            
+
+            // Then find the activated note searching from above
             while( scaleState[ noteI ] == 0 && noteI > 0 ) noteI --;
-            
+
+            // turn on the light
             lights[ ACTIVE_NOTE_LIGHTS + i * SCALE_LENGTH + noteI ].value = 1;
-        
+
+            // and figure out the CV
             float out = 1.0 * noteI / SCALE_LENGTH + octave;
             outputs[ QUANTIZED_OUT + i ].value = out;
           }
