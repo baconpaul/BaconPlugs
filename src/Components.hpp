@@ -179,7 +179,7 @@ struct SevenSegmentLight : T {
 
   static SevenSegmentLight< T, px > *createHex(Vec pos, Module *module, int firstLightId ) {
     auto *o = ModuleLightWidget::create<SevenSegmentLight<T,px>>(pos, module, firstLightId);
-    o->hexMode = 1;
+    o->hexMode = true;
     return o;
   }
 
