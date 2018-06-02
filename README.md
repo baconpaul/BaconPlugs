@@ -202,8 +202,10 @@ which always produce output and are then fed into envelopes and stuff, the Karpl
 triggered with a gate signal to produce any sound. When it is triggered it will snap all the parameters set on
 the front panel and play that voice until it fades. The system is configured to play upto 32 voices and will
 voice steal beyond that. But since Rack adds a 1 sample delay to all its signals as they go through each module,
-if you trigger from SEQ-3 and use a frequency you have modified, the trigger will "beat" the modified signal.
-So adding a few sample delay to your trigger may be approrpriate. There's a really simple SampleDelay module
+if you trigger from SEQ-3 and use a frequency you have modified, the trigger will arrive several samples before the modified 
+frequency or filter signal.
+Adding a few sample delay to your trigger may be approrpriate so that your other parameter control signals quiesce through
+the Rack network. There's a really simple SampleDelay module
 which ships with this plugin set if you want to do that.
 
 I've only implemented one filter so far, so the only control which does anything in the filter space is the "A" 
