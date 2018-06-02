@@ -1,3 +1,5 @@
+#include <vector>
+
 class AllPassFilter
 {
   // https://en.wikipedia.org/wiki/All-pass_filter
@@ -46,6 +48,41 @@ public:
   }
 };
 
-class Phaser
+struct Phaser
 {
+  // This phaser class has an EXTERNAL LFO and processes the input and the LFO as two signals to do phasing
+  float depth; // 0 -> 1
+  int   nfilters;
+
+  float r, dr, dtheta;
+
+  std::vector< AllPassFilter > filters;
+  
+  Phaser( )
+    :
+    nfilters( 6 )
+  {
+    for( size_t i =0; i<nfilters; ++i )
+      filters.push_back( AllPassFilter() );
+
+    dtheta = 3.14159265 / 2.0 / ( nfilters + 1 );
+    r = 0.92;
+    dr = 0.03;
+    depth = 1.0;
+  }
+
+  float process( float input, float lfo )
+  {
+    float filtV = input;
+    size_t i = 0;
+    for( auto f : filters )
+      {
+        f.setRadial( r + dr * lfo, ( i + 0.5 + 0.47 * lfo ) * dtheta );
+        filtV = f.process( filtV );
+
+        ++i;
+      }
+
+    return 0.5 * ( input + depth * filtV );
+  }
 };

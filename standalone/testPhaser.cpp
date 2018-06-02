@@ -8,44 +8,34 @@ int main( int argc, char **argv )
   float sinb[ 100000 ];
   float sqrb[ 100000 ];
   float filb[ 100000 ];
+  float lfo[ 10000 ];
   int ns = 100000;
 
 
   for( int i=0; i<ns; ++i )
     {
-      auto freq = 220 + 220.0 * i / ns;;
+      auto freq = 440; // + 220.0 * i / ns;;
       float t = i / 44100.0;
       sinb[ i ] = sin( t * 2.0 * 3.14 * freq );
+      lfo[ i ] = sin( t * 2.0 * 3.14 * 2 );
       if( sinb[ i ] > 0 ) sqrb[ i ] = 1.0; else sqrb[ i ] = -1.0;
     }
   fadeIn( sinb, ns );
   fadeIn( sqrb, ns );
 
-  AllPassFilter apf;
-  apf.setRadial( 0.98, 0.04 );
+  Phaser p;
+  float res[ 10000 ];
   for( int i=0; i<ns; ++i )
     {
-      filb[ i ] = apf.process( sinb[ i ] );
+      res[ i ] = p.process( sqrb[ i ], lfo [i ] );
     }
-
   {
-    BufferPlayer bp( sinb, ns );
-    bp.playAudioUntilStepsDone();
+    BufferPlayer pl( sqrb, ns );
+    pl.playAudioUntilStepsDone();
   }
-
   {
-    BufferPlayer bp( filb, ns );
-    bp.playAudioUntilStepsDone();
-  }
-
-  for( int i=0; i<ns; ++i )
-    {
-      filb[ i ] = 0.5 * filb[ i ] + 0.5 * sinb[ i ];
-    }
-  
-  {
-    BufferPlayer bp( filb, ns );
-    bp.playAudioUntilStepsDone();
+    BufferPlayer pl( res, ns );
+    pl.playAudioUntilStepsDone();
   }
 
   return 0;
