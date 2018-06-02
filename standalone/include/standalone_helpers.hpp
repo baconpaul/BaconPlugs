@@ -2,7 +2,8 @@
 #include "RtAudio.h"
 #include <unistd.h>
 
-int engineGetSampleRate() { return 44100; }
+float engineGetSampleRate() { return 44100; }
+float engineGetSampleTime() { return 1.0f / engineGetSampleRate(); }
 
 struct StepHandler
 {
