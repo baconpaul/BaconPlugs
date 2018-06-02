@@ -25,6 +25,7 @@ void init(rack::Plugin *p) {
   p->addModel( modelChipWaves );
   p->addModel( modelChipYourWave );
 
+  p->addModel( modelGenericLFSR );
 
   p->addModel( modelKarplusStrongPoly );
   
