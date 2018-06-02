@@ -1,5 +1,6 @@
 .DS_Store
 build/
+standalone/bld/*
 dist/
 plugin.dylib
 plugin.so

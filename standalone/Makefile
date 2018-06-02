@@ -3,19 +3,38 @@
 # make run T=docsaw
 # and that will build docsaw.cpp which depends on every header everywhere and voila.
 
-HDRS = $(wildcard ../src/*.hpp) $(wildcard *.hpp)
+HDRS = $(wildcard ../src/*.hpp) $(wildcard include/*.hpp)
 
-CPPEXE = c++ -I../../../dep/include -L../../../dep/lib -lrtaudio -std=c++11 -stdlib=libc++  -Werror
+CPPEXE = c++ -I include -I bld -I ../src -I Catch2/include -I../../../dep/include -L../../../dep/lib -lrtaudio -std=c++11 -stdlib=libc++  -Werror
 RUN_PREFIX = DYLD_LIBRARY_PATH=../../../dep/lib
 
-exe_%:	%.cpp $(HDRS)
+bld:
+	mkdir bld
+	curl -o bld/catch.hpp https://raw.githubusercontent.com/CatchOrg/Catch2/master/single_include/catch.hpp
+
+.PRECIOUS:	bld/exe_demo_% bld/exe_test_% bld
+
+bld/exe_demo_%:	demo/%.cpp $(HDRS) bld
 	$(CPPEXE) -o $@ $<
 
-run:	exe_$(T)
+bld/exe_test_%:	test/%.cpp $(HDRS) bld
+	$(CPPEXE) -o $@ $<
+
+demo_%:	bld/exe_demo_%
+	$(RUN_PREFIX) ./$<
+
+test_%:	bld/exe_test_%
+	$(RUN_PREFIX) ./$<
+
+TESTS = $(foreach src, $(wildcard test/*.cpp), $(subst /,_,$(subst .cpp,, $(src))) )
+
+allTests: $(TESTS)
+
+run_%:	exe_%
 	$(RUN_PREFIX) ./$<
 
 clean:
-	rm -f exe*
+	rm -rf bld
 
 
 
