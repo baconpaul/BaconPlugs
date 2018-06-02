@@ -105,6 +105,12 @@ public:
     delay.resize( burstLen );
   }
 
+  void silenceGracefully()
+  {
+    filtAtten = 10.0;
+    filtAttenScaled = filtAtten / 100 / ( freq / 440 );
+  }
+
   void trigger( float f )
   {
     // remember: Interally we work on the range [-1.0f, 1.0f] to match the python (but different from

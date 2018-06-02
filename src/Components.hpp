@@ -583,6 +583,15 @@ struct DotMatrixLightTextWidget : public Component // Thanks http://scruss.com/b
   }
 };
 
+struct SABROGWhite : SVGSwitch, MomentarySwitch
+{
+  SABROGWhite()
+  {
+    addFrame( SVG::load( assetPlugin( plugin, "res/sabrog-25-up.svg" ) ) );
+    addFrame( SVG::load( assetPlugin( plugin, "res/sabrog-25-down.svg" ) ) );
+  }
+};
+
 #include "SizeTable.hpp"
 
 

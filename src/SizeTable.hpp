@@ -57,6 +57,13 @@ struct SizeTable< RoundSmallBlackKnob >
   constexpr static const float Y = 23.6206;
 };
 
+template<>
+struct SizeTable< SABROGWhite >
+{
+  constexpr static const float X = 30.0;
+  constexpr static const float Y = 27.0;
+};
+
 // Diff Y to center
 template< typename T1, typename T2 >
 float diffY2c()

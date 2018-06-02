@@ -16,6 +16,11 @@ struct KarplusStrongPoly : virtual Module {
     FILTER_KNOB_A,
     FILTER_KNOB_B,
     FILTER_KNOB_C,
+
+    
+    TRIGGER_BUTTON,
+    KILL_BUTTON,
+
     NUM_PARAMS 
   };
 
@@ -28,6 +33,7 @@ struct KarplusStrongPoly : virtual Module {
     FILTER_CV_A,
     FILTER_CV_B,
     FILTER_CV_C,
+    
     NUM_INPUTS 
   };
 
@@ -50,7 +56,7 @@ struct KarplusStrongPoly : virtual Module {
   };
 
 
-  SchmittTrigger voiceTrigger;
+  SchmittTrigger voiceTrigger, voiceButtonTrigger, killallVoicesTrigger;
 
   std::vector< KSSynth *> voices;
   const static int nVoices = 32;
@@ -117,7 +123,7 @@ struct KarplusStrongPoly : virtual Module {
 
     // Check a trigger here and find a voice
     bool newVoice = false;
-    if( voiceTrigger.process( inputs[ TRIGGER_GATE ].value ) )
+    if( voiceTrigger.process( inputs[ TRIGGER_GATE ].value ) || voiceButtonTrigger.process( params[ TRIGGER_BUTTON ].value ) )
       {
         newVoice = true;
       }
@@ -162,6 +168,16 @@ struct KarplusStrongPoly : virtual Module {
         voice->packet = currentInitialPacket;
         voice->filtAtten = atten;
         voice->trigger( freq );
+      }
+
+    if( killallVoicesTrigger.process( params[ KILL_BUTTON ].value ) )
+      {
+        info( "Killing all voices" );
+        for( auto syn : voices )
+          if( syn->active )
+            {
+              syn->silenceGracefully();
+            };
       }
     
     float out = 0.0f;
@@ -260,6 +276,13 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
   yh = SizeTable<PJ301MPort>::Y;
   brd( yh );
   cl( "Trigger", yh );
+  addParam( ParamWidget::create< SABROGWhite >( Vec( box.size.x - obuf - 2 * margin -
+                                                     SizeTable<PJ301MPort>::X - SizeTable< SABROGWhite >::X, outy - 1 ),
+                                                module,
+                                                KarplusStrongPoly::TRIGGER_BUTTON,
+                                                0.0f,
+                                                10.0f,
+                                                0.0f ) );
   addInput( Port::create< PJ301MPort >( Vec( box.size.x - obuf - margin - SizeTable<PJ301MPort>::X, outy ),
                                         Port::INPUT,
                                         module,
@@ -392,6 +415,14 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget( KarplusStrongPoly *module ) : 
   last = true;
   brd( SizeTable<PJ301MPort>::Y );
   cl( "Output", SizeTable<PJ301MPort>::Y );
+  addParam( ParamWidget::create< SABROGWhite >( Vec( box.size.x - obuf - 2 * margin -
+                                                     SizeTable<PJ301MPort>::X - SizeTable< SABROGWhite >::X, outy - 1 ),
+                                                module,
+                                                KarplusStrongPoly::KILL_BUTTON,
+                                                0.0f,
+                                                10.0f,
+                                                0.0f ) );
+
   addOutput( Port::create< PJ301MPort >( Vec( box.size.x - obuf - margin - SizeTable<PJ301MPort>::X, outy ),
                                          Port::OUTPUT,
                                          module,

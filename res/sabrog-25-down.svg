@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2181"
+   sodipodi:docname="sabrog-25-down.svg"
+   viewBox="0 0 29.999998 27.180668"
+   sodipodi:version="0.32"
+   version="1.0"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:version="0.91 r13725"
+   width="29.999998"
+   height="27.180668">
+  <defs
+     id="defs2183">
+    <radialGradient
+       id="radialGradient14361"
+       gradientUnits="userSpaceOnUse"
+       cy="411.31"
+       cx="470.59"
+       gradientTransform="matrix(1.4865,1.652,-1.1776,1.0596,317.72,-790.89)"
+       r="204.78999"
+       inkscape:collect="always">
+      <stop
+         id="stop5534"
+         style="stop-color:#ffffff"
+         offset="0" />
+      <stop
+         id="stop5536"
+         style="stop-color:#000000"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       id="linearGradient14363"
+       y2="74.260002"
+       gradientUnits="userSpaceOnUse"
+       x2="681.82001"
+       y1="600.42999"
+       x1="253.53999"
+       inkscape:collect="always">
+      <stop
+         id="stop14351"
+         style="stop-color:#000000"
+         offset="0" />
+      <stop
+         id="stop14353"
+         style="stop-color:#000000;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+    <radialGradient
+       id="radialGradient14365"
+       gradientUnits="userSpaceOnUse"
+       cy="534.34998"
+       cx="468.35999"
+       gradientTransform="matrix(1.7944,-0.78108,0.41041,0.84324,-569.52,335.05)"
+       r="204.78999"
+       inkscape:collect="always">
+      <stop
+         id="stop9446"
+         style="stop-color:#898989"
+         offset="0" />
+      <stop
+         id="stop9448"
+         style="stop-color:#ffffff"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       id="linearGradient14367"
+       y2="-87.976997"
+       gradientUnits="userSpaceOnUse"
+       x2="655.23999"
+       y1="469.70999"
+       x1="427.14001"
+       inkscape:collect="always">
+      <stop
+         id="stop12381"
+         style="stop-color:#ffffff"
+         offset="0" />
+      <stop
+         id="stop12383"
+         style="stop-color:#000000"
+         offset="1" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     bordercolor="#666666"
+     inkscape:pageshadow="2"
+     guidetolerance="10"
+     pagecolor="#ffffff"
+     gridtolerance="10000"
+     inkscape:window-height="579"
+     inkscape:zoom="13.870153"
+     objecttolerance="10"
+     borderopacity="1.0"
+     inkscape:current-layer="layer1"
+     inkscape:cx="15.000003"
+     inkscape:cy="13.590336"
+     inkscape:window-y="132"
+     inkscape:showpageshadow="false"
+     inkscape:window-x="132"
+     inkscape:window-width="884"
+     showborder="false"
+     inkscape:pageopacity="0.0"
+     inkscape:document-units="px"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-maximized="0" />
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     transform="translate(-517.85853,-113.05624)">
+    <g
+       id="g14355"
+       transform="matrix(-0.11014299,0,0,-0.11014299,591.54917,140.5958)">
+      <ellipse
+         id="path5528"
+         style="fill:url(#radialGradient14361);fill-rule:evenodd;stroke:#000000"
+         inkscape:export-ydpi="21.969999"
+         inkscape:export-filename="C:\SABROG\Статьи\result.png"
+         transform="matrix(0.66502,0,0,0.80458,248.8,-151.11)"
+         inkscape:export-xdpi="21.969999"
+         cx="427.14285"
+         cy="345.21933"
+         rx="204.28572"
+         ry="152.85715" />
+      <ellipse
+         id="path7500"
+         style="fill:url(#linearGradient14363);fill-rule:evenodd;stroke:#000000"
+         inkscape:export-ydpi="21.969999"
+         inkscape:export-filename="C:\SABROG\Статьи\result.png"
+         transform="matrix(0.60936,0,0,0.72962,271.62,-124.08)"
+         inkscape:export-xdpi="21.969999"
+         cx="427.14285"
+         cy="345.21933"
+         rx="204.28572"
+         ry="152.85715" />
+      <ellipse
+         id="path8473"
+         style="fill:url(#radialGradient14365);fill-rule:evenodd;stroke:#000000"
+         inkscape:export-ydpi="21.969999"
+         inkscape:export-filename="C:\SABROG\Статьи\result.png"
+         transform="matrix(0.5769,0,0,0.67713,286.44,-108.26)"
+         inkscape:export-xdpi="21.969999"
+         cx="427.14285"
+         cy="345.21933"
+         rx="204.28572"
+         ry="152.85715" />
+      <ellipse
+         id="path9452"
+         style="fill:url(#linearGradient14367);fill-rule:evenodd;stroke:#000000"
+         inkscape:export-ydpi="21.969999"
+         inkscape:export-filename="C:\SABROG\Статьи\result.png"
+         transform="matrix(0.48877,0,0,0.55719,325.03,-68.004)"
+         inkscape:export-xdpi="21.969999"
+         cx="427.14285"
+         cy="345.21933"
+         rx="204.28572"
+         ry="152.85715" />
+    </g>
+  </g>
+  <metadata
+     id="metadata23">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title></dc:title>
+        <dc:date>2008-02-27T09:36:52</dc:date>
+        <dc:description />
+        <dc:source>https://openclipart.org/detail/15012/white-circle-button-by-sabrog-15012</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>SABROG</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>button</rdf:li>
+            <rdf:li>circle</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>
