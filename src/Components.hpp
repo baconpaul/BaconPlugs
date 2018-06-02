@@ -21,7 +21,7 @@ template <typename T, int px = 4>
 struct SevenSegmentLight : T {
   int lx, ly, ppl;
   std::vector< Rect > unscaledLoc;
-  int elementsByNum[ 10 ][ 7 ] = {
+  int elementsByNum[ 16 ][ 7 ] = {
     { 1, 1, 1, 1, 1, 1, 0 },
     { 0, 1, 1, 0, 0, 0, 0 },
     { 1, 1, 0, 1, 1, 0, 1 },
@@ -31,7 +31,14 @@ struct SevenSegmentLight : T {
     { 1, 0, 1, 1, 1, 1, 1 },
     { 1, 1, 1, 0, 0, 0, 0 },
     { 1, 1, 1, 1, 1, 1, 1 },
-    { 1, 1, 1, 1, 0, 1, 1 }
+    { 1, 1, 1, 1, 0, 1, 1 },
+
+    { 1, 1, 1, 0, 1, 1, 1 }, // A
+    { 0, 0, 1, 1, 1, 1, 1 }, // b
+    { 1, 0, 0, 1, 1, 1, 0 }, // C
+    { 0, 1, 1, 1, 1, 0, 1 }, // d
+    { 1, 0, 0, 1, 1, 1, 1 }, // E
+    { 1, 0, 0, 0, 1, 1, 1 } // F
   };
 
   const static int sx = px * 6 + 2;
@@ -39,6 +46,7 @@ struct SevenSegmentLight : T {
   int pvalue;
 
   int decimalPos;
+  bool hexMode;
   
   BufferedDrawFunctionWidget<SevenSegmentLight<T, px>> *buffer;
   
@@ -50,6 +58,7 @@ struct SevenSegmentLight : T {
     pvalue = 0;
     this->box.size = Vec( sx, sy );
     decimalPos = 1;
+    hexMode = false;
 
     // https://en.wikipedia.org/wiki/Seven-segment_display#/media/File:7_segment_display_labeled.svg
     unscaledLoc.push_back( Rect( Vec( 2, 1 ), Vec( 3, 1 ) ) );
@@ -69,7 +78,15 @@ struct SevenSegmentLight : T {
   void draw( NVGcontext *vg ) override
   {
     float fvalue = this->module->lights[ this->firstLightId ].value;
-    int value = int( fvalue / decimalPos ) % 10;
+    int value = 1;
+    if( hexMode )
+      {
+        value = (int)( fvalue ) % 16;
+      }
+    else
+      {
+        value = int( fvalue / decimalPos ) % 10;
+      }
 
     if( value != pvalue )
       {
@@ -157,6 +174,12 @@ struct SevenSegmentLight : T {
   static SevenSegmentLight< T, px > *create(Vec pos, Module *module, int firstLightId, int decimal) {
     auto *o = ModuleLightWidget::create<SevenSegmentLight<T,px>>(pos, module, firstLightId);
     o->decimalPos = decimal;
+    return o;
+  }
+
+  static SevenSegmentLight< T, px > *createHex(Vec pos, Module *module, int firstLightId ) {
+    auto *o = ModuleLightWidget::create<SevenSegmentLight<T,px>>(pos, module, firstLightId);
+    o->hexMode = 1;
     return o;
   }
 
