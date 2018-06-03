@@ -116,6 +116,7 @@ struct QuantEyes : virtual Module {
 
 struct QuantEyesWidget : ModuleWidget {
   QuantEyesWidget( QuantEyes *model );
+  void appendContextMenu( Menu * ) override;
 };
 
 QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
@@ -185,6 +186,38 @@ QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
                                                                     module,
                                                                     QuantEyes::ROOT_LIGHT ) );
 
+}
+
+
+
+struct QuantEyesScaleItem : MenuItem {
+  QuantEyes *quanteyes;
+  void onAction(EventAction &e) override {
+    info( "Selecting pre-canned scale %s", text.c_str() );
+  }
+  void setScale( std::string scaleData )
+  {
+  }
+};
+
+void QuantEyesWidget::appendContextMenu(Menu *menu) {
+  menu->addChild(MenuEntry::create());
+  menu->addChild(MenuLabel::create( "Scales:" ) );
+  QuantEyes *qe = dynamic_cast<QuantEyes*>(module);
+  assert(qe);
+
+  auto addScale = [&]( const char* name, const char* scale )
+  {
+    QuantEyesScaleItem *scaleItem = MenuItem::create<QuantEyesScaleItem>(name);
+    scaleItem->quanteyes = qe;
+    scaleItem->setScale( scale );
+    menu->addChild(scaleItem);
+  };
+
+  addScale( "Major", "W W H W W W H" );
+  addScale( "Natural Minor", "W H W W H W W" );
+  addScale( "Harmonic Minor", "W H W W H WH H" );
+  addScale( "Whole tone", "W W W W W W" );
 }
 
 Model *modelQuantEyes = Model::create< QuantEyes, QuantEyesWidget > ("Bacon Music", "QuantEyes", "QuantEyes", QUANTIZER_TAG);
