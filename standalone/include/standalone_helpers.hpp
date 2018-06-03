@@ -91,6 +91,8 @@ struct BufferPlayer : StepHandler
   float *buf;
   int nsamps;
   int pos;
+
+  
   BufferPlayer( float *_buf, int _nsamps )
     :
     StepHandler(),
@@ -115,8 +117,19 @@ struct BufferPlayer : StepHandler
     return 0;
     
   }
-
 };
+
+void playBuffer( float *b, size_t n )
+{
+  BufferPlayer bp( b, n );
+  bp.playAudioUntilStepsDone();
+}
+
+void playBuffer( std::vector< float > b )
+{
+  playBuffer( b.data(), b.size() );
+}
+
   
 struct StandaloneModule
 {

@@ -76,11 +76,11 @@ struct Phaser
   {
     float filtV = input;
     size_t i = 0;
-    for( auto f : filters )
-      {
-        f.setRadial( r + dr * lfo, ( i + 0.5 + 0.47 * lfo ) * dtheta );
-        filtV = f.process( filtV );
 
+    for( auto &f : filters )
+      {
+        f.setRadial( r + dr * lfo, ( i + 0.5 + lfo ) * dtheta );
+        filtV = f.process( filtV );
         ++i;
       }
 

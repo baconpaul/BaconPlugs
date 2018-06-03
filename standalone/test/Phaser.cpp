@@ -10,9 +10,8 @@
 
 typedef std::vector< float > flvec;
 
-flvec sinbuf( float freq )
+flvec sinbuf( float freq, int n )
 {
-  int n = engineGetSampleRate() / 10;
   flvec result;
   for( int i=0; i<n; ++i )
     {
@@ -20,6 +19,12 @@ flvec sinbuf( float freq )
       result.push_back( sin( t * 2 * M_PI * freq ) );
     }
   return result;
+}
+
+flvec sinbuf( float freq )
+{
+  int n = engineGetSampleRate() / 10;
+  return sinbuf( freq, n );
 }
 
 float bufMag( flvec buf )
@@ -60,6 +65,42 @@ TEST_CASE( "All Pass Filter generates min per python" )
   CHECK( rmsAtF( 0.931063, 0.188736, 1700.000000 ) ==  Approx( 0.543379f ).margin( 5e-5 ) );
 }
 
-TEST_CASE( "All Pass Filter matches python under zR zI changes" )
+flvec sqrBuf( float freq )
 {
+  int n = (int)(engineGetSampleRate() * 4 );
+  // int n = 30;
+  flvec res;
+  for( int i=0; i<n; ++i )
+    {
+      float t = i * engineGetSampleTime();
+      float s = sin( t * 2 * M_PI * freq );
+      res.push_back( s > 0 ? 1 : -1 );
+    }
+  return res;
+}
+
+TEST_CASE( "Square Buffer gets phased" )
+{
+  CHECK( bufMag( sqrBuf( 220 ) ) == Approx( sqrt( 2 ) / 2 ) );
+
+  flvec s220 = sqrBuf( 220 );
+  flvec s4 = sqrBuf( 440 * pow( 2.0, 3.0/12.0 ) );
+  flvec s7 = sqrBuf( 220 * pow( 2.0, 7.0 / 12.0 ) );
+
+  flvec chord;
+  for( int i=0; i<s220.size(); ++i )
+    chord.push_back( ( s220[ i ] + s4[ i ] + s7[ i ] ) / 3 );
+
+  CHECK( bufMag( chord ) == Approx( 0.408 ).margin( 1e-3 ) );
+
+  flvec lfo = sinbuf( 1.0, chord.size() );
+  std::transform( lfo.begin(), lfo.end(), lfo.begin(), []( float e ) -> float { return e * 0.47; } );
+
+  Phaser ph;
+  flvec phased;
+  for( int i=0; i<chord.size(); ++i )
+    phased.push_back( ph.process( chord[ i ], lfo[ i ] ) );
+
+  CHECK( bufMag( phased ) == Approx( 0.315 ).margin( 1e-3 ) );
+  // playBuffer( phased );
 }
