@@ -75,6 +75,9 @@ certain notes to allow you to pick scales to which you quantize.
 Since quantizing to scales could be useful for multiple things driving oscillators, 
 you can apply this quantization to up to 3 inputs using the same scale.
 
+If you would like some scale presets, the right mouse button will set to a few scales.
+If you want to add more pre-canned scales it's easy for me to do. Just open a github issue.
+
 Finally, you can choose where the "root" note is in CV space. The default is that
 1 volt is the "R" note, but if you set root to 3, then 1 3/12 volts would be R. If you don't
 understand this, send in a changing signal, select only the R note in the set of LED buttons, 
