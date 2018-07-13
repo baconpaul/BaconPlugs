@@ -1,5 +1,6 @@
 #include "BaconPlugs.hpp"
 #include "dsp/digital.hpp"
+#include <initializer_list>
 
 #define SCALE_LENGTH 12
 
@@ -192,11 +193,27 @@ QuantEyesWidget::QuantEyesWidget( QuantEyes *model ) : ModuleWidget( model )
 
 struct QuantEyesScaleItem : MenuItem {
   QuantEyes *quanteyes;
+  typedef std::initializer_list<int> scale_t;
+
+  scale_t scale;
+  
   void onAction(EventAction &e) override {
     info( "Selecting pre-canned scale %s", text.c_str() );
+    quanteyes->scaleState[ 0 ] = 10;
+    for( auto i=1; i<SCALE_LENGTH; ++i )
+      quanteyes->scaleState[ i ] = 0;
+
+    int pos = 0;
+    for( auto p : scale )
+      {
+        pos += p;
+        if( pos < SCALE_LENGTH )
+          quanteyes->scaleState[ pos ] = 10;
+      }
   }
-  void setScale( std::string scaleData )
+  void setScale(  scale_t scaleData )
   {
+    scale = scaleData; 
   }
 };
 
@@ -204,9 +221,8 @@ void QuantEyesWidget::appendContextMenu(Menu *menu) {
   menu->addChild(MenuEntry::create());
   menu->addChild(MenuLabel::create( "Scales:" ) );
   QuantEyes *qe = dynamic_cast<QuantEyes*>(module);
-  assert(qe);
 
-  auto addScale = [&]( const char* name, const char* scale )
+  auto addScale = [&]( const char* name,  QuantEyesScaleItem::scale_t scale )
   {
     QuantEyesScaleItem *scaleItem = MenuItem::create<QuantEyesScaleItem>(name);
     scaleItem->quanteyes = qe;
@@ -214,10 +230,10 @@ void QuantEyesWidget::appendContextMenu(Menu *menu) {
     menu->addChild(scaleItem);
   };
 
-  addScale( "Major", "W W H W W W H" );
-  addScale( "Natural Minor", "W H W W H W W" );
-  addScale( "Harmonic Minor", "W H W W H WH H" );
-  addScale( "Whole tone", "W W W W W W" );
+  addScale( "Major", { 2, 2, 1, 2, 2, 2, 1 } );
+  addScale( "Natural Minor", { 2, 1, 2, 2, 1, 2, 2 } );
+  addScale( "Harmonic Minor", { 2, 1, 2, 2, 1, 3, 1 } );
+  addScale( "Whole Tone", { 2, 2, 2, 2, 2, 2 } );
 }
 
 Model *modelQuantEyes = Model::create< QuantEyes, QuantEyesWidget > ("Bacon Music", "QuantEyes", "QuantEyes", QUANTIZER_TAG);
