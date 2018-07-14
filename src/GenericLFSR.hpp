@@ -2,7 +2,9 @@ template< class TBase >
 struct GenericLFSR : TBase
 {
   enum ParamIds {
-    NUM_PARAMS
+    SEED_LSB,
+    
+    NUM_PARAMS = SEED_LSB + 4
   };
 
   enum InputIds {
@@ -14,7 +16,9 @@ struct GenericLFSR : TBase
   };
 
   enum LightIds {
-    NUM_LIGHTS
+    SEED_LIGHT_LSB,
+    
+    NUM_LIGHTS = SEED_LIGHT_LSB + 4
   };
   
   using TBase::params;
@@ -28,6 +32,7 @@ struct GenericLFSR : TBase
 
   void step() override
   {
+    lights[ SEED_LIGHT_LSB ].value = params[ SEED_LSB ].value;
   }
 
 };
