@@ -37,5 +37,6 @@ extern Model *modelKarplusStrongPoly;
 
 extern Model *modelALingADing;
 extern Model *modelBitulator;
+extern Model *modelPhaser;
 
 #endif

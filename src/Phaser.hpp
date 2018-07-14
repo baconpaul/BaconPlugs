@@ -55,7 +55,7 @@ struct Phaser
   float depth; // 0 -> 1
   int   nfilters;
 
-  float r, dr, dtheta;
+  float r0, dr, theta0, dtheta;
 
   std::vector< AllPassFilter > filters;
   
@@ -63,11 +63,12 @@ struct Phaser
     :
     nfilters( 6 )
   {
-    for( size_t i =0; i<nfilters; ++i )
+    for( auto i =0; i<nfilters; ++i )
       filters.push_back( AllPassFilter() );
 
     dtheta = 3.14159265 / 2.0 / ( nfilters + 1 );
-    r = 0.92;
+    theta0 = dtheta * 0.5;
+    r0 = 0.92;
     dr = 0.03;
     depth = 1.0;
   }
@@ -79,11 +80,71 @@ struct Phaser
 
     for( auto &f : filters )
       {
-        f.setRadial( r + dr * lfo, ( i + 0.5 + lfo ) * dtheta );
+        f.setRadial( r0 + dr * lfo, ( i + lfo ) * dtheta + theta0 );
         filtV = f.process( filtV );
         ++i;
       }
 
     return 0.5 * ( input + depth * filtV );
+  }
+
+  struct SimpleInternalLFO
+  {
+    float phase = 0.0f;
+    float freq = 1.0f;
+    
+    void setFreq( float f ) {
+      freq = f;
+    }
+    
+    float step( float dt )
+    {
+      phase += freq * dt;
+      if( phase > 1.0f )
+        phase -= 1.0f;
+      return sin( 2 * M_PI * phase );
+    }
+
+  };
+};
+
+template <typename TBase>
+struct PhaserModule : public TBase {
+  using TBase::params;
+  using TBase::inputs;
+  using TBase::outputs;
+  using TBase::lights;
+
+  Phaser p;
+  Phaser::SimpleInternalLFO l;
+
+  enum ParamIds {
+    NUM_PARAMS
+  };
+
+  enum InputIds {
+    SIGNAL_IN,
+    LFO_IN,
+    NUM_INPUTS
+  };
+
+  enum OutputIds {
+    PHASED,
+    NUM_OUTPUTS
+  };
+
+  enum LightIds {
+    NUM_LIGHTS
+  };
+
+  PhaserModule() : TBase( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS )
+  {
+  }
+
+  void step() override
+  {
+    float lfov = l.step( engineGetSampleTime() );
+    float res = p.process( inputs[ SIGNAL_IN ].value, lfov );
+    outputs[ PHASED ].value = res;
   }
 };

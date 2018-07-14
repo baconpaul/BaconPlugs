@@ -31,5 +31,6 @@ void init(rack::Plugin *p) {
   
   p->addModel( modelALingADing );
   p->addModel( modelBitulator );
+  p->addModel( modelPhaser );
 
 }
