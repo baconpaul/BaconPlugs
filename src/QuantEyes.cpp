@@ -67,6 +67,17 @@ struct QuantEyes : virtual Module {
             double octave, note;
             note = modf( in, &octave );
 
+            // In the event we get negative input, modf has the behavior of making both outputs negative.
+            // So 1.23 gives .23 in note and 1 in octave
+            // -1.23 gives -.23 in note and -1 in octave which is the same as .77 in note and -2 in octave
+            if( in < 0 )
+              {
+                note += 1;
+                octave -= 1;
+              }
+            
+            // assert( note >= 0 );
+
             // We need to re-mod note since the root can make our range of the integer note
             // somewhere other than (0,1) so first push by root
             float noteF = ( floor( note * SCALE_LENGTH ) + root );
