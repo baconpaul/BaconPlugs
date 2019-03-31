@@ -45,9 +45,7 @@ jobs:
   - bash: |
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       export CC=gcc
-      make dist
-      mkdir products_win/
-      cp dist/*zip products_win/
+      make all
     displayName: Build Windows Plugins
     condition: variables.isWindows
 
@@ -70,18 +68,21 @@ jobs:
 
   - task: PublishPipelineArtifact@0
     inputs:
+      artifactName: 'BACONPLUGS_ZIP_LINUX'
       targetPath: 'products_lin/'
     displayName: Publish Linux Zip
     condition: variables.isLinux
 
   - task: PublishPipelineArtifact@0
     inputs:
-      targetPath: 'products_win/'
+      artifactName: 'BACONPLUGS_ALL_WIN'  
+      targetPath: 'dist/'
     displayName: Publish Windows Zip
     condition: variables.isWindows
 
   - task: PublishPipelineArtifact@0
     inputs:
+      artifactName: 'BACONPLUGS_ZIP_MACOS'  
       targetPath: 'products_mac/'
     displayName: Publish macOS Zip
     condition: variables.isMac
