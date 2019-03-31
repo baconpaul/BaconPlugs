@@ -119,6 +119,8 @@ struct PhaserModule : public TBase {
   Phaser::SimpleInternalLFO l;
 
   enum ParamIds {
+    DEPTH,
+    ILFO_FREQ,
     NUM_PARAMS
   };
 
@@ -143,6 +145,7 @@ struct PhaserModule : public TBase {
 
   void step() override
   {
+    p.depth = params[ DEPTH ].value;
     float lfov = l.step( engineGetSampleTime() );
     float res = p.process( inputs[ SIGNAL_IN ].value, lfov );
     outputs[ PHASED ].value = res;
