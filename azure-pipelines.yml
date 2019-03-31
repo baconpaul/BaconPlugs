@@ -5,15 +5,46 @@
 
 trigger:
 - master
+- candidate*
+- release*
 
-pool:
-  vmImage: 'Ubuntu-16.04'
+pr:
+- master
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+jobs:
+- job: Build
+  strategy:
+    matrix:
+      mac:
+        imageName: 'macos-10.13'
+        isMac: true
+      windows:
+        imageName: 'vs2017-win2016'
+        isWindows: true
+      linux:
+        imageName: 'ubuntu-16.04'
+        isLinux: true
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+  - checkout: self
+    fetchDepth: 1
+    # submodules: recursive # can't do submodules here b'cuz depth=1 fails with Github
+
+  - bash: |
+      pushd $AGENT_TEMPDIRECTORY
+      curl -o Rack-SDK.zip  https://vcvrack.com/downloads/Rack-SDK-0.6.2.zip
+      unzip Rack-SDK.zip
+      ls -alFh
+      ls -alFh Rack-SDK
+      popd
+    displayName: Get Rack  
+
+  - bash: |
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+      make dist
+    displayName: Build plugins
+
+  
