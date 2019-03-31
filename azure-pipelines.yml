@@ -46,30 +46,45 @@ jobs:
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       export CC=gcc
       make dist
+      mkdir products_win/
+      cp dist/*zip products_win/
     displayName: Build Windows Plugins
     condition: variables.isWindows
 
   - bash: |
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       make dist
+      mkdir products_mac/
+      cp dist/*zip products_mac/
     displayName: Build Mac Plugins
     condition: variables.isMac
 
   - bash: |
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       make dist
+      mkdir products_lin/
+      cp dist/*zip products_lin/
     displayName: Build Linux Plugins
     condition: variables.isLinux
 
-  - bash: |
-      mkdir products/
-      mv dist/*.zip products
-    displayName: Relocate Zip Files
 
   - task: PublishPipelineArtifact@0
     inputs:
-      targetPath: 'products/'
-    displayName: Publish architecture zip
+      targetPath: 'products_lin/'
+    displayName: Publish Linux Zip
+    condition: variables.isLinux
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      targetPath: 'products_win/'
+    displayName: Publish Windows Zip
+    condition: variables.isWindows
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      targetPath: 'products_mac/'
+    displayName: Publish macOS Zip
+    condition: variables.isMac
 
 
   
