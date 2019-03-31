@@ -43,6 +43,14 @@ jobs:
     displayName: Get Rack  
 
   - bash: |
+      nuget install chocolatey
+      choco install -y mingw
+      where.exe cc
+      where.exe mingw-make 
+    condition: variables.isWindows
+    displayName: Install MinGW for Windows
+
+  - bash: |
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       make dist
     displayName: Build plugins
