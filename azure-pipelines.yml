@@ -43,15 +43,33 @@ jobs:
     displayName: Get Rack  
 
   - bash: |
-      where cc
-      where gcc    
-      where mingw-make 
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+      export CC=gcc
+      make dist
+    displayName: Build Windows Plugins
     condition: variables.isWindows
-    displayName: Install MinGW for Windows
 
   - bash: |
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       make dist
-    displayName: Build plugins
+    displayName: Build Mac Plugins
+    condition: variables.isMac
+
+  - bash: |
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+      make dist
+    displayName: Build Linux Plugins
+    condition: variables.isLinux
+
+  - bash: |
+      mkdir products/
+      mv dist/*.zip products
+    displayName: Relocate Zip Files
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      targetPath: 'products/'
+    displayName: Publish architecture zip
+
 
   
