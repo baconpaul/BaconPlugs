@@ -42,6 +42,10 @@ issue_blurb:	dist
 	@echo "* Transaction: " `git rev-parse HEAD`
 	@echo "* Branch: " `git rev-parse --abbrev-ref HEAD`
 
+install_local:	dist
+	unzip -o dist/$(SLUG)-$(VERSION)-$(ARCH).zip -d ~/Documents/Rack/plugins
+	
+
 push_git:
 	@echo "Pushing current branch to git and dropbox"
 	git push dropbox `git rev-parse --abbrev-ref HEAD`

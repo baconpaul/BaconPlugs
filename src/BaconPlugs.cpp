@@ -25,12 +25,16 @@ void init(rack::Plugin *p) {
   p->addModel( modelChipWaves );
   p->addModel( modelChipYourWave );
 
+#ifdef BUILD_GENERICLSFR
   p->addModel( modelGenericLFSR );
+#endif
 
   p->addModel( modelKarplusStrongPoly );
   
   p->addModel( modelALingADing );
   p->addModel( modelBitulator );
+#ifdef BUILD_PHASER
   p->addModel( modelPhaser );
+#endif
 
 }
