@@ -45,8 +45,11 @@ jobs:
   - bash: |
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       export CC=gcc
-      make all
-      echo "Zip is not installed on azure it seems. Skipping dist"
+
+      make win-dist
+
+      mkdir products_win/
+      cp dist/*zip products_win/
     displayName: Build Windows Plugins
     condition: variables.isWindows
 
@@ -66,7 +69,6 @@ jobs:
     displayName: Build Linux Plugins
     condition: variables.isLinux
 
-
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'BACONPLUGS_ZIP_LINUX'
@@ -80,6 +82,13 @@ jobs:
       targetPath: 'products_mac/'
     displayName: Publish macOS Zip
     condition: variables.isMac
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'BACONPLUGS_ZIP_WIN'  
+      targetPath: 'products_win/'
+    displayName: Publish Windows Zip
+    condition: variables.isWindows
 
 
   

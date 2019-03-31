@@ -1,7 +1,6 @@
 
 SLUG = BaconMusic
-
-VERSION = 0.6.2
+VERSION = 0.6.3
 RELEASE_BRANCH = release_0.6.2
 
 # FLAGS will be passed to both the C and C++ compiler
@@ -44,9 +43,24 @@ issue_blurb:	dist
 
 install_local:	dist
 	unzip -o dist/$(SLUG)-$(VERSION)-$(ARCH).zip -d ~/Documents/Rack/plugins
-	
 
 push_git:
 	@echo "Pushing current branch to git and dropbox"
 	git push dropbox `git rev-parse --abbrev-ref HEAD`
 	git push github `git rev-parse --abbrev-ref HEAD`
+
+win-dist: all
+	rm -rf dist
+	mkdir -p dist/$(SLUG)
+	@# Strip and copy plugin binary
+	cp $(TARGET) dist/$(SLUG)/
+ifdef ARCH_MAC
+	$(STRIP) -S dist/$(SLUG)/$(TARGET)
+else
+	$(STRIP) -s dist/$(SLUG)/$(TARGET)
+endif
+	@# Copy distributables
+	cp -R $(DISTRIBUTABLES) dist/$(SLUG)/
+	@# Create ZIP package
+	echo "cd dist && 7z.exe a $(SLUG)-$(VERSION)-$(ARCH).zip -r $(SLUG)"
+	cd dist && 7z.exe a $(SLUG)-$(VERSION)-$(ARCH).zip -r $(SLUG)
