@@ -64,6 +64,14 @@ struct SizeTable< SABROGWhite >
   constexpr static const float Y = 27.0;
 };
 
+
+template<>
+struct SizeTable< NKK >
+{
+  constexpr static const float X = 32.0;
+  constexpr static const float Y = 44.0;
+};
+
 // Diff Y to center
 template< typename T1, typename T2 >
 float diffY2c()

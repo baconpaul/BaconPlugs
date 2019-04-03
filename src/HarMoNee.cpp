@@ -10,10 +10,18 @@ struct HarMoNee : Module {
     MAJOR_THIRD,
     FIFTH,
     OCTAVE,
+    GLISS_RATE,
     NUM_PARAMS
   };
   enum InputIds {
     SOURCE_INPUT,
+    UP_OR_DOWN_CV,
+    HALF_STEP_CV,
+    WHOLE_STEP_CV,
+    MINOR_THIRD_CV,
+    MAJOR_THIRD_CV,
+    FIFTH_CV,
+    OCTAVE_CV,
     NUM_INPUTS
   };
   enum OutputIds {
@@ -37,6 +45,7 @@ struct HarMoNee : Module {
   };
   
   std::vector< float > offsets;
+
   float priorOffset;
   float targetOffset;
   int offsetCount;
@@ -92,12 +101,36 @@ void HarMoNee::step() {
           lights[ i + ld ].value = 0.0;
         }
     }
+
+  /*
+  ** And the CV inputs
+  */
+  ld = HALF_STEP_LIGHT - HALF_STEP_CV;
+  for( int i=UP_OR_DOWN_CV; i<=OCTAVE_CV; ++i )
+  {
+      if( inputs[ i ].value > 5.0f )
+      {
+          if( i == UP_OR_DOWN_CV )
+          {
+              lights[ UP_LIGHT ].value = 1; lights[ DOWN_LIGHT ].value = 0;
+              uod = 1;
+          }
+          else
+          {
+              lights[ i  + ld ].value = 1.0;
+              offsetI += offsets[ i - UP_OR_DOWN_CV + UP_OR_DOWN ];
+          }
+      }
+  }
+  
   lights[ DIGIT_LIGHT ].value = offsetI;
   
   offsetI = uod * offsetI / 12.0;
 
-  int shift_time = 44000 / 5;
-  /* Glissando state management
+  int shift_time = engineGetSampleRate() / 10 * params[ GLISS_RATE ].value;
+  /* Glissando state management which basically makes it so that
+     you don't click when you change a value
+
      - priorOffset is the place we are starting the glide from
      - targetOffset is where we are headed
      - offsetI is where the switches are set
@@ -159,7 +192,7 @@ struct HarMoNeeWidget : ModuleWidget {
 
 HarMoNeeWidget::HarMoNeeWidget( HarMoNee *model ) : ModuleWidget( model )
 {
-  box.size = Vec( SCREW_WIDTH*8 , RACK_HEIGHT );
+  box.size = Vec( SCREW_WIDTH*10 , RACK_HEIGHT );
 
   BaconBackground *bg = new BaconBackground( box.size, "HarMoNee" );
 
@@ -177,8 +210,14 @@ HarMoNeeWidget::HarMoNeeWidget( HarMoNee *model ) : ModuleWidget( model )
   bg->addPlugLabel( iPos, BaconBackground::SIG_OUT, "harm" );
   addOutput( Port::create<PJ301MPort>(iPos, Port::OUTPUT, module, HarMoNee::INCREASED_OUTPUT ) );
 
+  iPos.y += 60;
+  bg->addPlugLabel( iPos, BaconBackground::SIG_IN, "gliss" );
+  addParam( ParamWidget::create< RoundSmallBlackKnob >( iPos, module, HarMoNee::GLISS_RATE, 0.1, 1, 0.55 ) );
+  
   // NKK is 32 x 44
   addParam( ParamWidget::create< NKK >( Vec( 80, 26 ), module, HarMoNee::UP_OR_DOWN, 0, 1, 1 ) );
+  addInput( Port::create<PJ301MPort>(Vec( 80 + SizeTable<NKK>::X + 5, 26 + diffY2c<NKK,PJ301MPort>() ),
+                                     Port::INPUT, module, HarMoNee::UP_OR_DOWN_CV ) );
   bg->addLabel( Vec( 74, 26+22-4-5-5 ), "up", 12, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM );
   addChild( ModuleLightWidget::create< MediumLight< GreenLight >>( Vec( 70, 26 + 22 - 4 - 5 ), module, HarMoNee::UP_LIGHT ) );
 
@@ -202,6 +241,9 @@ HarMoNeeWidget::HarMoNeeWidget( HarMoNee *model ) : ModuleWidget( model )
       bg->addLabel( Vec( 66, y+22 ), labels[ i - HarMoNee::HALF_STEP ],
                     14, NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE );
       addChild( ModuleLightWidget::create< MediumLight< BlueLight > >( Vec( 70, y + 22 - 5 ), module, i + ld ) );
+      addInput( Port::create<PJ301MPort>(Vec( x + SizeTable<NKK>::X + 5, y + diffY2c<NKK,PJ301MPort>() ),
+                                         Port::INPUT, module, HarMoNee::HALF_STEP_CV + i - HarMoNee::HALF_STEP ) );
+
       y += 45;
     }
 }

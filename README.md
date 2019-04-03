@@ -36,7 +36,11 @@ one which is the original, and the second which is modified by a musical amount,
 like a minor 3rd. It spans plus or minus one octave, and is controlled by toggles.
 
 The toggles are additive. So if you want a fourth, choose a major third and a half step 
-both. You get the idea. 
+both.
+
+With release v0.6.4 each of the toggles is controllable by CV. To avoid sudden clicks and
+pops when the voltage changes rapidly, HarMoNee also provides a smooth transition between
+values at a rate set by the Gliss knob.
 
 <a href="https://baconpaul.github.io/audio/HarMoNee.mp3">
 <img src="docs/HarMoNee.png" alt="ExampleQuanteyes Patch">

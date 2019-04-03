@@ -44,6 +44,9 @@ issue_blurb:	dist
 install_local:	dist
 	unzip -o dist/$(SLUG)-$(VERSION)-$(ARCH).zip -d ~/Documents/Rack/plugins
 
+run_local:	install_local
+	/Applications/Rack.app/Contents/MacOS/Rack
+
 push_git:
 	@echo "Pushing current branch to git and dropbox"
 	git push dropbox `git rev-parse --abbrev-ref HEAD`
