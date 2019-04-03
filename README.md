@@ -38,7 +38,7 @@ like a minor 3rd. It spans plus or minus one octave, and is controlled by toggle
 The toggles are additive. So if you want a fourth, choose a major third and a half step 
 both.
 
-With release v0.6.4 each of the toggles is controllable by CV. To avoid sudden clicks and
+With release v0.6.3 each of the toggles is controllable by CV. To avoid sudden clicks and
 pops when the voltage changes rapidly, HarMoNee also provides a smooth transition between
 values at a rate set by the Gliss knob.
 
