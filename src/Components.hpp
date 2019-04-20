@@ -67,7 +67,9 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
     }
 
     void draw(const widget::Widget::DrawArgs &args) override {
-        float fvalue = this->module->lights[this->firstLightId].value;
+        float fvalue = 0;
+        if(this->module)
+            fvalue = this->module->lights[this->firstLightId].value;
         int value = 1;
         if (hexMode) {
             value = (int)(fvalue) % 16;
@@ -513,7 +515,7 @@ struct DotMatrixLightTextWidget
     Module *module;
 
     void draw(const DrawArgs &args) override {
-        if (dirtyfn(this->module)) {
+        if (this->module && dirtyfn(this->module)) {
             currentText = getfn(this->module);
             buffer->dirty = true;
         }
