@@ -4,15 +4,15 @@
 #include "rack.hpp"
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 using namespace rack;
 
 #define SCREW_WIDTH 15
 #define RACK_HEIGHT 380
 
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
 #include "Components.hpp"
 
@@ -21,7 +21,6 @@ extern Model *modelGlissinator;
 extern Model *modelQuantEyes;
 extern Model *modelPolyGnome;
 extern Model *modelSampleDelay;
-
 
 #ifdef BUILD_SORTACHORUS
 extern Model *modelSortaChorus;

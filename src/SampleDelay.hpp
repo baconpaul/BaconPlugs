@@ -1,58 +1,46 @@
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
-template< typename TBase >
-struct SampleDelay : virtual TBase {
-  enum ParamIds {
-    DELAY_KNOB,
-    NUM_PARAMS
-  };
+template <typename TBase> struct SampleDelay : virtual TBase {
+    enum ParamIds { DELAY_KNOB, NUM_PARAMS };
 
-  enum InputIds {
-    SIGNAL_IN,
-    NUM_INPUTS
-  };
+    enum InputIds { SIGNAL_IN, NUM_INPUTS };
 
-  enum OutputIds {
-    SIGNAL_OUT,
-    NUM_OUTPUTS
-  };
+    enum OutputIds { SIGNAL_OUT, NUM_OUTPUTS };
 
-  enum LightIds {
-    DELAY_VALUE_LIGHT,
-    NUM_LIGHTS
-  };
+    enum LightIds { DELAY_VALUE_LIGHT, NUM_LIGHTS };
 
-  using TBase::params;
-  using TBase::inputs;
-  using TBase::outputs;
-  using TBase::lights;
+    using TBase::inputs;
+    using TBase::lights;
+    using TBase::outputs;
+    using TBase::params;
 
-  std::vector< float > ring;
-  size_t ringSize;
-  size_t pos;
-  
-  SampleDelay() : TBase( NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS )
-  {
-    params[ DELAY_KNOB ].value = 1;
-    ringSize = 100;
-    ring.resize( ringSize );
-    std::fill( ring.begin(), ring.end(), 0 );
-    pos = 0;
-  }
+    std::vector<float> ring;
+    size_t ringSize;
+    size_t pos;
 
-  void step() override
-  {
-    int del = params[ DELAY_KNOB ].value - 1;
-    int dpos = ( (int)pos - del );
-    if( dpos < 0 ) dpos += ringSize;
+    SampleDelay() : TBase() {
+        TBase::config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        TBase::configParam(DELAY_KNOB, 1, 99, 1, "Samples to delay");
+        ringSize = 100;
+        ring.resize(ringSize);
+        std::fill(ring.begin(), ring.end(), 0);
+        pos = 0;
+    }
 
-    ring[ pos ] = inputs[ SIGNAL_IN ].value;
-    outputs[ SIGNAL_OUT ].value = ring[ dpos ];
-    lights[ DELAY_VALUE_LIGHT ].value = del + 1;
+    void process(const typename TBase::ProcessArgs &args) override {
+        int del = params[DELAY_KNOB].getValue() - 1;
+        int dpos = ((int)pos - del);
+        if (dpos < 0)
+            dpos += ringSize;
 
-    pos++;
-    if( pos >= ringSize ) pos = 0;
-  }
+        ring[pos] = inputs[SIGNAL_IN].getVoltage();
+        outputs[SIGNAL_OUT].setVoltage(ring[dpos]);
+        lights[DELAY_VALUE_LIGHT].value = del + 1;
+
+        pos++;
+        if (pos >= ringSize)
+            pos = 0;
+    }
 };
