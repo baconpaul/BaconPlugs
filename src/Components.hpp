@@ -67,6 +67,10 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
         this->addChild(buffer);
     }
 
+    void step() override {
+        buffer->step();
+    }
+    
     void draw(const widget::Widget::DrawArgs &args) override {
         float fvalue = 0;
         if(this->module)
@@ -81,8 +85,6 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
         
 
         if (value != pvalue) {
-            INFO( "BUFFER DIRTY" );
-            INFO( "Drawing SSL %lf %d", fvalue, value);
             buffer->dirty = true;
         }
 
@@ -92,7 +94,6 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
     }
 
     void drawSegments(NVGcontext *vg) {
-        INFO( "DrawSegments" );
         // This is now buffered to only be called when the value has changed
         int w = this->box.size.x;
         int h = this->box.size.y;
@@ -201,6 +202,15 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget {
         }
     }
 
+    void step() override {
+        ModuleLightWidget::step();
+        
+        for( auto c : children )
+        {
+            c->step();
+        }
+    }
+    
     void draw(const DrawArgs &args) override {
         for (auto it = children.begin(); it != children.end(); ++it) {
             nvgSave(args.vg);
@@ -520,6 +530,10 @@ struct DotMatrixLightTextWidget
     stringGetter getfn;
     Module *module;
 
+    void step() override {
+        buffer->step();
+    }
+    
     void draw(const DrawArgs &args) override {
         if (this->module && dirtyfn(this->module)) {
             currentText = getfn(this->module);
