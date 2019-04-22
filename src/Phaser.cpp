@@ -6,7 +6,8 @@ struct PhaserWidget : ModuleWidget {
     PhaserWidget(M *model);
 };
 
-PhaserWidget::PhaserWidget(PhaserWidget::M *model) : ModuleWidget(model) {
+PhaserWidget::PhaserWidget(PhaserWidget::M *model) : ModuleWidget() {
+    setModule(model);
     box.size = Vec(SCREW_WIDTH * 10, RACK_HEIGHT);
     BaconBackground *bg = new BaconBackground(box.size, "Phaser");
 

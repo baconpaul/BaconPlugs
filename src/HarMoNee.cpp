@@ -187,7 +187,8 @@ struct HarMoNeeWidget : ModuleWidget {
     HarMoNeeWidget(HarMoNee *model);
 };
 
-HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget(model) {
+HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget() {
+    setModule(model);
     box.size = Vec(SCREW_WIDTH * 10, RACK_HEIGHT);
 
     BaconBackground *bg = new BaconBackground(box.size, "HarMoNee");

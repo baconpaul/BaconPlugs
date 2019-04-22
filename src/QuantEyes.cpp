@@ -122,7 +122,8 @@ struct QuantEyesWidget : ModuleWidget {
     void appendContextMenu(Menu *) override;
 };
 
-QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : ModuleWidget(model) {
+QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : ModuleWidget() {
+    setModule(model);
     box.size = Vec(SCREW_WIDTH * 11, RACK_HEIGHT);
 
     BaconBackground *bg = new BaconBackground(box.size, "QuantEyes");

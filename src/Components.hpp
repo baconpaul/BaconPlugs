@@ -293,7 +293,7 @@ struct BaconBackground : virtual TransparentWidget {
     FramebufferWidget *wrappedInFramebuffer();
 };
 
-struct BaconHelpButton : public SVGButton {
+struct BaconHelpButton : public SvgButton {
     std::string url;
     BaconHelpButton(std::string urli) : url(urli) {
         box.pos = Vec(0, 0);
@@ -598,7 +598,7 @@ struct DotMatrixLightTextWidget
 };
 
 // FIXME: Look at correct switch type
-struct SABROGWhite : SVGSwitch /*, MomentarySwitch */ {
+struct SABROGWhite : SvgSwitch /*, MomentarySwitch */ {
     SABROGWhite() {
         addFrame(APP->window->loadSvg(
             asset::plugin(pluginInstance, "res/sabrog-25-up.svg")));
