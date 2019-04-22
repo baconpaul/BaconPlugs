@@ -21,9 +21,9 @@ struct ChipYourWave : virtual Module {
     ChipYourWave() : Module() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(FREQ_KNOB, -54.0, 54.0, 0.0, "Frequency");
-        for (int i = 0; i < 32; ++i) {
-            // FIXME : This is tricky because I can't construct since i don't
-            // know sample rate yet
+        for (int i = 0; i < 16; ++i) {
+            configParam(WAVEFORM_START + (15-i), 0, 1.0, i / 15.0f);
+            configParam(WAVEFORM_START + 16+i, 0, 1.0, i / 15.0f);
         }
     }
 
@@ -83,13 +83,12 @@ ChipYourWaveWidget::ChipYourWaveWidget(ChipYourWave *module) : ModuleWidget() {
 
     bg->addLabel(Vec(bg->cx(), 135), "Draw your Digital Waveform Here", 14,
                  NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
-    /* TODO: FIXME
-      for (int i = 0; i < 32; ++i) {
+    
+    for (int i = 0; i < 32; ++i) {
         addParam(createParam<
                  NStepDraggableLEDWidget<16, RedGreenFromMiddleColorModel>>(
-            Vec(10 + 10 * i, 140), module, ChipYourWave::WAVEFORM_START + i, 0,
-            15, module->narb->getWaveformPoint(i)));
-            }*/
+                     Vec(10 + 10 * i, 140), module, ChipYourWave::WAVEFORM_START + i));
+    }
 }
 
 Model *modelChipYourWave =

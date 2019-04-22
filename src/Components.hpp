@@ -43,7 +43,6 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
     BufferedDrawFunctionWidget<SevenSegmentLight<T, px>> *buffer;
 
     SevenSegmentLight() {
-        INFO( "SSL Constructor" );
         lx = 7;
         ly = 11;
         ppl = px;
@@ -342,7 +341,9 @@ struct NStepDraggableLEDWidget : public ParamWidget {
     }
 
     int getStep() {
-        float pvalue = this->module->params[this->paramId].getValue();
+        float pvalue = 0.0;
+        if(this->paramQuantity)
+            pvalue = this->paramQuantity->getValue();
         int step = (int)pvalue;
         return step;
     }
@@ -352,7 +353,8 @@ struct NStepDraggableLEDWidget : public ParamWidget {
         return (int)(py * NSteps);
     }
 
-    void draw(const DrawArgs &args) override { buffer->draw(args.vg); }
+    void step() override { buffer->step(); ParamWidget::step(); }
+    void draw(const DrawArgs &args) override { buffer->draw(args); }
 
     void valueByMouse(float ey) {
         if (impStep(ey) != getStep()) {

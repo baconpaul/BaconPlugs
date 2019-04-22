@@ -52,7 +52,7 @@ struct HarMoNee : Module {
         configParam(UP_OR_DOWN_CV, 0, 1, 1, "Increase or Decrease by interval");
         for (int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i) {
             int v;
-            if (i == HarMoNee::OCTAVE) {
+            if (i == HarMoNee::MAJOR_THIRD) {
                 v = 1;
             } else {
                 v = 0;
@@ -233,15 +233,10 @@ HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget() {
 
     int x = 80;
     int y = 26 + 45;
-    float v = -1;
     int ld = HarMoNee::HALF_STEP_LIGHT - HarMoNee::HALF_STEP;
 
     const char *labels[] = {"1/2", "W", "m3", "III", "V", "O"};
     for (int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i) {
-        if (i == HarMoNee::OCTAVE) {
-            v = 1;
-        }
-        { v = -1; }
         addParam(createParam<NKK_UpDown>(Vec(x, y), module, i));
         bg->addLabel(Vec(66, y + 22), labels[i - HarMoNee::HALF_STEP], 14,
                      NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE);
