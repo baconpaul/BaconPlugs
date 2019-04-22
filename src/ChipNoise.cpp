@@ -117,10 +117,10 @@ ChipNoiseWidget::ChipNoiseWidget(ChipNoise *module) : ModuleWidget() {
     bg->addRoundedBorder(Vec(8, 135), Vec(SCREW_WIDTH * 6 - 16, 160));
     bg->addLabel(Vec(bg->cx(), 155), "Sequence", 13,
                  NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
-    addParam(createParam<NKK>(Vec(bg->cx() - 32, 175), module,
+    addParam(createParam<NKK_UpDown>(Vec(bg->cx() - 32, 175), module,
                               ChipNoise::LONG_MODE));
     addParam(
-        createParam<NKK>(Vec(bg->cx() + 2, 175), module, ChipNoise::SHORT_LEN));
+        createParam<NKK_UpDown>(Vec(bg->cx() + 2, 175), module, ChipNoise::SHORT_LEN));
     bg->addLabel(Vec(bg->cx() + 16 - 32, 160), "long", 11,
                  NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
     bg->addLabel(Vec(bg->cx() + 16 - 32, 223), "short", 11,

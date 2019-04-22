@@ -26,6 +26,11 @@ template <int H> struct GraduatedFader : app::SvgSlider {
             Vec(0, 0), box.size, this, &GraduatedFader<H>::drawBackground);
     }
 
+    void step() override {
+        notches->step();
+        SvgSlider::step();
+    }
+    
     void draw(const DrawArgs &args) override {
         notches->draw(args);
         SvgSlider::draw(args);

@@ -607,6 +607,13 @@ struct SABROGWhite : SvgSwitch /*, MomentarySwitch */ {
     }
 };
 
+struct NKK_UpDown : app::SvgSwitch {
+	NKK_UpDown() {
+		addFrame(APP->window->loadSvg(asset::system("res/ComponentLibrary/NKK_0.svg")));
+		addFrame(APP->window->loadSvg(asset::system("res/ComponentLibrary/NKK_2.svg")));
+	}
+};
+
 #include "SizeTable.hpp"
 
 #endif

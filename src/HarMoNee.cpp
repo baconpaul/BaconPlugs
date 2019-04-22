@@ -214,7 +214,7 @@ HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget() {
         createParam<RoundSmallBlackKnob>(iPos, module, HarMoNee::GLISS_RATE));
 
     // NKK is 32 x 44
-    addParam(createParam<NKK>(Vec(80, 26), module, HarMoNee::UP_OR_DOWN));
+    addParam(createParam<NKK_UpDown>(Vec(80, 26), module, HarMoNee::UP_OR_DOWN));
     addInput(createInput<PJ301MPort>(
         Vec(80 + SizeTable<NKK>::X + 5, 26 + diffY2c<NKK, PJ301MPort>()),
         module, HarMoNee::UP_OR_DOWN_CV));
@@ -242,7 +242,7 @@ HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget() {
             v = 1;
         }
         { v = -1; }
-        addParam(createParam<NKK>(Vec(x, y), module, i));
+        addParam(createParam<NKK_UpDown>(Vec(x, y), module, i));
         bg->addLabel(Vec(66, y + 22), labels[i - HarMoNee::HALF_STEP], 14,
                      NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE);
         addChild(createLight<MediumLight<BlueLight>>(Vec(70, y + 22 - 5),
