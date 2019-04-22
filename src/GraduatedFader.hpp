@@ -6,7 +6,7 @@ template <int H> struct GraduatedFader : app::SvgSlider {
     int slider_height = 41;
     int slider_width = 20;
     int widget_width = 28;
-    FramebufferWidget *notches;
+    widget::Widget *notches;
 
     GraduatedFader() {
         background->svg = NULL;
@@ -71,7 +71,7 @@ template <int H> struct GraduatedFader : app::SvgSlider {
         nvgFill(vg);
     }
 
-    void onZoom(const ZoomEvent &e) override {
+    void onZoom(const event::Zoom &e) override {
         // Need this because I don't add it as a child, since the base class
         // does something funky with that
         notches->onZoom(e);

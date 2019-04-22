@@ -43,6 +43,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
     BufferedDrawFunctionWidget<SevenSegmentLight<T, px>> *buffer;
 
     SevenSegmentLight() {
+        INFO( "SSL Constructor" );
         lx = 7;
         ly = 11;
         ppl = px;
@@ -71,13 +72,17 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
         if(this->module)
             fvalue = this->module->lights[this->firstLightId].value;
         int value = 1;
+
         if (hexMode) {
             value = (int)(fvalue) % 16;
         } else {
             value = int(fvalue / decimalPos) % 10;
         }
+        
 
         if (value != pvalue) {
+            INFO( "BUFFER DIRTY" );
+            INFO( "Drawing SSL %lf %d", fvalue, value);
             buffer->dirty = true;
         }
 
@@ -87,6 +92,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
     }
 
     void drawSegments(NVGcontext *vg) {
+        INFO( "DrawSegments" );
         // This is now buffered to only be called when the value has changed
         int w = this->box.size.x;
         int h = this->box.size.y;
@@ -199,7 +205,7 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget {
         for (auto it = children.begin(); it != children.end(); ++it) {
             nvgSave(args.vg);
             nvgTranslate(args.vg, (*it)->box.pos.x, (*it)->box.pos.y);
-            (*it)->draw(args.vg);
+            (*it)->draw(args);
             nvgRestore(args.vg);
         }
     }
@@ -298,7 +304,7 @@ struct BaconHelpButton : public SVGButton {
         INFO("Help button configured to: %s", url.c_str());
     }
 
-    void onAction(const widget::ActionEvent &e) override {
+    void onAction(const event::Action &e) override {
         std::thread t([/*this*/]() {
             // systemOpenBrowser(url.c_str() );
         });
@@ -574,7 +580,7 @@ struct DotMatrixLightTextWidget
         }
     }
 
-    void onZoom(const ZoomEvent &e) override { buffer->dirty = true; }
+    void onZoom(const event::Zoom &e) override { buffer->dirty = true; }
 };
 
 // FIXME: Look at correct switch type

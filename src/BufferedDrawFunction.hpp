@@ -9,19 +9,25 @@
 using namespace rack;
 
 template <typename T>
-struct BufferedDrawFunctionWidget : virtual FramebufferWidget {
+struct BufferedDrawFunctionWidget : virtual  FramebufferWidget /* widget::Widget*/ {
     typedef std::function<void(T *, NVGcontext *)> drawfn_t;
+    
+    // Put this in when I change baseclass to compile at least
+    //bool dirty = true;
+    
     T *that;
     drawfn_t drawf;
 
-    struct InternalBDW : TransparentWidget {
+    struct InternalBDW : Widget {
         T *that;
         drawfn_t drawf;
         InternalBDW(Rect box_, T *that_, drawfn_t draw_)
             : that(that_), drawf(draw_) {
             box = box_;
         }
-        void draw(const DrawArgs &args) override { drawf(that, args.vg); }
+        void draw(const DrawArgs &args) override {
+            drawf(that, args.vg);
+        }
     };
 
     BufferedDrawFunctionWidget(Vec pos, Vec sz, T *that_, drawfn_t draw_)

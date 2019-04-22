@@ -196,7 +196,7 @@ struct QuantEyesScaleItem : MenuItem {
 
     scale_t scale;
 
-    void onAction(const widget::ActionEvent &e) override {
+    void onAction(const event::Action &e) override {
         INFO("Selecting pre-canned scale %s", text.c_str());
         quanteyes->scaleState[0] = 10;
         for (auto i = 1; i < SCALE_LENGTH; ++i)
