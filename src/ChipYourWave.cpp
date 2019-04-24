@@ -22,8 +22,8 @@ struct ChipYourWave : virtual Module {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(FREQ_KNOB, -54.0, 54.0, 0.0, "Frequency");
         for (int i = 0; i < 16; ++i) {
-            configParam(WAVEFORM_START + (15-i), 0, 1.0, i / 15.0f);
-            configParam(WAVEFORM_START + 16+i, 0, 1.0, i / 15.0f);
+            configParam(WAVEFORM_START + (15-i), 0, 15.0, i );
+            configParam(WAVEFORM_START + 16+i, 0, 15.0, i );
         }
     }
 

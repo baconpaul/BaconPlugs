@@ -333,7 +333,7 @@ struct NStepDraggableLEDWidget : public ParamWidget {
         box.size = Vec(10, 200);
         dragging = false;
         lastDragPos = Vec(-1, -1);
-
+        
         buffer = new BufferedDrawFunctionWidget<
             NStepDraggableLEDWidget<NSteps, ColorModel>>(
             Vec(0, 0), this->box.size, this,
@@ -357,12 +357,27 @@ struct NStepDraggableLEDWidget : public ParamWidget {
     void draw(const DrawArgs &args) override { buffer->draw(args); }
 
     void valueByMouse(float ey) {
-        if (impStep(ey) != getStep()) {
+        if (impStep(ey) != getStep() && paramQuantity) {
             buffer->dirty = true;
-            setValue(impStep(ey));
+            paramQuantity->setValue(impStep(ey));
         }
     }
 
+    virtual void onButton(const event::Button &e) override {
+        if(e.action == GLFW_PRESS)
+        {
+            lastDragPos = e.pos;
+            valueByMouse(lastDragPos.y);
+        }
+        ParamWidget::onButton(e);
+    }
+
+    virtual void onDragMove(const event::DragMove &e) override {
+        lastDragPos.y += e.mouseDelta.y;
+        valueByMouse(lastDragPos.y);
+        ParamWidget::onDragMove(e);
+    }
+    
 #if FALSE
     void onMouseDown(widget::EventMouseDown &e) override {
         ParamWidget::onMouseDown(e);
