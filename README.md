@@ -9,7 +9,8 @@ they sort of fall into a few groups:
 * and finally, not very useful modulations and  distortions and stuff.
 
 
-All the source is here, released under an Apache 2.0 license. You are free to use
+All the source is here, released as of version 1.0.0 under a GPL3 license. (Prior versions were Apache 2). 
+You are free to use
 these modules as you see fit. If you happen to use them to make music you want to share, please
 do let me know, either by raising an issue on this github or by tagging me on twitter (@baconpaul) or
 soundcloud (@baconpaul).
@@ -280,16 +281,6 @@ I can handle.
 
 Copyright © 2017-2019  Paul Walker
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Licsened under the Gnu Public License, version 3. https://www.gnu.org/licenses/gpl-3.0.en.html
 
 
