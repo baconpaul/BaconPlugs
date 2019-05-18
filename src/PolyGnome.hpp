@@ -17,9 +17,8 @@ template <typename TBase> struct PolyGnome : virtual TBase {
     enum OutputIds {
         CLOCK_GATE_0,
 
-        NUM_OUTPUTS =
-            CLOCK_GATE_0 + NUM_CLOCKS +
-            1 // the "1" is for the 1/4 note clock which isn't parameterized
+        CLOCK_CV_LEVEL = CLOCK_GATE_0 + NUM_CLOCKS + 1, // the "1" is for the 1/4 note clock which isn't parameterized
+        NUM_OUTPUTS
     };
 
     enum LightIds {
@@ -55,8 +54,11 @@ template <typename TBase> struct PolyGnome : virtual TBase {
         return (int)params[CLOCK_DENOMINATOR_1 + i].getValue();
     }
     void process(const typename TBase::ProcessArgs &args) override {
-        float clockTime = powf(2.0f, params[CLOCK_PARAM].getValue() +
-                                         inputs[CLOCK_INPUT].getVoltage());
+        float clockCV = params[CLOCK_PARAM].getValue() +
+            inputs[CLOCK_INPUT].getVoltage();
+        float clockTime = powf(2.0f, clockCV);
+        outputs[CLOCK_CV_LEVEL].setVoltage(clockCV);
+        
         phase += clockTime * args.sampleTime;
 
         while (phase > 1) {

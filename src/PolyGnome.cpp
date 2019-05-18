@@ -21,7 +21,9 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module) : ModuleWidget() {
     addParam(
         createParam<RoundSmallBlackKnob>(Vec(55, 40), module, M::CLOCK_PARAM));
     addInput(createInput<PJ301MPort>(Vec(85, 40), module, M::CLOCK_INPUT));
-
+    // FIXME - label this
+    addOutput(createOutput<PJ301MPort>(Vec( 120, 40), module, M::CLOCK_CV_LEVEL));
+    
     for (size_t i = 0; i <= NUM_CLOCKS; ++i) {
         Vec outP = Vec(box.size.x - 45, 100 + 48 * i);
         if (i == 0) {

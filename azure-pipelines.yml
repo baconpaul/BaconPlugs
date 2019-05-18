@@ -38,19 +38,9 @@ jobs:
 
       pushd $AGENT_TEMPDIRECTORY
       # There is no 1.0 SDK so
-      # curl -o Rack-SDK.zip  https://vcvrack.com/downloads/Rack-SDK-0.6.2.zip
-      # unzip Rack-SDK.zip
+      curl -o Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-1.dev.ddf06a9.zip
+      unzip Rack-SDK.zip
       
-      git clone https://github.com/VCVRack/Rack.git
-      cd Rack
-      git checkout v1
-      git status
-      git submodule update --init --recursive
-      make -j4 dep
-      make -j4
-
-      ls -alFh
-      popd
     displayName: Get Rack 
 
 
