@@ -1,4 +1,5 @@
 #include <math.h>
+#include "rack.hpp"
 #define NUM_CLOCKS 4
 
 template <typename TBase> struct PolyGnome : virtual TBase {
@@ -24,7 +25,8 @@ template <typename TBase> struct PolyGnome : virtual TBase {
     enum LightIds {
         LIGHT_NUMERATOR_1,
         LIGHT_DENOMINATOR_1 = LIGHT_NUMERATOR_1 + NUM_CLOCKS,
-        NUM_LIGHTS = LIGHT_DENOMINATOR_1 + NUM_CLOCKS
+        BPM_LIGHT = LIGHT_DENOMINATOR_1 + NUM_CLOCKS,
+        NUM_LIGHTS
     };
 
     using TBase::inputs;
@@ -43,7 +45,7 @@ template <typename TBase> struct PolyGnome : virtual TBase {
         TBase::configParam(CLOCK_PARAM, -2.0, 6.0, 2.0, "Clock");
         for (int i = 0; i < NUM_CLOCKS; ++i) {
             TBase::configParam(CLOCK_NUMERATOR_1 + i, 1, 30, 1);
-            TBase::configParam(CLOCK_DENOMINATOR_1 + 1, 1, 16, 1);
+            TBase::configParam(CLOCK_DENOMINATOR_1 + i, 1, 16, 1);
         }
     }
 
@@ -58,8 +60,15 @@ template <typename TBase> struct PolyGnome : virtual TBase {
             inputs[CLOCK_INPUT].getVoltage();
         float clockTime = powf(2.0f, clockCV);
         outputs[CLOCK_CV_LEVEL].setVoltage(clockCV);
+
+        float dPhase = clockTime * args.sampleTime;
+        float samplesPerBeat = 1.0/dPhase;
+        float secondsPerBeat = samplesPerBeat / args.sampleRate;
+        float beatsPerMinute = 60.0 / secondsPerBeat;
+        lights[BPM_LIGHT].value = beatsPerMinute;
         
         phase += clockTime * args.sampleTime;
+
 
         while (phase > 1) {
             phase = phase - 1;

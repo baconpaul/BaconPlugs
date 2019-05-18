@@ -27,8 +27,12 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module) : ModuleWidget() {
     for (size_t i = 0; i <= NUM_CLOCKS; ++i) {
         Vec outP = Vec(box.size.x - 45, 100 + 48 * i);
         if (i == 0) {
-            bg->addLabel(Vec(17, outP.y + 21), "Unit (1/1) clock", 13,
+            bg->addLabel(Vec(17, outP.y + 21), "Unit clock bpm", 13,
                          NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
+            addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 3>::create(
+                         Vec(88, outP.y + 2), module,
+                         M::BPM_LIGHT));
+
         } else {
             int yoff = 2;
             // knob light knob light
