@@ -34,16 +34,18 @@ jobs:
     # submodules: recursive # can't do submodules here b'cuz depth=1 fails with Github
 
   - bash: |
+      uname -a
+
       pushd $AGENT_TEMPDIRECTORY
-      curl -o Rack-SDK.zip  https://vcvrack.com/downloads/Rack-SDK-0.6.2.zip
+      # There is no 1.0 SDK so
+      curl -o Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-1.dev.ddf06a9.zip
       unzip Rack-SDK.zip
-      ls -alFh
-      ls -alFh Rack-SDK
-      popd
-    displayName: Get Rack  
+      
+    displayName: Get Rack 
+
 
   - bash: |
-      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack
       export CC=gcc
 
       make win-dist
@@ -54,7 +56,7 @@ jobs:
     condition: variables.isWindows
 
   - bash: |
-      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack
       make dist
       mkdir products_mac/
       cp dist/*zip products_mac/
@@ -62,7 +64,7 @@ jobs:
     condition: variables.isMac
 
   - bash: |
-      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack
       make dist
       mkdir products_lin/
       cp dist/*zip products_lin/

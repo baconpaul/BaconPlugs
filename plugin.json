@@ -1,0 +1,81 @@
+{
+	"slug": "BaconMusic",
+	"name": "Bacon Music",
+	"version": "1.0.0",
+	"license": "Apache-2.0",
+	"author": "@baconpaul",
+	"authorEmail": "",
+	"authorUrl": "https://www.baconpaul.org/",
+	"pluginUrl": "https://github.com/baconpaul/BaconPlugs/",
+	"manualUrl": "",
+	"sourceUrl": "https://github.com/baconpaul/BaconPlugs/",
+	"donateUrl": "",
+	"modules": [
+		{
+			"slug": "HarMoNee",
+			"name": "HarMoNee",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "Glissinator",
+			"name": "Glissinator",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "PolyGnome",
+			"name": "PolyGnome",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "QuantEyes",
+			"name": "QuantEyes",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "SampleDelay",
+			"name": "SampleDelay",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "ChipNoise",
+			"name": "ChipNoise",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "ChipWaves",
+			"name": "ChipWaves",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "ChipYourWave",
+			"name": "ChipYourWave",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "KarplusStrongPoly",
+			"name": "KarplusStrongPoly",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "ALingADing",
+			"name": "ALingADing",
+			"description": "",
+			"tags": []
+		},
+		{
+			"slug": "Bitulator",
+			"name": "Bitulator",
+			"description": "",
+			"tags": []
+		}
+	]
+}
