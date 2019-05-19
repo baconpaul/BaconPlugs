@@ -45,7 +45,7 @@ jobs:
 
 
   - bash: |
-      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       export CC=gcc
 
       make win-dist
@@ -56,7 +56,7 @@ jobs:
     condition: variables.isWindows
 
   - bash: |
-      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       make dist
       mkdir products_mac/
       cp dist/*zip products_mac/
@@ -64,7 +64,7 @@ jobs:
     condition: variables.isMac
 
   - bash: |
-      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack
+      export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       make dist
       mkdir products_lin/
       cp dist/*zip products_lin/
