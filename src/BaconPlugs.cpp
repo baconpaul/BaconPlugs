@@ -30,4 +30,6 @@ void init(rack::Plugin *p) {
 #ifdef BUILD_PHASER
     p->addModel(modelPhaser);
 #endif
+
+    p->addModel(modelPolyGenerator);
 }

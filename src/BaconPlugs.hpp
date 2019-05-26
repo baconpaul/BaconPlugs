@@ -38,4 +38,6 @@ extern Model *modelALingADing;
 extern Model *modelBitulator;
 extern Model *modelPhaser;
 
+extern Model *modelPolyGenerator;
+
 #endif
