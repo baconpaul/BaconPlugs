@@ -11,13 +11,17 @@ struct ChipWaves : virtual Module {
 
     enum LightIds { PULSE_CYCLE_LIGHT, NUM_LIGHTS };
 
-    std::unique_ptr<ChipSym::NESPulse> npulse = nullptr;
-    std::unique_ptr<ChipSym::NESTriangle> ntri = nullptr;
+    // For now just do this the obvious way for polyphony
+    std::vector<std::unique_ptr<ChipSym::NESPulse>> npulse;
+    std::vector<std::unique_ptr<ChipSym::NESTriangle>> ntri;
 
     ChipWaves() : Module() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(PULSE_CYCLE, 0, 3, 0, "NES Pulse Wave Duty Cycle");
         configParam(FREQ_KNOB, -54.0, 54.0, 0.0, "Frequency");
+
+        npulse.resize(16);
+        ntri.resize(16);
     }
 
     float digWFInSeconds(float pitchKnob, float pitchCV) {
@@ -33,27 +37,38 @@ struct ChipWaves : virtual Module {
     }
 
     void process(const ProcessArgs &args) override {
-        if (npulse == nullptr || ntri == nullptr) {
-            npulse.reset(new ChipSym::NESPulse(-5.0, 5.0, args.sampleRate));
-            ntri.reset(new ChipSym::NESTriangle(-5.0, 5.0, args.sampleRate));
-
-            npulse->setDigWavelength(2 << 9);
-            ntri->setDigWavelength(2 << 8);
+        if (npulse[0] == nullptr || ntri[0] == nullptr) {
+            for( int i=0; i<16; ++i )
+            {
+                npulse[i].reset(new ChipSym::NESPulse(-5.0, 5.0, args.sampleRate));
+                ntri[i].reset(new ChipSym::NESTriangle(-5.0, 5.0, args.sampleRate));
+                
+                npulse[i]->setDigWavelength(2 << 9);
+                ntri[i]->setDigWavelength(2 << 8);
+            }
         }
-        float dwf = digWFInSeconds(params[FREQ_KNOB].getValue(),
-                                   12.0f * inputs[FREQ_CV].getVoltage());
 
-        ntri->setWavelengthInSeconds(dwf);
-        npulse->setWavelengthInSeconds(dwf);
+        int chanct = std::max(1, inputs[FREQ_CV].getChannels());
+        outputs[TRI_OUTPUT].setChannels(chanct);
+        outputs[PULSE_OUTPUT].setChannels(chanct);
+        
+        for( int c=0; c<chanct; ++c )
+        {
+            float dwf = digWFInSeconds(params[FREQ_KNOB].getValue(),
+                                       12.0f * inputs[FREQ_CV].getVoltage(c));
 
-        int dc = clamp((int)(params[PULSE_CYCLE].getValue()), 0, 3);
-        npulse->setDutyCycle(dc);
-        lights[PULSE_CYCLE_LIGHT].value = dc;
-
-        if (outputs[TRI_OUTPUT].isConnected())
-            outputs[TRI_OUTPUT].setVoltage(ntri->step());
-        if (outputs[PULSE_OUTPUT].isConnected())
-            outputs[PULSE_OUTPUT].setVoltage(npulse->step());
+            ntri[c]->setWavelengthInSeconds(dwf);
+            npulse[c]->setWavelengthInSeconds(dwf);
+            
+            int dc = clamp((int)(params[PULSE_CYCLE].getValue()), 0, 3);
+            npulse[c]->setDutyCycle(dc);
+            lights[PULSE_CYCLE_LIGHT].value = dc;
+            
+            if (outputs[TRI_OUTPUT].isConnected())
+                outputs[TRI_OUTPUT].setVoltage(ntri[c]->step(), c);
+            if (outputs[PULSE_OUTPUT].isConnected())
+                outputs[PULSE_OUTPUT].setVoltage(npulse[c]->step(), c);
+        }
     }
 };
 

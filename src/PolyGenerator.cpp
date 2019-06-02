@@ -14,6 +14,10 @@ PolyGeneratorWidget::PolyGeneratorWidget(PolyGenerator *model)
 
     addChild(bg->wrappedInFramebuffer());
 
+    addParam(createParam<RoundSmallBlackKnob>(Vec(55, 40), module, M::BPM_PARAM));
+    addParam(createParam<RoundSmallBlackKnob>(Vec(55, 70), module, M::VOICES_PARAM));
+    addParam(createParam<RoundSmallBlackKnob>(Vec(55, 100), module, M::PATTERN_PARAM));
+
     Vec toneP = Vec(7, RACK_HEIGHT - 15 - 43);
     Vec velP  = Vec(box.size.x/2 - 12, RACK_HEIGHT - 15 - 43);
     Vec gateP = Vec(box.size.x - 24 - 7, RACK_HEIGHT - 15 - 43);
