@@ -51,7 +51,7 @@
 			"slug": "ChipWaves",
 			"name": "ChipWaves",
 			"description": "A recreation of the NES oscillators",
-			"tags": [ "Oscillator" ]
+			"tags": [ "Oscillator", "Polyphonic" ]
 		},
 		{
 			"slug": "ChipYourWave",
@@ -81,7 +81,7 @@
 			"slug": "PolyGenerator",
 			"name": "PolyGenerator",
 			"description": "Generate test polyphonic midi-like sequences",
-			"tags": [  ]
+			"tags": [ "Polyphonic" ]
 		}
 
 	]
