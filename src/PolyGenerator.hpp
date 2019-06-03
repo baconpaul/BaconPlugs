@@ -56,10 +56,6 @@ struct PolyGenerator : public rack::Module {
     void process( const ProcessArgs &args ) override {
         if( dPhase == 0 )
         {
-            outputs[TONE_CV].setChannels(16);
-            outputs[VEL_CV].setChannels(16);
-            outputs[GATE_CV].setChannels(16);
-
             directions.resize(16);
             snotes.resize(16);
             for( int i=0; i<16; ++i ) {
@@ -77,6 +73,10 @@ struct PolyGenerator : public rack::Module {
         phase += dPhase;
         int pattern = (int)params[PATTERN_PARAM].getValue();
         int voices = (int)(params[VOICES_PARAM].getValue());
+        outputs[TONE_CV].setChannels(voices);
+        outputs[VEL_CV].setChannels(voices);
+        outputs[GATE_CV].setChannels(voices);
+
         switch( pattern )
         {
         case 1:
@@ -168,24 +168,15 @@ struct PolyGenerator : public rack::Module {
         if( phase > 1.0 )
             phase -= 1.0;
         
-        for( int i=0; i<16; ++i )
+        for( int i=0; i<voices; ++i )
         {
-            if( notes[i].on )
-            {
-                notes[i].len -= dPhase;
-                outputs[TONE_CV].setVoltage(notes[i].tone,i);
-                outputs[VEL_CV].setVoltage(notes[i].vel,i);
-                outputs[GATE_CV].setVoltage(10,i);
-
-                if( notes[i].len < 0 )
-                    notes[i].on = false;
-            }
-            else
-            {
-                outputs[TONE_CV].setVoltage(0,i);
-                outputs[VEL_CV].setVoltage(0,i);
-                outputs[GATE_CV].setVoltage(0,i);
-            }
+            notes[i].len -= dPhase;
+            outputs[TONE_CV].setVoltage(notes[i].tone,i);
+            outputs[VEL_CV].setVoltage(notes[i].vel,i);
+            outputs[GATE_CV].setVoltage(notes[i].on ? 10 : 0 ,i);
+            
+            if( notes[i].len < 0 )
+                notes[i].on = false;
         }
     }
 };
