@@ -4,7 +4,7 @@ RELEASE_BRANCH = release_1.0.0
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
 CFLAGS +=
-CXXFLAGS += -Werror -Ilibs/midifile/include
+CXXFLAGS += -Wno-array-bounds -Werror -Ilibs/midifile/include
 
 # Careful about linking to shared libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.
