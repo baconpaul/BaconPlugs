@@ -78,31 +78,32 @@ struct ChipWavesWidget : ModuleWidget {
 
 ChipWavesWidget::ChipWavesWidget(ChipWaves *module) : ModuleWidget() {
     setModule(module);
-    box.size = Vec(SCREW_WIDTH * 8, RACK_HEIGHT);
+    box.size = Vec(SCREW_WIDTH * 6, RACK_HEIGHT);
 
     BaconBackground *bg = new BaconBackground(box.size, "ChipWaves");
     addChild(bg->wrappedInFramebuffer());
 
-    Vec outP = Vec(bg->cx(24) + 25, RACK_HEIGHT - 15 - 43);
+    Vec outP = Vec(bg->cx(24) + 22, RACK_HEIGHT - 15 - 43);
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "pulse");
     addOutput(createOutput<PJ301MPort>(outP, module, ChipWaves::PULSE_OUTPUT));
 
-    Vec outT = Vec(bg->cx(24) - 25, RACK_HEIGHT - 15 - 43);
+    Vec outT = Vec(bg->cx(24) - 22, RACK_HEIGHT - 15 - 43);
     bg->addPlugLabel(outT, BaconBackground::SIG_OUT, "tri");
     addOutput(createOutput<PJ301MPort>(outT, module, ChipWaves::TRI_OUTPUT));
 
-    Vec fcv = Vec(bg->cx(24) + 35, 160);
+    Vec fcv = Vec(bg->cx(24), 140);
     bg->addPlugLabel(fcv, BaconBackground::SIG_IN, "v/o");
     addInput(createInput<PJ301MPort>(fcv, module, ChipWaves::FREQ_CV));
 
-    bg->addRoundedBorder(Vec(10, 140), Vec(63, 49));
-    bg->addLabel(Vec(40, 144), "Duty Cycle", 12,
+    float x0 = bg->cx(63);
+    bg->addRoundedBorder(Vec(x0, 200), Vec(63, 49));
+    bg->addLabel(Vec(box.size.x/2, 204), "Duty Cycle", 12,
                  NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-    int ybot = 140 + 24 + 5 + 20;
-    addParam(createParam<RoundSmallBlackKnob>(Vec(16, ybot - 3 - 28), module,
+    int ybot = 200 + 24 + 5 + 20;
+    addParam(createParam<RoundSmallBlackKnob>(Vec(x0 + 6, ybot - 3 - 28), module,
                                               ChipWaves::PULSE_CYCLE));
     addChild(createLight<SevenSegmentLight<BlueLight, 2>>(
-        Vec(47, ybot - 5 - 24), module, ChipWaves::PULSE_CYCLE_LIGHT));
+        Vec(x0 + 42, ybot - 5 - 24), module, ChipWaves::PULSE_CYCLE_LIGHT));
 
     bg->addLabel(Vec(bg->cx(), 45), "Freq", 14,
                  NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);

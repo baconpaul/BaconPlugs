@@ -35,20 +35,27 @@ struct ALingADing : Module {
     }
 
     void process(const ProcessArgs &args) override {
-        float vin = inputs[SIGNAL_INPUT].getVoltage();
-        float vc = inputs[CARRIER_INPUT].getVoltage();
-        float wd = params[WET_DRY_MIX].getValue();
+        int nChan = inputs[SIGNAL_INPUT].getChannels();
+        outputs[MODULATED_OUTPUT].setChannels(nChan);
 
-        float A = 0.5 * vin + vc;
-        float B = vc - 0.5 * vin;
-
-        float dPA = diode_sim(A);
-        float dMA = diode_sim(-A);
-        float dPB = diode_sim(B);
-        float dMB = diode_sim(-B);
-
-        float res = dPA + dMA - dPB - dMB;
-        outputs[MODULATED_OUTPUT].setVoltage(wd * res + (1.0 - wd) * vin);
+        // FIXME - convert ths to SIMD one day
+        for( int i=0; i<nChan; ++i )
+        {
+            float vin = inputs[SIGNAL_INPUT].getVoltage(i);
+            float vc = inputs[CARRIER_INPUT].getPolyVoltage(i);
+            float wd = params[WET_DRY_MIX].getValue();
+            
+            float A = 0.5 * vin + vc;
+            float B = vc - 0.5 * vin;
+            
+            float dPA = diode_sim(A);
+            float dMA = diode_sim(-A);
+            float dPB = diode_sim(B);
+            float dMB = diode_sim(-B);
+            
+            float res = dPA + dMA - dPB - dMB;
+            outputs[MODULATED_OUTPUT].setVoltage(wd * res + (1.0 - wd) * vin, i);
+        }
     }
 };
 

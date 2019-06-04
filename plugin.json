@@ -15,7 +15,7 @@
 			"slug": "HarMoNee",
 			"name": "HarMoNee",
 			"description": "Apply musical (major third, fifth, etc...) offsets to CV 1v/oct signals",
-			"tags": [ "Quantizer" ]
+			"tags": [ "Quantizer", "Polyphonic" ]
 		},
 		{
 			"slug": "Glissinator",
@@ -69,7 +69,7 @@
 			"slug": "ALingADing",
 			"name": "ALingADing",
 			"description": "A sub-par ring modulator",
-			"tags": [ "Ring modulator" ]
+			"tags": [ "Ring modulator", "Polyphonic" ]
 		},
 		{
 			"slug": "Bitulator",

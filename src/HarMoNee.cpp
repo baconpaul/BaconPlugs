@@ -83,9 +83,9 @@ void HarMoNee::process(const ProcessArgs &args) {
        Display the shift
        Tests
     */
-
-    float in = inputs[SOURCE_INPUT].getVoltage();
-    float echo = in;
+    int nChan = inputs[SOURCE_INPUT].getChannels();
+    outputs[ECHO_OUTPUT].setChannels(nChan);
+    outputs[INCREASED_OUTPUT].setChannels(nChan);
 
     float offsetI = 0;
     float uod = (params[UP_OR_DOWN].getValue() > 0) ? 1.0 : -1.0;
@@ -177,10 +177,15 @@ void HarMoNee::process(const ProcessArgs &args) {
         targetOffset = offsetI;
     }
 
-    float increased = in + offsetI;
+    for( int i=0; i<nChan; ++i )
+    {
+        float in = inputs[SOURCE_INPUT].getVoltage(i);
+        float increased = in + offsetI;
 
-    outputs[ECHO_OUTPUT].setVoltage(echo);
-    outputs[INCREASED_OUTPUT].setVoltage(increased);
+
+        outputs[ECHO_OUTPUT].setVoltage(in,i);
+        outputs[INCREASED_OUTPUT].setVoltage(increased,i);
+    }
 }
 
 struct HarMoNeeWidget : ModuleWidget {

@@ -89,8 +89,55 @@ void BaconBackground::draw(const DrawArgs &args) {
 
     nvgBeginPath(args.vg);
     nvgRect(args.vg, 0, 0, box.size.x, box.size.y);
-    nvgFillColor(args.vg, BaconBackground::bg);
+    NVGpaint vgr = nvgLinearGradient(args.vg, 0, 0, 0, box.size.y, bg, bgEnd );
+    nvgFillPaint(args.vg, vgr );
     nvgFill(args.vg);
+
+    // Standard Footer
+    float rulePos = 360;
+    nvgBeginPath(args.vg);
+    nvgRect(args.vg, 0, rulePos, box.size.x, box.size.y-rulePos );
+    vgr = nvgLinearGradient(args.vg, 0, rulePos, 0, box.size.y, labelBgEnd, labelBg );
+    nvgFillPaint(args.vg, vgr);
+    nvgFill(args.vg);
+
+    nvgBeginPath(args.vg);
+    nvgMoveTo(args.vg,0,rulePos);
+    nvgLineTo(args.vg,box.size.x, rulePos);
+    nvgStrokeColor(args.vg, BaconBackground::labelRule);
+    nvgStroke(args.vg);
+
+    nvgBeginPath(args.vg);
+    nvgFontFaceId(args.vg, memFont);
+    nvgFontSize(args.vg, 14);
+    nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
+    nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
+    nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
+    nvgText(args.vg, box.size.x / 2, box.size.y - 3, "Bacon Music", NULL);
+
+    // Header BG
+    rulePos = 22;
+    nvgBeginPath(args.vg);
+    nvgRect(args.vg, 0, 0, box.size.x, rulePos );
+    vgr = nvgLinearGradient(args.vg, 0, 0, 0, rulePos, labelBgEnd, labelBg );
+
+    nvgFillPaint(args.vg, vgr);
+    nvgFill(args.vg);
+    
+    nvgBeginPath(args.vg);
+    nvgMoveTo(args.vg,1, rulePos);
+    nvgLineTo(args.vg,box.size.x, rulePos );
+    nvgStrokeColor(args.vg, BaconBackground::labelRule);
+    nvgStroke(args.vg);
+
+    // Header label
+    nvgBeginPath(args.vg);
+    nvgFontFaceId(args.vg, memFont);
+    nvgFontSize(args.vg, 16);
+    nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
+    nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
+    nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+    nvgText(args.vg, box.size.x / 2, 5, title.c_str(), NULL);
 
     nvgBeginPath(args.vg);
     nvgMoveTo(args.vg, 0, 0);
@@ -101,19 +148,11 @@ void BaconBackground::draw(const DrawArgs &args) {
     nvgStrokeColor(args.vg, BaconBackground::bgOutline);
     nvgStroke(args.vg);
 
-    nvgFontFaceId(args.vg, memFont);
-    nvgFontSize(args.vg, 14);
-    nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
-    nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
-    nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
-    nvgText(args.vg, box.size.x / 2, box.size.y - 5, "Bacon Music", NULL);
 
-    nvgFontFaceId(args.vg, memFont);
-    nvgFontSize(args.vg, 16);
-    nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
-    nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
-    nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-    nvgText(args.vg, box.size.x / 2, 5, title.c_str(), NULL);
+
+    if (extraDrawFunction != nullptr)
+        extraDrawFunction(args.vg);
+
 
     for (auto w : children) {
         nvgTranslate(args.vg, w->box.pos.x, w->box.pos.y);
@@ -216,9 +255,13 @@ BaconBackground *BaconBackground::addRoundedBorder(Vec pos, Vec sz,
     return this;
 }
 
-NVGcolor BaconBackground::bg = nvgRGBA(220, 220, 210, 255);
+NVGcolor BaconBackground::bg = nvgRGBA(225, 225, 230, 255);
+NVGcolor BaconBackground::bgEnd = nvgRGBA(215, 215, 255, 255);
 NVGcolor BaconBackground::bgOutline = nvgRGBA(180, 180, 170, 255);
-NVGcolor BaconBackground::highlight = nvgRGBA(90, 90, 60, 255);
+NVGcolor BaconBackground::highlight = nvgRGBA(70, 70, 100, 255);
+NVGcolor BaconBackground::labelBg = nvgRGBA(170, 170, 190, 255);
+NVGcolor BaconBackground::labelBgEnd = nvgRGBA(220, 220, 240, 255);
+NVGcolor BaconBackground::labelRule = nvgRGBA(120,120,190, 255);
 
 BaconBackground::BaconBackground(Vec size, const char *lab) : title(lab) {
     box.pos = Vec(0, 0);

@@ -221,9 +221,11 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget {
 };
 
 struct BaconBackground : virtual TransparentWidget {
-    static NVGcolor bg;
+    static NVGcolor bg, bgEnd;
     static NVGcolor bgOutline;
     static NVGcolor highlight;
+    static NVGcolor labelBg, labelBgEnd;
+    static NVGcolor labelRule;
 
     typedef std::tuple<Rect, NVGcolor, bool> col_rect_t;
     std::vector<col_rect_t> rects;
@@ -287,6 +289,12 @@ struct BaconBackground : virtual TransparentWidget {
         return this;
     }
 
+    typedef std::function<void(NVGcontext *c)> drawFn;
+    drawFn extraDrawFunction = nullptr;
+    void addDrawFunction(drawFn f) {
+        extraDrawFunction = f;
+    }
+    
     void draw(const DrawArgs &args) override;
 
     FramebufferWidget *wrappedInFramebuffer();
