@@ -269,6 +269,9 @@ The Keypunch font used in the textual display LED widget comes from
 The font is Copyright 2017 Stewart C. Russell and is released under 
 the [SIL Open Font License 1.1](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL).
 
+The MIDI file of the goldberg variations in res/midi is from Dave Grossman's J.S. Bach page
+at http://www.jsbach.net.
+
 The slug name ('BaconMusic') is different than the repo name ('BaconPlugs'), somewhat confusingly.
 When I made my git repo I had no idea really how anything worked or if I'd write anything. 
 I was thinking "Hey I'm writing a collection of plugins for this software right". When I went

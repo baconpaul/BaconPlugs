@@ -39,5 +39,6 @@ extern Model *modelBitulator;
 extern Model *modelPhaser;
 
 extern Model *modelPolyGenerator;
+extern Model *modelMidifilePlayer;
 
 #endif

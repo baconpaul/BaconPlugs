@@ -35,6 +35,7 @@ jobs:
 
   - bash: |
       uname -a
+      git submodule update --init --recursive
 
       pushd $AGENT_TEMPDIRECTORY
       # There is no 1.0 SDK so

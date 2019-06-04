@@ -82,6 +82,12 @@
 			"name": "PolyGenerator",
 			"description": "Generate test polyphonic midi-like sequences",
 			"tags": [ "Polyphonic" ]
+		},
+        {
+			"slug": "MidifilePlayer",
+			"name": "MidifilePlayer",
+			"description": "Plays a midi file as polyphonic outputs",
+			"tags": [ "Polyphonic" ]
 		}
 
 	]

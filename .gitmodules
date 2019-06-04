@@ -1,0 +1,3 @@
+[submodule "libs/midifile"]
+	path = libs/midifile
+	url = https://github.com/craigsapp/midifile.git
