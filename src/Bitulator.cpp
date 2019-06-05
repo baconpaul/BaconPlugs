@@ -16,7 +16,7 @@ struct Bitulator : Module {
         NUM_PARAMS
     };
 
-    enum InputIds { SIGNAL_INPUT, BIT_CV, AMP_CV, NUM_INPUTS };
+    enum InputIds { SIGNAL_INPUT, BIT_CV, AMP_CV, MIX_CV, NUM_INPUTS };
 
     enum OutputIds { CRUNCHED_OUTPUT, NUM_OUTPUTS };
 
@@ -35,13 +35,13 @@ struct Bitulator : Module {
     }
 
     void process(const ProcessArgs &args) override {
-        float wd = params[WET_DRY_MIX].getValue();
         int nChan = inputs[SIGNAL_INPUT].getChannels();
         outputs[CRUNCHED_OUTPUT].setChannels(nChan);
         for( int i=0; i<nChan; ++i )
         {
             float vin = inputs[SIGNAL_INPUT].getVoltage(i);
-
+            float wd = params[WET_DRY_MIX].getValue() +  inputs[MIX_CV].getPolyVoltage(i) / 10.0;
+            wd = clamp(wd, 0.f, 1.f );
             // Signals are +/-5V signals of course. So
             
             float res = 0;
@@ -79,17 +79,39 @@ BitulatorWidget::BitulatorWidget(Bitulator *model) : ModuleWidget() {
 
     BaconBackground *bg = new BaconBackground(box.size, "Bitulator");
     addChild(bg->wrappedInFramebuffer());
+    bg->addDrawFunction([](NVGcontext *vg) {
+            int xpos = 5 + 12 + SizeTable<RoundLargeBlackKnob>::X / 2;
+            int ypos = 35 + 25 + SizeTable<RoundLargeBlackKnob>::Y / 2;
+            for( int i=0; i<3; ++i )
+            {
+                nvgBeginPath(vg);
+                nvgMoveTo(vg, xpos, ypos + i * 88 );
+                nvgLineTo(vg, xpos + 25, ypos + i * 88);
+                nvgStrokeColor(vg, componentlibrary::SCHEME_BLACK );
+                nvgStrokeWidth(vg, 1 );
+                nvgStroke(vg);
+            }
+        }
+        );
 
-    int wdpos = 35;
-    bg->addLabel(Vec(bg->cx() + 14, wdpos + 35), "Wet", 13,
+    Vec cr(5, 35), rs(box.size.x - 10, 80);
+    bg->addRoundedBorder(cr, rs);
+    bg->addLabel(Vec(box.size.x/2, cr.y + 3), "Mix", 14,
+                 NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+
+    Vec knobPos = Vec(cr.x + 12, cr.y + 25);
+    Vec knobCtr = knobPos.plus(Vec(18, 18));
+    addParam(createParam<RoundLargeBlackKnob>(knobPos, module,
+                                              Bitulator::WET_DRY_MIX));
+    bg->addLabel(knobCtr.plus(Vec(8, 21)), "dry", 10,
                  NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    bg->addLabel(Vec(bg->cx() - 14, wdpos + 35), "Dry", 13,
+    bg->addLabel(knobCtr.plus(Vec(-8, 21)), "wet", 10,
                  NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
+    knobPos.x = cr.x + rs.x - 3 - 24;;
+    knobPos.y += diffY2c<RoundLargeBlackKnob,PJ301MPort>();
+    addInput(createInput<PJ301MPort>(knobPos, module, Bitulator::MIX_CV));
 
-    addParam(createParam<RoundLargeBlackKnob>(Vec(bg->cx(SizeTable<RoundLargeBlackKnob>::X), wdpos),
-                                             module, Bitulator::WET_DRY_MIX));
-
-    Vec cr(5, 95), rs(box.size.x - 10, 80);
+    cr.y += 88;
     bg->addRoundedBorder(cr, rs);
     bg->addLabel(Vec(cr.x + 3, cr.y + 3), "Quantize", 14,
                  NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
@@ -99,8 +121,8 @@ BitulatorWidget::BitulatorWidget(Bitulator *model) : ModuleWidget() {
     addParam(
         createParam<CKSS>(cr.plus(Vec(rs.x - 17, 5)), module, Bitulator::BITULATE));
 
-    Vec knobPos = Vec(cr.x + 12, cr.y + 25);
-    Vec knobCtr = knobPos.plus(Vec(18, 18));
+    knobPos = Vec(cr.x + 12, cr.y + 25);
+    knobCtr = knobPos.plus(Vec(18, 18));
     addParam(createParam<RoundLargeBlackKnob>(knobPos, module,
                                               Bitulator::STEP_COUNT));
     bg->addLabel(knobCtr.plus(Vec(8, 21)), "smth", 10,
@@ -111,7 +133,7 @@ BitulatorWidget::BitulatorWidget(Bitulator *model) : ModuleWidget() {
     knobPos.y += diffY2c<RoundLargeBlackKnob,PJ301MPort>();
     addInput(createInput<PJ301MPort>(knobPos, module, Bitulator::BIT_CV));
 
-    cr = Vec(5, 200);
+    cr.y += 88;
     bg->addRoundedBorder(cr, rs);
     bg->addLabel(Vec(cr.x + 3, cr.y + 3), "Amp/Clip", 14,
                  NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
