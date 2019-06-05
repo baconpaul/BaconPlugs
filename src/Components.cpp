@@ -83,10 +83,16 @@ struct InternalPlugLabel : virtual TransparentWidget {
     void draw(const DrawArgs &args) override;
 };
 
+typedef std::shared_ptr<rack::Svg> svg_t;
+static svg_t baconEmoji = nullptr;
+
 void BaconBackground::draw(const DrawArgs &args) {
     if (memFont < 0)
         memFont = InternalFontMgr::get(args.vg, "res/Monitorica-Bd.ttf");
 
+    if (baconEmoji == nullptr)
+        baconEmoji = rack::APP->window->loadSvg(rack::asset::plugin(pluginInstance, "res/1f953.svg"));
+    
     nvgBeginPath(args.vg);
     nvgRect(args.vg, 0, 0, box.size.x, box.size.y);
     NVGpaint vgr = nvgLinearGradient(args.vg, 0, 0, 0, box.size.y, bg, bgEnd );
@@ -107,13 +113,49 @@ void BaconBackground::draw(const DrawArgs &args) {
     nvgStrokeColor(args.vg, BaconBackground::labelRule);
     nvgStroke(args.vg);
 
-    nvgBeginPath(args.vg);
-    nvgFontFaceId(args.vg, memFont);
-    nvgFontSize(args.vg, 14);
-    nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
-    nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
-    nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
-    nvgText(args.vg, box.size.x / 2, box.size.y - 3, "Bacon Music", NULL);
+    float endB = box.size.x/2, startM = box.size.x/2;
+    if( baconEmoji != nullptr && baconEmoji->handle)
+    {
+        float scaleFactor = 1.0 * (box.size.y-rulePos - 4) / baconEmoji->handle->height;
+        float x0 = box.size.x / 2 - baconEmoji->handle->width * scaleFactor / 2;
+
+        if( box.size.x < 5.5 * SCREW_WIDTH )
+        {
+            x0 = box.size.x - 2 - baconEmoji->handle->width * scaleFactor;
+        }
+        
+        endB = x0 - 2;
+        startM = x0 + baconEmoji->handle->width * scaleFactor + 2;
+        nvgSave(args.vg);
+        nvgTranslate(args.vg, x0, rulePos + 2);
+        nvgScale(args.vg, scaleFactor, scaleFactor );
+        rack::svgDraw(args.vg, baconEmoji->handle);
+        nvgRestore(args.vg);
+    }
+
+    if( box.size.x > 5 * SCREW_WIDTH )
+    {
+        nvgBeginPath(args.vg);
+        nvgFontFaceId(args.vg, memFont);
+        nvgFontSize(args.vg, 14);
+        nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
+        nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
+        nvgTextAlign(args.vg, NVG_ALIGN_RIGHT | NVG_ALIGN_BOTTOM);
+        nvgText(args.vg, endB, box.size.y - 3, "Bacon", NULL);
+        nvgTextAlign(args.vg, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
+        nvgText(args.vg, startM, box.size.y - 3, "Music", NULL);
+    }
+    else
+    {
+        nvgBeginPath(args.vg);
+        nvgFontFaceId(args.vg, memFont);
+        nvgFontSize(args.vg, 14);
+        nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
+        nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
+        nvgTextAlign(args.vg, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
+        nvgText(args.vg, 3, box.size.y - 3, "Bacon", NULL);
+
+    }
 
     // Header BG
     rulePos = 22;
