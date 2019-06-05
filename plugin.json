@@ -57,7 +57,7 @@
 			"slug": "ChipYourWave",
 			"name": "ChipYourWave",
 			"description": "An 8 bit oscillator where you draw the waveform",
-			"tags": [ "Oscillator" ]
+			"tags": [ "Oscillator", "Polyphonic" ]
 		},
 		{
 			"slug": "KarplusStrongPoly",

@@ -298,6 +298,10 @@ struct BaconBackground : virtual TransparentWidget {
     void draw(const DrawArgs &args) override;
 
     FramebufferWidget *wrappedInFramebuffer();
+
+    bool showSmiles = false;
+    rack::math::Rect baconBox;
+    virtual void onButton(const event::Button &e) override;
 };
 
 struct BaconHelpButton : public SvgButton {

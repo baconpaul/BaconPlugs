@@ -85,13 +85,21 @@ struct InternalPlugLabel : virtual TransparentWidget {
 
 typedef std::shared_ptr<rack::Svg> svg_t;
 static svg_t baconEmoji = nullptr;
+static svg_t lovebaconEmoji = nullptr;
 
 void BaconBackground::draw(const DrawArgs &args) {
+    rack::INFO( "DRAW BG" );
     if (memFont < 0)
         memFont = InternalFontMgr::get(args.vg, "res/Monitorica-Bd.ttf");
 
     if (baconEmoji == nullptr)
+    {
         baconEmoji = rack::APP->window->loadSvg(rack::asset::plugin(pluginInstance, "res/1f953.svg"));
+    }
+    if( lovebaconEmoji == nullptr )
+    {
+        lovebaconEmoji = rack::APP->window->loadSvg(rack::asset::plugin(pluginInstance, "res/1f60d.svg"));
+    }
     
     nvgBeginPath(args.vg);
     nvgRect(args.vg, 0, 0, box.size.x, box.size.y);
@@ -114,23 +122,28 @@ void BaconBackground::draw(const DrawArgs &args) {
     nvgStroke(args.vg);
 
     float endB = box.size.x/2, startM = box.size.x/2;
-    if( baconEmoji != nullptr && baconEmoji->handle)
+    svg_t svgu = baconEmoji;
+    if( showSmiles ) svgu = lovebaconEmoji;
+    if( svgu != nullptr && svgu->handle)
     {
-        float scaleFactor = 1.0 * (box.size.y-rulePos - 4) / baconEmoji->handle->height;
-        float x0 = box.size.x / 2 - baconEmoji->handle->width * scaleFactor / 2;
+        float scaleFactor = 1.0 * (box.size.y-rulePos - 4) / svgu->handle->height;
+        float x0 = box.size.x / 2 - svgu->handle->width * scaleFactor / 2;
 
         if( box.size.x < 5.5 * SCREW_WIDTH )
         {
-            x0 = box.size.x - 2 - baconEmoji->handle->width * scaleFactor;
+            x0 = box.size.x - 2 - svgu->handle->width * scaleFactor;
         }
         
         endB = x0 - 2;
-        startM = x0 + baconEmoji->handle->width * scaleFactor + 2;
+        startM = x0 + svgu->handle->width * scaleFactor + 2;
         nvgSave(args.vg);
         nvgTranslate(args.vg, x0, rulePos + 2);
         nvgScale(args.vg, scaleFactor, scaleFactor );
-        rack::svgDraw(args.vg, baconEmoji->handle);
+        rack::svgDraw(args.vg, svgu->handle);
         nvgRestore(args.vg);
+
+        baconBox.pos = rack::Vec(x0, rulePos + 2);
+        baconBox.size = rack::Vec(svgu->handle->width * scaleFactor, svgu->handle->height * scaleFactor );
     }
 
     if( box.size.x > 5 * SCREW_WIDTH )
@@ -231,6 +244,19 @@ InternalPlugLabel::InternalPlugLabel(Vec portPos, BaconBackground::LabelAt l,
     box.pos.y = portPos.y - 2.5 - 17;
 }
 
+void BaconBackground::onButton(const event::Button &e) 
+{
+    showSmiles = false;
+    if( e.action == GLFW_PRESS && baconBox.isContaining(e.pos))
+        showSmiles = true;
+    auto *r = dynamic_cast<FramebufferWidget *>(parent);
+    if( r != nullptr )
+    {
+        rack::INFO( "DIRTY PARENT" );
+        r->dirty=true;
+    }
+}
+
 void InternalPlugLabel::draw(const DrawArgs &args) {
     if (memFont < 0)
         memFont = InternalFontMgr::get(args.vg, "res/Monitorica-Bd.ttf");
@@ -308,6 +334,8 @@ NVGcolor BaconBackground::labelRule = nvgRGBA(120,120,190, 255);
 BaconBackground::BaconBackground(Vec size, const char *lab) : title(lab) {
     box.pos = Vec(0, 0);
     box.size = size;
+    baconBox.pos = Vec(0,0);
+    baconBox.size = Vec(0,0);
 }
 
 FramebufferWidget *BaconBackground::wrappedInFramebuffer() {
