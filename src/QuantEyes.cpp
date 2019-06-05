@@ -10,19 +10,17 @@ struct QuantEyes : virtual Module {
         NUM_PARAMS = SCALE_PARAM + SCALE_LENGTH
     };
 
-    enum InputIds { CV_INPUT, CV_INPUT_2, CV_INPUT_3, NUM_INPUTS };
+    enum InputIds { CV_INPUT, NUM_INPUTS };
 
     enum OutputIds {
         QUANTIZED_OUT,
-        QUANTIZED_OUT_2,
-        QUANTIZED_OUT_3,
         NUM_OUTPUTS
     };
 
     enum LightIds {
         ROOT_LIGHT,
         ACTIVE_NOTE_LIGHTS,
-        SCALE_LIGHTS = ACTIVE_NOTE_LIGHTS + 3 * SCALE_LENGTH,
+        SCALE_LIGHTS = ACTIVE_NOTE_LIGHTS + 16 * SCALE_LENGTH,
         NUM_LIGHTS = SCALE_LIGHTS + SCALE_LENGTH
     };
 
@@ -36,6 +34,8 @@ struct QuantEyes : virtual Module {
             configParam(SCALE_PARAM + i, 0, 1, 0);
         for (int i = 0; i < SCALE_LENGTH; ++i)
             scaleState[i] = 1;
+        for( int i=0; i<16; ++i )
+            lastIn[i] = -1000;
     }
 
     void process(const ProcessArgs &args) override {
@@ -47,14 +47,18 @@ struct QuantEyes : virtual Module {
                 scaleState[i] = !scaleState[i];
             }
             lights[SCALE_LIGHTS + i].value = scaleState[i];
-            lights[ACTIVE_NOTE_LIGHTS + i].value = 0;
-            lights[ACTIVE_NOTE_LIGHTS + i + SCALE_LENGTH].value = 0;
-            lights[ACTIVE_NOTE_LIGHTS + i + SCALE_LENGTH * 2].value = 0;
+            for( int j=0; j<16; ++j )
+            {
+                lights[ACTIVE_NOTE_LIGHTS + i + j * SCALE_LENGTH].value = 0;
+            }
         }
 
-        for (int i = 0; i < 3; ++i) {
-            if (inputs[CV_INPUT + i].isConnected()) {
-                float in = inputs[CV_INPUT + i].getVoltage();
+        int nChan = inputs[CV_INPUT].getChannels();
+        outputs[QUANTIZED_OUT].setChannels(nChan);
+        for (int i = 0; i < nChan; ++i) {
+            if (inputs[CV_INPUT].isConnected()) {
+                float in = inputs[CV_INPUT].getVoltage(i);
+                
                 double octave, note;
                 note = modf(in, &octave);
 
@@ -71,8 +75,10 @@ struct QuantEyes : virtual Module {
 
                 // We need to re-mod note since the root can make our range of
                 // the integer note somewhere other than (0,1) so first push by
-                // root
-                float noteF = (floor(note * SCALE_LENGTH) + root);
+                // root. This 1e-5 increase makes sure that QuantEyes is an
+                // identity for tuned inputs (which can sometimes end up just below
+                // the floor).
+                float noteF = (floor(note * SCALE_LENGTH + 1e-5) + root);
                 // Then find the new integer part of the pushed stuff
                 int noteI = (int)noteF % SCALE_LENGTH;
                 // and bump the octave if root pushes us up. Note if root==0
@@ -89,7 +95,7 @@ struct QuantEyes : virtual Module {
 
                 // and figure out the CV
                 float out = 1.0 * noteI / SCALE_LENGTH + octave;
-                outputs[QUANTIZED_OUT + i].setVoltage(out);
+                outputs[QUANTIZED_OUT].setVoltage(out, i);
             }
         }
     }
@@ -129,7 +135,7 @@ QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : ModuleWidget() {
     BaconBackground *bg = new BaconBackground(box.size, "QuantEyes");
     addChild(bg->wrappedInFramebuffer());
 
-    int rx = 15, ry = 30, sp = 22, slope = 8;
+    float rx = 15, ry = 30, sp = 22, slope = 7.5;
     for (int i = 0; i < SCALE_LENGTH; ++i) {
         char d[24];
         sprintf(d, "%d", i + 1);
@@ -143,22 +149,21 @@ QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : ModuleWidget() {
                                         QuantEyes::SCALE_PARAM + i));
         addChild(createLight<MediumLight<BlueLight>>(
             Vec(x0 + 4, yp0 + ry + 4), module, QuantEyes::SCALE_LIGHTS + i));
-        addChild(createLight<SmallLight<GreenLight>>(
-            Vec(x0 + 20, yp0 + ry + 6), module,
-            QuantEyes::ACTIVE_NOTE_LIGHTS + i));
-        addChild(createLight<SmallLight<GreenLight>>(
-            Vec(x0 + 28, yp0 + ry + 6), module,
-            QuantEyes::ACTIVE_NOTE_LIGHTS + i + 12));
-        addChild(createLight<SmallLight<GreenLight>>(
-            Vec(x0 + 36, yp0 + ry + 6), module,
-            QuantEyes::ACTIVE_NOTE_LIGHTS + i + 24));
 
+        for( int j=0; j<16; ++j )
+        {
+            float yOff = ( j < 8 ? 0 : 4.5 );
+            addChild(createLight<TinyLight<BlueLight>>(
+                         Vec(x0 + 20.6 + 4.5 * (j%8), yp0 + ry + 6 + yOff), module,
+                         QuantEyes::ACTIVE_NOTE_LIGHTS + i + j * SCALE_LENGTH));
+        }
+        
         auto c = nvgRGBA(225, 225, 225, 255);
         if (i == 1 || i == 3 || i == 6 || i == 8 || i == 10)
             c = nvgRGBA(110, 110, 110, 255);
 
-        bg->addFilledRect(Vec(rx, yp0 + ry + 7), Vec(i * slope + 39, 4.5), c);
-        bg->addRect(Vec(rx, yp0 + ry + 7), Vec(i * slope + 39, 4.5),
+        bg->addFilledRect(Vec(rx, yp0 + ry + 7), Vec(x0 - rx, 4.5), c);
+        bg->addRect(Vec(rx, yp0 + ry + 7), Vec(x0 - rx, 4.5),
                     nvgRGBA(70, 70, 70, 255));
     }
 
@@ -166,20 +171,14 @@ QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : ModuleWidget() {
     Vec inP = Vec(xpospl - 32, RACK_HEIGHT - 60);
     Vec outP = Vec(xpospl, RACK_HEIGHT - 60);
 
-    for (int i = 0; i < 3; ++i) {
-        Vec off(0, -55 * (2 - i));
-        char buf[20];
-        sprintf(buf, "in %d", i + 1);
-        bg->addPlugLabel(inP.plus(off), BaconBackground::SIG_IN, buf);
-        addInput(createInput<PJ301MPort>(inP.plus(off), module,
-                                         QuantEyes::CV_INPUT + i));
+    bg->addPlugLabel(inP, BaconBackground::SIG_IN, "in");
+    addInput(createInput<PJ301MPort>(inP, module,
+                                     QuantEyes::CV_INPUT ));
+    
+    bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "out");
 
-        sprintf(buf, "out %d", i + 1);
-        bg->addPlugLabel(outP.plus(off), BaconBackground::SIG_OUT, buf);
-
-        addOutput(createOutput<PJ301MPort>(outP.plus(off), module,
-                                           QuantEyes::QUANTIZED_OUT + i));
-    }
+    addOutput(createOutput<PJ301MPort>(outP, module,
+                                       QuantEyes::QUANTIZED_OUT ));
 
     bg->addRoundedBorder(Vec(10, box.size.y - 78), Vec(70, 49));
     bg->addLabel(Vec(45, box.size.y - 74), "Root CV", 12,
