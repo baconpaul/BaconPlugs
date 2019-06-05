@@ -16,31 +16,40 @@ template <typename TBase> struct SampleDelay : virtual TBase {
     using TBase::outputs;
     using TBase::params;
 
-    std::vector<float> ring;
+    std::vector<float> ring[16];
     size_t ringSize;
-    size_t pos;
+    size_t pos[16];
 
     SampleDelay() : TBase() {
         TBase::config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         TBase::configParam(DELAY_KNOB, 1, 99, 1, "Samples to delay");
         ringSize = 100;
-        ring.resize(ringSize);
-        std::fill(ring.begin(), ring.end(), 0);
-        pos = 0;
+        for( int i=0; i<16; ++i )
+        {
+            ring[i].resize(ringSize);
+            pos[i] = 0;
+            std::fill(ring[i].begin(), ring[i].end(), 0);
+        }
     }
 
     void process(const typename TBase::ProcessArgs &args) override {
         int del = params[DELAY_KNOB].getValue() - 1;
-        int dpos = ((int)pos - del);
-        if (dpos < 0)
-            dpos += ringSize;
-
-        ring[pos] = inputs[SIGNAL_IN].getVoltage();
-        outputs[SIGNAL_OUT].setVoltage(ring[dpos]);
+        int nChan = inputs[SIGNAL_IN].getChannels();
+        outputs[SIGNAL_OUT].setChannels(nChan);
         lights[DELAY_VALUE_LIGHT].value = del + 1;
 
-        pos++;
-        if (pos >= ringSize)
-            pos = 0;
+        for( int i=0; i<nChan; ++i )
+        {
+            int dpos = ((int)pos[i] - del);
+            if (dpos < 0)
+                dpos += ringSize;
+            
+            ring[i][pos[i]] = inputs[SIGNAL_IN].getVoltage(i);
+            outputs[SIGNAL_OUT].setVoltage(ring[i][dpos], i);
+            
+            pos[i]++;
+            if (pos[i] >= ringSize)
+                pos[i] = 0;
+        }
     }
 };

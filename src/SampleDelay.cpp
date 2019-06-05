@@ -23,7 +23,7 @@ SampleDelayWidget::SampleDelayWidget(SD *module) : ModuleWidget() {
     bg->addPlugLabel(ppos, BaconBackground::SIG_IN, "in");
     addInput(createInput<PJ301MPort>(ppos, module, SD::SIGNAL_IN));
 
-    outy += 49 + gap + margin;
+    outy += 90 + gap + margin;
     bg->addRoundedBorder(
         Vec(bg->cx() - 14 * 1.5 - margin, outy - margin),
         Vec(14 * 3 + 2 * margin, 14 + SizeTable<RoundBlackSnapKnob>::Y +
@@ -41,7 +41,7 @@ SampleDelayWidget::SampleDelayWidget(SD *module) : ModuleWidget() {
         Vec(bg->cx() - 14 * 1.5, outy), module, SD::DELAY_VALUE_LIGHT));
     outy += 22 + gap + margin;
 
-    ppos = Vec(bg->cx(SizeTable<PJ301MPort>::X), outy + 20);
+    ppos = Vec(bg->cx(SizeTable<PJ301MPort>::X), RACK_HEIGHT - 15 - 43);
     bg->addPlugLabel(ppos, BaconBackground::SIG_OUT, "out");
     addOutput(createOutput<PJ301MPort>(ppos, module, SD::SIGNAL_OUT));
 }

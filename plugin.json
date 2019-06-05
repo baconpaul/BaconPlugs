@@ -39,7 +39,7 @@
 			"slug": "SampleDelay",
 			"name": "SampleDelay",
 			"description": "A tiny number of sample delay",
-			"tags": [ "Utility" ]
+			"tags": [ "Utility", "Polyphonic" ]
 		},
 		{
 			"slug": "ChipNoise",
