@@ -103,9 +103,9 @@ BitulatorWidget::BitulatorWidget(Bitulator *model) : ModuleWidget() {
     Vec knobCtr = knobPos.plus(Vec(18, 18));
     addParam(createParam<RoundLargeBlackKnob>(knobPos, module,
                                               Bitulator::WET_DRY_MIX));
-    bg->addLabel(knobCtr.plus(Vec(8, 21)), "dry", 10,
+    bg->addLabel(knobCtr.plus(Vec(8, 21)), "dist", 10,
                  NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    bg->addLabel(knobCtr.plus(Vec(-8, 21)), "wet", 10,
+    bg->addLabel(knobCtr.plus(Vec(-8, 21)), "clean", 10,
                  NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
     knobPos.x = cr.x + rs.x - 3 - 24;;
     knobPos.y += diffY2c<RoundLargeBlackKnob,PJ301MPort>();
@@ -147,9 +147,9 @@ BitulatorWidget::BitulatorWidget(Bitulator *model) : ModuleWidget() {
     knobCtr = knobPos.plus(Vec(18, 18));
     addParam(createParam<RoundLargeBlackKnob>(knobPos, module,
                                               Bitulator::AMP_LEVEL));
-    bg->addLabel(knobCtr.plus(Vec(8, 21)), "one", 10,
+    bg->addLabel(knobCtr.plus(Vec(8, 21)), "11", 10,
                  NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    bg->addLabel(knobCtr.plus(Vec(-8, 21)), "11", 10,
+    bg->addLabel(knobCtr.plus(Vec(-8, 21)), "one", 10,
                  NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
     knobPos.x = cr.x + rs.x - 3 - 24;;
     knobPos.y += diffY2c<RoundLargeBlackKnob,PJ301MPort>();
