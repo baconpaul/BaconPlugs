@@ -34,8 +34,6 @@ struct QuantEyes : virtual Module {
             configParam(SCALE_PARAM + i, 0, 1, 0);
         for (int i = 0; i < SCALE_LENGTH; ++i)
             scaleState[i] = 1;
-        for( int i=0; i<16; ++i )
-            lastIn[i] = -1000;
     }
 
     void process(const ProcessArgs &args) override {
