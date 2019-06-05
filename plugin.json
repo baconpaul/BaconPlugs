@@ -21,7 +21,7 @@
 			"slug": "Glissinator",
 			"name": "Glissinator",
 			"description": "Do a constant time gliss over a changing input signal",
-			"tags": [ "Slew limiter" ]
+			"tags": [ "Slew limiter", "Polyphonic" ]
 		},
 		{
 			"slug": "PolyGnome",

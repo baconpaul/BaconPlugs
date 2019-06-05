@@ -12,9 +12,9 @@ template <typename TBase> struct Glissinator : public TBase {
 
     enum LightIds { SLIDING_LIGHT, NUM_LIGHTS };
 
-    float priorIn;
-    float targetIn;
-    int offsetCount;
+    float priorIn[16];
+    float targetIn[16];
+    int offsetCount[16];
 
     // Hey thanks https://stackoverflow.com/a/4643091
     using TBase::inputs;
@@ -25,7 +25,8 @@ template <typename TBase> struct Glissinator : public TBase {
     Glissinator() : TBase() {
         TBase::config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         TBase::configParam(GLISS_TIME, 0, 1, 0.1, "Time to gliss, in seconds");
-        offsetCount = -1;
+        for( int i=0; i<16; ++i )
+            offsetCount[i] = -1;
     }
 
     void process(const typename TBase::ProcessArgs &args) override {
@@ -34,69 +35,77 @@ template <typename TBase> struct Glissinator : public TBase {
         if (shift_time < 10)
             shift_time = 10;
 
-        float thisIn = inputs[SOURCE_INPUT].getVoltage();
+        int nChan = inputs[SOURCE_INPUT].getChannels();
+        outputs[SLID_OUTPUT].setChannels(nChan);
+        outputs[GLISSING_GATE].setChannels(nChan);
+        lights[SLIDING_LIGHT].value = 0;
 
-        // This means I am being intialized
-        if (offsetCount < 0) {
-            priorIn = thisIn;
-            offsetCount = 0;
-        }
+        for( int i=0; i<nChan; ++i )
+        {
+            float thisIn = inputs[SOURCE_INPUT].getVoltage(i);
 
-        bool inGliss = offsetCount != 0;
-        float thisOut = thisIn;
-
-        // When I begin the cycle, the shift_time may be a different shift_time
-        // than the prior cycle. This is not a problem unless the shift time is
-        // now shorter than the offset_time. If that's the case we have
-        // basically finished the gliss. This check used to be at the end of the
-        // loop but that lead to one bad value even with the >=
-        if (offsetCount >= shift_time) {
-            offsetCount = 0;
-            priorIn = thisIn;
-            targetIn = thisIn;
-            inGliss = false;
-        }
-
-        // I am not glissing
-        if (!inGliss) {
-            // But I have a new target, so start glissing by setting offset
-            // count to 1.
-            if (thisIn != priorIn) {
-                targetIn = thisIn;
-                offsetCount = 1;
-                inGliss = true;
-            }
-        }
-
-        // I am glissing (note this is NOT in an else since inGliss can be reset
-        // above)
-        if (inGliss) {
-            // OK this means my note has changed underneath me so I have to
-            // simulate my starting point.
-            if (thisIn != targetIn) {
-                // This "-1" is here because we want to know the LAST known step
-                // - so at the prior offset count. Without this a turnaround
-                // will tick above the turnaround point for one sample.
-                float lastKnown = ((shift_time - (offsetCount - 1)) * priorIn +
-                                   (offsetCount - 1) * targetIn) /
-                                  shift_time;
-                targetIn = thisIn;
-                priorIn = lastKnown;
-                offsetCount = 0;
+            // This means I am being intialized
+            if (offsetCount[i] < 0) {
+                priorIn[i] = thisIn;
+                offsetCount[i] = 0;
             }
 
-            // Then the output is just the weighted sum of the prior input and
-            // this input.
-            thisOut =
-                ((shift_time - offsetCount) * priorIn + offsetCount * thisIn) /
-                shift_time;
+            bool inGliss = offsetCount[i] != 0;
+            float thisOut = thisIn;
 
-            // and step along one.
-            offsetCount++;
+            // When I begin the cycle, the shift_time may be a different shift_time
+            // than the prior cycle. This is not a problem unless the shift time is
+            // now shorter than the offset_time. If that's the case we have
+            // basically finished the gliss. This check used to be at the end of the
+            // loop but that lead to one bad value even with the >=
+            if (offsetCount[i] >= shift_time) {
+                offsetCount[i] = 0;
+                priorIn[i] = thisIn;
+                targetIn[i] = thisIn;
+                inGliss = false;
+            }
+            
+            // I am not glissing
+            if (!inGliss) {
+                // But I have a new target, so start glissing by setting offset
+                // count to 1.
+                if (thisIn != priorIn[i]) {
+                    targetIn[i] = thisIn;
+                    offsetCount[i] = 1;
+                    inGliss = true;
+                }
+            }
+
+            // I am glissing (note this is NOT in an else since inGliss can be reset
+            // above)
+            if (inGliss) {
+                // OK this means my note has changed underneath me so I have to
+                // simulate my starting point.
+                if (thisIn != targetIn[i]) {
+                    // This "-1" is here because we want to know the LAST known step
+                    // - so at the prior offset count. Without this a turnaround
+                    // will tick above the turnaround point for one sample.
+                    float lastKnown = ((shift_time - (offsetCount[i] - 1)) * priorIn[i] +
+                                       (offsetCount[i] - 1) * targetIn[i]) /
+                        shift_time;
+                    targetIn[i] = thisIn;
+                    priorIn[i] = lastKnown;
+                    offsetCount[i] = 0;
+                }
+
+                // Then the output is just the weighted sum of the prior input and
+                // this input.
+                thisOut =
+                    ((shift_time - offsetCount[i]) * priorIn[i] + offsetCount[i] * thisIn) /
+                    shift_time;
+                
+                // and step along one.
+                offsetCount[i]++;
+            }
+
+            lights[SLIDING_LIGHT].value += inGliss ? 1.0/nChan : 0;
+            outputs[SLID_OUTPUT].setVoltage(thisOut,i);
+            outputs[GLISSING_GATE].setVoltage(inGliss ? 10 : 0,i);
         }
-
-        lights[SLIDING_LIGHT].value = inGliss ? 1 : 0;
-        outputs[SLID_OUTPUT].setVoltage(thisOut);
-        outputs[GLISSING_GATE].setVoltage(inGliss ? 10 : 0);
     }
 };
