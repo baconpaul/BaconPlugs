@@ -50,7 +50,7 @@ struct KarplusStrongPoly : virtual Module {
         NUM_LIGHTS
     };
 
-    dsp::SchmittTrigger voiceTrigger, voiceButtonTrigger, killallVoicesTrigger;
+    dsp::SchmittTrigger voiceTrigger[16], voiceButtonTrigger, killallVoicesTrigger;
 
     std::vector<KSSynth *> voices;
     const static int nVoices = 32;
@@ -123,68 +123,77 @@ struct KarplusStrongPoly : virtual Module {
             initPacketString = voices[0]->initPacketName(currentInitialPacket);
         }
 
-        // Check a trigger here and find a voice
-        bool newVoice = false;
-        if (voiceTrigger.process(inputs[TRIGGER_GATE].getVoltage()) ||
-            voiceButtonTrigger.process(params[TRIGGER_BUTTON].getValue())) {
-            newVoice = true;
-        }
-
-        if (newVoice) {
-            // find voice
-            KSSynth *voice = NULL;
-            for (auto syn : voices)
-                if (!syn->active) {
-                    voice = syn;
-                    break;
-                }
-
-            if (voice == NULL) {
-                // INFO( "All voices are active: Running voice steal" );
-                voice = voices[0];
-                float ds = voice->sumDelaySquared;
-                for (auto syn : voices) {
-                    if (syn->sumDelaySquared < ds) {
-                        ds = syn->sumDelaySquared;
+        int nChan = inputs[TRIGGER_GATE].getChannels();
+        outputs[TRIGGER_GATE].setChannels(nChan);
+        for( int i=0; i<nChan; ++i )
+        {
+            // Check a trigger here and find a voice
+            bool newVoice = false;
+            if (voiceTrigger[i].process(inputs[TRIGGER_GATE].getVoltage(i)) ||
+                (i==0 && voiceButtonTrigger.process(params[TRIGGER_BUTTON].getValue()))) {
+                newVoice = true;
+            }
+            
+            if (newVoice) {
+                // find voice
+                KSSynth *voice = NULL;
+                for (auto syn : voices)
+                    if (!syn->active) {
                         voice = syn;
+                        break;
+                    }
+                
+                if (voice == NULL) {
+                    // INFO( "All voices are active: Running voice steal" );
+                    voice = voices[0];
+                    float ds = voice->sumDelaySquared;
+                    for (auto syn : voices) {
+                        if (syn->sumDelaySquared < ds) {
+                            ds = syn->sumDelaySquared;
+                            voice = syn;
+                        }
                     }
                 }
+                
+                // Capture parameters onto this voice and trigger it
+                float pitch = params[FREQ_KNOB].getValue() +
+                    12.0f * inputs[FREQ_CV].getPolyVoltage(i);
+                float freq = 261.262f * powf(2.0f, pitch / 12.0f);
+                
+                // For now, since we only have one filter, hardcode this
+                voice->filtParamA =
+                    clamp(params[FILTER_KNOB_A].getValue() +
+                          inputs[FILTER_CV_A].getPolyVoltage(i) * 0.1,
+                          0.0f, 1.0f);
+                voice->filtParamB = 0;
+                voice->filtParamC = 0;
+                
+                float atten =
+                    params[ATTEN_KNOB].getValue() + inputs[ATTEN_CV].getPolyVoltage(i);
+                voice->packet = currentInitialPacket;
+                voice->filtAtten = atten;
+                voice->polyChannel = i;
+                voice->trigger(freq);
             }
-
-            // Capture parameters onto this voice and trigger it
-            float pitch = params[FREQ_KNOB].getValue() +
-                          12.0f * inputs[FREQ_CV].getVoltage();
-            float freq = 261.262f * powf(2.0f, pitch / 12.0f);
-
-            // For now, since we only have one filter, hardcode this
-            voice->filtParamA =
-                clamp(params[FILTER_KNOB_A].getValue() +
-                          inputs[FILTER_CV_A].getVoltage() * 0.1,
-                      0.0f, 1.0f);
-            voice->filtParamB = 0;
-            voice->filtParamC = 0;
-
-            float atten =
-                params[ATTEN_KNOB].getValue() + inputs[ATTEN_CV].getVoltage();
-            voice->packet = currentInitialPacket;
-            voice->filtAtten = atten;
-            voice->trigger(freq);
         }
-
+        
         if (killallVoicesTrigger.process(params[KILL_BUTTON].getValue())) {
-            INFO("Killing all voices");
             for (auto syn : voices)
                 if (syn->active) {
                     syn->silenceGracefully();
                 };
         }
 
-        float out = 0.0f;
+        // We could make a choice to have monophonic output here, but let user use sum if they want that
+        float out[nChan];
+        for (int i=0; i<nChan; ++i )
+            out[i] = 0.0;
         for (auto syn : voices)
             if (syn->active)
-                out += syn->step();
+                out[syn->polyChannel] += syn->step();
 
-        outputs[SYNTH_OUTPUT].setVoltage(out);
+        for (int i=0; i<nChan; ++i )
+            outputs[SYNTH_OUTPUT].setVoltage(out[i],i);
     }
 
     bool initPacketStringDirty;

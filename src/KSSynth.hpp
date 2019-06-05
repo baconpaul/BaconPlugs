@@ -60,7 +60,8 @@ class KSSynth {
                            // sample
 
     bool active;
-
+    int polyChannel;
+    
     // private:
     float freq;
     int burstLen;
@@ -77,7 +78,7 @@ class KSSynth {
 
           filtParamA(0.5f), filtParamB(0.0f), filtParamC(0.0f), filtAtten(3.0f),
 
-          active(false),
+          active(false), polyChannel(0),
 
           wfMin(minv), wfMax(maxv), sampleRate(sampleRateIn),
           sampleRateBy100((int)(sampleRate / 100)), pos(0) {

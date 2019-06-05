@@ -63,7 +63,7 @@
 			"slug": "KarplusStrongPoly",
 			"name": "KarplusStrongPoly",
 			"description": "An implementation of KS in a module",
-			"tags": [ "Oscillator"]
+			"tags": [ "Oscillator", "Polyphonic" ]
 		},
 		{
 			"slug": "ALingADing",
