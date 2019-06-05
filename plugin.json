@@ -75,7 +75,7 @@
 			"slug": "Bitulator",
 			"name": "Bitulator",
 			"description": "A sub-par distortion and bit cruncher",
-			"tags": [ "Distortion", "Waveshaper" ]
+			"tags": [ "Distortion", "Waveshaper", "Polyphonic" ]
 		},
         {
 			"slug": "PolyGenerator",
