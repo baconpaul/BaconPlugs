@@ -50,9 +50,9 @@ struct RandomTunedPlayer : public PPlayer
 {
     std::vector<int> major = { 0, 2, 4, 5, 7, 9, 11, 12 };
 
-    virtual std::string getName() { return "RND TUNE"; }
+    virtual std::string getName() override { return "RND TUNE"; }
     
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) override {
         if( phase >= 1 )
         {
             for( int i=0; i<voiceCount; ++i )
@@ -76,8 +76,8 @@ struct RandomTunedPlayer : public PPlayer
 struct ArpPlayer : public PPlayer
 {
     std::vector<int> arp = { 0, 4, 7, 2, 7, 12, 5 };
-    virtual std::string getName() { return "ARPS"; }
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
+    virtual std::string getName() override { return "ARPS"; }
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) override {
         int pos = std::max(0, std::min((int)(phase * 16), 15));
         if( pos < voiceCount && ! notes[pos].on )
         {
@@ -95,8 +95,8 @@ struct ArpPlayer : public PPlayer
 struct CircleOfFifthsPlayer : public PPlayer
 {
     float fifthPos = 0;
-    virtual std::string getName() { return "CIRC O 5"; }
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
+    virtual std::string getName() override { return "CIRC O 5"; }
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) override {
         if( phase > 1.0 )
         {
             std::vector<int> triad = { 0, 4, 7, 10 };
@@ -125,7 +125,7 @@ struct RandomChordPlayer : public PPlayer {
     std::vector<int> directions;
     std::vector<float> snotes;
 
-    virtual std::string getName() { return "RND CHRD"; }
+    virtual std::string getName() override { return "RND CHRD"; }
     RandomChordPlayer() : PPlayer() {
         directions.resize(16);
         snotes.resize(16);
@@ -135,7 +135,7 @@ struct RandomChordPlayer : public PPlayer {
         }
     }
 
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) override {
         if( phase > 1.0 )
         {
             for( int i=0; i<voiceCount; ++i )
@@ -162,9 +162,9 @@ struct RandomChordPlayer : public PPlayer {
 };
 
 struct ChaosPlayer : public PPlayer {
-    virtual std::string getName() { return "CHAOS"; }
+    virtual std::string getName() override { return "CHAOS"; }
     
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) override {
         int modv = (int)(1000.0 + 5000 * extra);
         if( rand() % modv == 14 )
         {
@@ -183,8 +183,8 @@ struct ChaosPlayer : public PPlayer {
         shortenNotes(dPhase);
     }
 
-    virtual bool extraActive() { return true; }
-    virtual std::string extraLabel() {  dirty = false; return "DENSITY"; }
+    virtual bool extraActive() override { return true; }
+    virtual std::string extraLabel() override {  dirty = false; return "DENSITY"; }
 };
 
 struct GoldbergPlayer : public PPlayer {
@@ -193,8 +193,8 @@ struct GoldbergPlayer : public PPlayer {
     int currentEvent = 0;
     int nextVoice = 0;
 
-    virtual std::string getName() { return "GOLDBERG"; }
-    virtual int minVoices(int userCount) { return 16; }
+    virtual std::string getName() override { return "GOLDBERG"; }
+    virtual int minVoices(int userCount) override { return 16; }
 
     std::string varDisp = "";
     int lastVar = -1;
@@ -229,7 +229,7 @@ struct GoldbergPlayer : public PPlayer {
         loadVariation(5);
     }
     
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) override {
         int wantedVar = (int)(extra * 30);
         if( wantedVar != lastVar )
             loadVariation(wantedVar);
@@ -277,13 +277,13 @@ struct GoldbergPlayer : public PPlayer {
         }
     }
 
-    virtual bool extraActive() { return true; }
-    virtual void copyNotes( PPlayer *other ) {
+    virtual bool extraActive() override { return true; }
+    virtual void copyNotes( PPlayer *other ) override {
         for( int i=0; i<16; ++i )
             notes[i].on = false;
     }
 
-    virtual std::string extraLabel() { return varDisp; }
+    virtual std::string extraLabel() override { return varDisp; }
 
 };
 
@@ -356,7 +356,6 @@ struct PolyGenerator : public rack::Module {
         }
         player.reset(np);
         player->pattern = pattern;
-        rack::INFO( "Reset player to %d %s", pattern, player->getName().c_str());
         patternStringDirty = true;
         patternString = player->getName();
     }
