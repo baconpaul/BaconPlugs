@@ -643,6 +643,19 @@ struct NKK_UpDown : app::SvgSwitch {
 	}
 };
 
+struct InternalFontMgr {
+    static std::map<std::string, int> fontMap;
+    static int get(NVGcontext *vg, std::string resName) {
+        if (fontMap.find(resName) == fontMap.end()) {
+            fontMap[resName] =
+                nvgCreateFont(vg, resName.c_str(),
+                              asset::plugin(pluginInstance, resName).c_str());
+        }
+        return fontMap[resName];
+    }
+};
+
+
 #include "SizeTable.hpp"
 
 #endif

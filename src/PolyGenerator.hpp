@@ -22,7 +22,7 @@ struct PPlayer {
 
     virtual ~PPlayer() {
     }
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase) { }
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) { }
     virtual void copyNotes( PPlayer *other ) {
         for( int i=0; i<16; ++i )
             notes[i] = other->notes[i];
@@ -30,6 +30,11 @@ struct PPlayer {
 
     virtual std::string getName() = 0;
     virtual int minVoices(int userChoice) { return std::max(1, userChoice); }
+    virtual bool extraActive() { return false; }
+
+    bool dirty = true;
+    virtual std::string extraLabel() { dirty = false; return ""; }
+    virtual bool extraLabelDirty() { return dirty; }
     
     void shortenNotes(float dPhase) {
         for( int i=0; i<noteCount; ++i )
@@ -45,9 +50,9 @@ struct RandomTunedPlayer : public PPlayer
 {
     std::vector<int> major = { 0, 2, 4, 5, 7, 9, 11, 12 };
 
-    virtual std::string getName() { return "Random Tuned"; }
+    virtual std::string getName() { return "RND TUNE"; }
     
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase) {
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
         if( phase >= 1 )
         {
             for( int i=0; i<voiceCount; ++i )
@@ -71,8 +76,8 @@ struct RandomTunedPlayer : public PPlayer
 struct ArpPlayer : public PPlayer
 {
     std::vector<int> arp = { 0, 4, 7, 2, 7, 12, 5 };
-    virtual std::string getName() { return "Quick Arp"; }
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase) {
+    virtual std::string getName() { return "ARPS"; }
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
         int pos = std::max(0, std::min((int)(phase * 16), 15));
         if( pos < voiceCount && ! notes[pos].on )
         {
@@ -90,8 +95,8 @@ struct ArpPlayer : public PPlayer
 struct CircleOfFifthsPlayer : public PPlayer
 {
     float fifthPos = 0;
-    virtual std::string getName() { return "Circle of 5ths"; }
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase) {
+    virtual std::string getName() { return "CIRC O 5"; }
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
         if( phase > 1.0 )
         {
             std::vector<int> triad = { 0, 4, 7, 10 };
@@ -120,7 +125,7 @@ struct RandomChordPlayer : public PPlayer {
     std::vector<int> directions;
     std::vector<float> snotes;
 
-    virtual std::string getName() { return "Random Chord"; }
+    virtual std::string getName() { return "RND CHRD"; }
     RandomChordPlayer() : PPlayer() {
         directions.resize(16);
         snotes.resize(16);
@@ -130,7 +135,7 @@ struct RandomChordPlayer : public PPlayer {
         }
     }
 
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase) {
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
         if( phase > 1.0 )
         {
             for( int i=0; i<voiceCount; ++i )
@@ -156,30 +161,81 @@ struct RandomChordPlayer : public PPlayer {
     }
 };
 
+struct ChaosPlayer : public PPlayer {
+    virtual std::string getName() { return "CHAOS"; }
+    
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
+        int modv = (int)(1000.0 + 5000 * extra);
+        if( rand() % modv == 14 )
+        {
+            for( int i=0; i<voiceCount; ++i )
+            {
+                if( !notes[i].on )
+                {
+                    notes[i].on = true;
+                    notes[i].tone = rand() % 10000 / 10000.0 * 5.0 - 2.0;
+                    notes[i].len = rand() % 1000 / 500.0 + 0.1;
+                    notes[i].vel = rand() % 80 + 40;
+                    break;
+                }
+            }
+        }
+        shortenNotes(dPhase);
+    }
+
+    virtual bool extraActive() { return true; }
+    virtual std::string extraLabel() {  dirty = false; return "DENSITY"; }
+};
+
 struct GoldbergPlayer : public PPlayer {
     smf::MidiFile mf;
     float currentTime = 0;
     int currentEvent = 0;
     int nextVoice = 0;
 
-    virtual std::string getName() { return "Goldberg"; }
+    virtual std::string getName() { return "GOLDBERG"; }
     virtual int minVoices(int userCount) { return 16; }
+
+    std::string varDisp = "";
+    int lastVar = -1;
     
-    GoldbergPlayer() : PPlayer() {
-        rack::INFO( "Loading midi file" );
-        mf.read(rack::asset::plugin(pluginInstance, "res/midi/988-v05.mid").c_str());
+    void loadVariation( int var ) {
+        char vn[ 256 ];
+        snprintf(vn, 256, "res/midi/988-v%02d.mid", var );
+        rack::INFO( "loading file %s", vn );
+        mf.read(rack::asset::plugin(pluginInstance, vn).c_str());
         mf.doTimeAnalysis();
         mf.linkNotePairs();
         mf.joinTracks();
         currentEvent = 0;
-        currentTime = -1;
-        rack::INFO( "mf[0].size is %d", mf[0].size());
+        currentTime = -0.25;
+
+        if( var == 0 )
+        {
+            varDisp = "aria";
+        }
+        else
+        {
+            snprintf( vn, 256, "var. %d", var );
+            varDisp = vn;
+        }
+        dirty = true;
+        lastVar = var;
+        for( int i=0; i<16; ++i )
+            notes[i].on = false;
     }
     
-    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase) {
+    GoldbergPlayer() : PPlayer() {
+        loadVariation(5);
+    }
+    
+    virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) {
+        int wantedVar = (int)(extra * 30);
+        if( wantedVar != lastVar )
+            loadVariation(wantedVar);
+        
         if( currentEvent >= mf[0].size())
         {
-            rack::INFO( "Looping" );
             currentTime = -1.0;
             currentEvent = 0.0;
             for( int i=0; i<16; ++i )
@@ -189,7 +245,6 @@ struct GoldbergPlayer : public PPlayer {
         currentTime += sampleTime;
         while( currentEvent < mf[0].size() &&  mf[0][currentEvent].seconds < currentTime )
         {
-            rack::INFO( "Got an event at %lf %d", currentTime, currentEvent );
             smf::MidiEvent &evt = mf[0][currentEvent];
             if (evt.isNoteOn())
             {
@@ -222,10 +277,13 @@ struct GoldbergPlayer : public PPlayer {
         }
     }
 
+    virtual bool extraActive() { return true; }
     virtual void copyNotes( PPlayer *other ) {
         for( int i=0; i<16; ++i )
             notes[i].on = false;
     }
+
+    virtual std::string extraLabel() { return varDisp; }
 
 };
 
@@ -234,6 +292,7 @@ struct PolyGenerator : public rack::Module {
         BPM_PARAM,
         VOICES_PARAM,
         PATTERN_PARAM,
+        EXTRA_PARAM,
         NUM_PARAMS
     };
     enum InputIds {
@@ -246,6 +305,9 @@ struct PolyGenerator : public rack::Module {
         NUM_OUTPUTS
     };
     enum LightIds {
+        BPM_LIGHT,
+        VOICES_LIGHT,
+        EXTRA_LIGHT,
         NUM_LIGHTS
     };
 
@@ -258,9 +320,10 @@ struct PolyGenerator : public rack::Module {
     PolyGenerator() : rack::Module() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
-        configParam(BPM_PARAM, -2, 3, 1, "BPM" );
+        configParam(BPM_PARAM, -2, 3, 1, "Clock Tempo", " bpm", 2.f, 60.f );
         configParam(VOICES_PARAM, 1, 16, 16, "Voice Count" );
         configParam(PATTERN_PARAM, 0, 5, 0, "Pattern" );
+        configParam(EXTRA_PARAM, 0, 1, 0, "Extra" );
         resetPlayer(0);
     }
 
@@ -277,6 +340,9 @@ struct PolyGenerator : public rack::Module {
             np = new RandomChordPlayer();
             break;
         case 4:
+            np = new ChaosPlayer();
+            break;
+        case 5:
             np = new GoldbergPlayer();
             break;
         case 0:
@@ -291,6 +357,8 @@ struct PolyGenerator : public rack::Module {
         player.reset(np);
         player->pattern = pattern;
         rack::INFO( "Reset player to %d %s", pattern, player->getName().c_str());
+        patternStringDirty = true;
+        patternString = player->getName();
     }
     
     void process( const ProcessArgs &args ) override {
@@ -309,8 +377,12 @@ struct PolyGenerator : public rack::Module {
         if( pattern != player->pattern )
             resetPlayer(pattern);
 
-        player->step(voices, args.sampleTime, phase, dPhase);
+        player->step(voices, args.sampleTime, phase, dPhase, params[EXTRA_PARAM].getValue());
 
+        lights[BPM_LIGHT].value = bpm;
+        lights[VOICES_LIGHT].value = voices;
+        lights[EXTRA_LIGHT].value = player->extraActive() ? 10.0 : 0;
+        
         if( phase > 1.0 )
             phase -= 1.0;
         
@@ -324,5 +396,23 @@ struct PolyGenerator : public rack::Module {
                 player->notes[i].on = false;
         }
     }
+
+    bool patternStringDirty = true;
+    std::string patternString = "pattern";
+    static bool getPatternNameDirty(Module *that) {
+        return dynamic_cast<PolyGenerator *>(that)->patternStringDirty;
+    }
+    static std::string getPatternName(Module *that) {
+        dynamic_cast<PolyGenerator *>(that)->patternStringDirty = false;
+        return dynamic_cast<PolyGenerator *>(that)->patternString;
+    }
+
+    static bool getExtraLabelDirty(Module *that) {
+        return dynamic_cast<PolyGenerator *>(that)->player->extraLabelDirty();
+    }
+    static std::string getExtraLabel(Module *that) {
+        return dynamic_cast<PolyGenerator *>(that)->player->extraLabel();
+    }
+
 };
 
