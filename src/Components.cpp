@@ -88,7 +88,6 @@ static svg_t baconEmoji = nullptr;
 static svg_t lovebaconEmoji = nullptr;
 
 void BaconBackground::draw(const DrawArgs &args) {
-    rack::INFO( "DRAW BG" );
     if (memFont < 0)
         memFont = InternalFontMgr::get(args.vg, "res/Monitorica-Bd.ttf");
 
@@ -252,7 +251,6 @@ void BaconBackground::onButton(const event::Button &e)
     auto *r = dynamic_cast<FramebufferWidget *>(parent);
     if( r != nullptr )
     {
-        rack::INFO( "DIRTY PARENT" );
         r->dirty=true;
     }
 }
