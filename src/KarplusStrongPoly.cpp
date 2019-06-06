@@ -51,7 +51,9 @@ struct KarplusStrongPoly : virtual Module {
     };
 
     dsp::SchmittTrigger voiceTrigger[16], voiceButtonTrigger, killallVoicesTrigger;
-
+    dsp::Timer triggerTimers[16];
+    bool       delayTrigger[16];
+    
     std::vector<KSSynth *> voices;
     const static int nVoices = 32;
 
@@ -74,6 +76,9 @@ struct KarplusStrongPoly : virtual Module {
         filterStringDirty = true;
         currentFilter = KSSynth::WEIGHTED_ONE_SAMPLE;
         filterString = voices[0]->filterTypeName(currentFilter);
+
+        for( int i=0; i<16; ++i )
+            delayTrigger[i] = false;
     }
 
     virtual ~KarplusStrongPoly() {
@@ -123,7 +128,12 @@ struct KarplusStrongPoly : virtual Module {
             initPacketString = voices[0]->initPacketName(currentInitialPacket);
         }
 
-        int nChan = inputs[TRIGGER_GATE].getChannels();
+        int nChan;
+        if( inputs[TRIGGER_GATE].isConnected() )
+            nChan = std::max(1,inputs[TRIGGER_GATE].getChannels());
+        else
+            nChan = 16;
+        
         outputs[TRIGGER_GATE].setChannels(nChan);
         for( int i=0; i<nChan; ++i )
         {
@@ -131,8 +141,19 @@ struct KarplusStrongPoly : virtual Module {
             bool newVoice = false;
             if (voiceTrigger[i].process(inputs[TRIGGER_GATE].getVoltage(i)) ||
                 (i==0 && voiceButtonTrigger.process(params[TRIGGER_BUTTON].getValue()))) {
-                newVoice = true;
+                triggerTimers[i].time = 0.001; // per https://vcvrack.com/manual/VoltageStandards.html
+                delayTrigger[i] = true;
             }
+
+            if( triggerTimers[i].time < 0 && delayTrigger[i] )
+            {
+                newVoice = true;
+                triggerTimers[i].time = 0;
+                delayTrigger[i] = false;
+            }
+
+            if( delayTrigger[i] )
+                triggerTimers[i].process(-args.sampleTime);
             
             if (newVoice) {
                 // find voice
