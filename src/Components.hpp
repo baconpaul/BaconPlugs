@@ -223,7 +223,8 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget {
 struct BaconBackground : virtual TransparentWidget {
     static NVGcolor bg, bgEnd;
     static NVGcolor bgOutline;
-    static NVGcolor highlight;
+    static NVGcolor highlight, highlightEnd;
+    static NVGcolor inputStart, inputEnd;
     static NVGcolor labelBg, labelBgEnd;
     static NVGcolor labelRule;
 

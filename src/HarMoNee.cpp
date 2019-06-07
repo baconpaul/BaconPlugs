@@ -194,64 +194,64 @@ struct HarMoNeeWidget : ModuleWidget {
 
 HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget() {
     setModule(model);
-    box.size = Vec(SCREW_WIDTH * 10, RACK_HEIGHT);
+    box.size = Vec(SCREW_WIDTH * 8, RACK_HEIGHT);
 
     BaconBackground *bg = new BaconBackground(box.size, "HarMoNee");
 
     addChild(bg->wrappedInFramebuffer());
 
-    Vec iPos(12, 100);
+    Vec iPos = Vec(7, RACK_HEIGHT - 15 - 43);
+
     bg->addPlugLabel(iPos, BaconBackground::SIG_IN, "in");
     addInput(createInput<PJ301MPort>(iPos, module, HarMoNee::SOURCE_INPUT));
 
-    iPos.y += 60;
-    bg->addPlugLabel(iPos, BaconBackground::SIG_OUT, "root");
-    addOutput(createOutput<PJ301MPort>(iPos, module, HarMoNee::ECHO_OUTPUT));
-
-    iPos.y += 60;
-    bg->addPlugLabel(iPos, BaconBackground::SIG_OUT, "harm");
-    addOutput(
-        createOutput<PJ301MPort>(iPos, module, HarMoNee::INCREASED_OUTPUT));
-
-    iPos.y += 60;
+    iPos = Vec(box.size.x/2 - 12, RACK_HEIGHT - 15 - 43);
     bg->addPlugLabel(iPos, BaconBackground::SIG_IN, "gliss");
     addParam(
         createParam<RoundSmallBlackKnob>(iPos, module, HarMoNee::GLISS_RATE));
 
+    iPos = Vec(box.size.x - 24 - 7, RACK_HEIGHT - 15 - 43);
+
+    bg->addPlugLabel(iPos, BaconBackground::SIG_OUT, "harm");
+    addOutput(
+        createOutput<PJ301MPort>(iPos, module, HarMoNee::INCREASED_OUTPUT));
+
+
     // NKK is 32 x 44
-    addParam(createParam<NKK_UpDown>(Vec(80, 26), module, HarMoNee::UP_OR_DOWN));
+    int x0 = 53;
+    addParam(createParam<NKK_UpDown>(Vec(x0, 26), module, HarMoNee::UP_OR_DOWN));
     addInput(createInput<PJ301MPort>(
-        Vec(80 + SizeTable<NKK>::X + 5, 26 + diffY2c<NKK, PJ301MPort>()),
+        Vec(x0 + SizeTable<NKK>::X + 5, 26 + diffY2c<NKK, PJ301MPort>()),
         module, HarMoNee::UP_OR_DOWN_CV));
-    bg->addLabel(Vec(74, 26 + 22 - 4 - 5 - 5), "up", 12,
+    bg->addLabel(Vec(x0-6, 26 + 22 - 4 - 5 - 5), "up", 12,
                  NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
-    addChild(createLight<MediumLight<GreenLight>>(Vec(70, 26 + 22 - 4 - 5),
+    addChild(createLight<MediumLight<GreenLight>>(Vec(x0-10, 26 + 22 - 4 - 5),
                                                   module, HarMoNee::UP_LIGHT));
 
-    bg->addLabel(Vec(74, 26 + 22 - 4 + 5 + 8 + 7), "dn", 12,
+    bg->addLabel(Vec(x0-6, 26 + 22 - 4 + 5 + 8 + 7), "dn", 12,
                  NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-    addChild(createLight<MediumLight<RedLight>>(Vec(70, 26 + 22 - 4 + 5),
+    addChild(createLight<MediumLight<RedLight>>(Vec(x0-10, 26 + 22 - 4 + 5),
                                                 module, HarMoNee::DOWN_LIGHT));
 
-    addChild(MultiDigitSevenSegmentLight<BlueLight, 4, 2>::create(
-        Vec(10, 30), module, HarMoNee::DIGIT_LIGHT));
+    addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(
+        Vec(7, 38), module, HarMoNee::DIGIT_LIGHT));
 
-    int x = 80;
-    int y = 26 + 45;
+    int x = 50;
+    int y = 26 + 45 + 14;
     int ld = HarMoNee::HALF_STEP_LIGHT - HarMoNee::HALF_STEP;
 
     const char *labels[] = {"1/2", "W", "m3", "III", "V", "O"};
     for (int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i) {
-        addParam(createParam<NKK_UpDown>(Vec(x, y), module, i));
-        bg->addLabel(Vec(66, y + 22), labels[i - HarMoNee::HALF_STEP], 14,
+        addParam(createParam<CKSS>(Vec(x, y), module, i));
+        bg->addLabel(Vec(x-14, y + SizeTable<PJ301MPort>::Y/2), labels[i - HarMoNee::HALF_STEP], 14,
                      NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE);
-        addChild(createLight<MediumLight<BlueLight>>(Vec(70, y + 22 - 5),
+        addChild(createLight<SmallLight<BlueLight>>(Vec(x-10, y + SizeTable<PJ301MPort>::Y/2 - 4),
                                                      module, i + ld));
         addInput(createInput<PJ301MPort>(
-            Vec(x + SizeTable<NKK>::X + 5, y + diffY2c<NKK, PJ301MPort>()),
+            Vec(x + SizeTable<CKSS>::X + 5, y + diffY2c<CKSS, PJ301MPort>()),
             module, HarMoNee::HALF_STEP_CV + i - HarMoNee::HALF_STEP));
 
-        y += 45;
+        y += 35;
     }
 }
 

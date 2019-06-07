@@ -253,6 +253,9 @@ void InternalPlugLabel::draw(const DrawArgs &args) {
     case (BaconBackground::SIG_IN): {
         nvgBeginPath(args.vg);
         nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y, 5);
+        NVGpaint vgr = nvgLinearGradient(args.vg, 0, 0, 0, box.size.y, BaconBackground::inputStart, BaconBackground::inputEnd );
+        nvgFillPaint(args.vg, vgr);
+        nvgFill(args.vg);
         nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
         nvgStroke(args.vg);
         break;
@@ -260,7 +263,8 @@ void InternalPlugLabel::draw(const DrawArgs &args) {
     case (BaconBackground::SIG_OUT): {
         nvgBeginPath(args.vg);
         nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y, 5);
-        nvgFillColor(args.vg, BaconBackground::highlight);
+        NVGpaint vgr = nvgLinearGradient(args.vg, 0, 0, 0, box.size.y, BaconBackground::highlight, BaconBackground::highlightEnd );
+        nvgFillPaint(args.vg, vgr);
         nvgFill(args.vg);
 
         nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
@@ -311,8 +315,13 @@ BaconBackground *BaconBackground::addRoundedBorder(Vec pos, Vec sz,
 
 NVGcolor BaconBackground::bg = nvgRGBA(225, 225, 230, 255);
 NVGcolor BaconBackground::bgEnd = nvgRGBA(215, 215, 255, 255);
-NVGcolor BaconBackground::bgOutline = nvgRGBA(180, 180, 170, 255);
+NVGcolor BaconBackground::bgOutline = nvgRGBA(120, 120, 160, 255);
 NVGcolor BaconBackground::highlight = nvgRGBA(70, 70, 100, 255);
+NVGcolor BaconBackground::highlightEnd = nvgRGBA(60, 60, 120, 255);
+
+NVGcolor BaconBackground::inputStart = nvgRGBA(225, 225, 255, 255);
+NVGcolor BaconBackground::inputEnd = nvgRGBA(225, 225, 255, 255);
+
 NVGcolor BaconBackground::labelBg = nvgRGBA(170, 170, 190, 255);
 NVGcolor BaconBackground::labelBgEnd = nvgRGBA(220, 220, 240, 255);
 NVGcolor BaconBackground::labelRule = nvgRGBA(120,120,190, 255);

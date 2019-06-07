@@ -49,6 +49,11 @@ template <> struct SizeTable<NKK> {
     constexpr static const float Y = 44.0;
 };
 
+template <> struct SizeTable<CKSS> {
+    constexpr static const float X = 13.0;
+    constexpr static const float Y = 21.0;
+};
+
 // Diff Y to center
 template <typename T1, typename T2> float diffY2c() {
     return (SizeTable<T1>::Y - SizeTable<T2>::Y) / 2;
