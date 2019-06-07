@@ -270,7 +270,8 @@ The font is Copyright 2017 Stewart C. Russell and is released under
 the [SIL Open Font License 1.1](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL).
 
 The MIDI file of the goldberg variations in res/midi is from Dave Grossman's J.S. Bach page
-at http://www.jsbach.net.
+at http://www.jsbach.net. The MIDI files of other composers are from Bernd Krueger's piano-midi.de site,
+and are released under cc-by-sa Germany License as described http://www.piano-midi.de/copy.htm
 
 The Bacon Emoji is from twitters https://twemoji.twitter.com outstanding free SVG emojis,
 which are cc-sa-4.
