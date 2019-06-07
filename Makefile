@@ -1,6 +1,4 @@
 
-RELEASE_BRANCH = release_1.0.0
-
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
 CFLAGS +=
