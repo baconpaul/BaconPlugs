@@ -2,7 +2,7 @@
 	"slug": "BaconMusic",
 	"name": "Bacon Music",
 	"version": "1.0.1",
-	"license": "GPL3",
+	"license": "GPL-3.0-or-later",
 	"author": "@baconpaul",
 	"authorEmail": "",
 	"authorUrl": "https://www.baconpaul.org/",
