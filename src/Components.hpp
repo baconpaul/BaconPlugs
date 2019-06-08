@@ -630,6 +630,7 @@ struct DotMatrixLightTextWidget
 // FIXME: Look at correct switch type
 struct SABROGWhite : SvgSwitch /*, MomentarySwitch */ {
     SABROGWhite() {
+        momentary = true;
         addFrame(APP->window->loadSvg(
             asset::plugin(pluginInstance, "res/sabrog-25-up.svg")));
         addFrame(APP->window->loadSvg(
