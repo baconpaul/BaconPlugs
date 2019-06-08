@@ -16,12 +16,22 @@ SOURCES += $(wildcard libs/midifile/src/*.cpp)
 # The compiled plugin is automatically added.
 DISTRIBUTABLES += $(wildcard LICENSE*) res docs patches README.md
 
+# Add a fake dep
+DEPS += libs/midifile/LICENSE.txt
+
+libs/midifile/LICENSE.txt:
+	echo "libs/midifile/LICENSE.txt does not exist"
+	echo "executing git submodule update"
+	git submodule update --init --recursive
+
+
 # Include the VCV plugin Makefile framework
 RACK_DIR ?= ../..
 include $(RACK_DIR)/plugin.mk
 
 shadist:	dist
 	openssl sha256 dist/$(SLUG)-$(VERSION)-$(ARCH).zip > dist/$(SLUG)-$(VERSION)-$(ARCH).zip.sha256
+
 
 COMMUNITY_ISSUE=https://github.com/VCVRack/community/issues/433
 
