@@ -23,6 +23,14 @@ for maintaining these builds.
 I'm happy to hear any feedback and bug reports. The best way
 to reach me is to just open a github issue [right here on github](https://github.com/baconpaul/BaconPlugs/issues). 
 
+If you choose to build the modules yourself you need to run
+
+```
+git submodule update --init --recursive
+```
+
+before you build. 
+
 Finally, all the [sample patches I used to make the screen-shots](https://github.com/baconpaul/BaconPlugs/tree/master/patches) are
 on the github here. 
 
