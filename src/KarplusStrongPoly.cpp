@@ -132,7 +132,12 @@ struct KarplusStrongPoly : virtual Module {
         if( inputs[TRIGGER_GATE].isConnected() )
             nChan = std::max(1,inputs[TRIGGER_GATE].getChannels());
         else
-            nChan = 16;
+        {
+            nChan = 1;
+            for (auto syn: voices)
+                if( syn->active )
+                    nChan = std::max(nChan, syn->polyChannel + 1);
+        }
         
         outputs[TRIGGER_GATE].setChannels(nChan);
         for( int i=0; i<nChan; ++i )
