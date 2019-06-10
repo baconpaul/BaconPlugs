@@ -14,16 +14,7 @@ SOURCES += $(wildcard libs/midifile/src/*.cpp)
 
 # Add files to the ZIP package when running `make dist`
 # The compiled plugin is automatically added.
-DISTRIBUTABLES += $(wildcard LICENSE*) res docs patches README.md
-
-# Add a fake dep
-DEPS += libs/midifile/LICENSE.txt
-
-libs/midifile/LICENSE.txt:
-	echo "libs/midifile/LICENSE.txt does not exist"
-	echo "executing git submodule update"
-	git submodule update --init --recursive
-
+DISTRIBUTABLES += $(wildcard LICENSE*) res patches README.md
 
 # Include the VCV plugin Makefile framework
 RACK_DIR ?= ../..
