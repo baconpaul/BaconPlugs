@@ -33,7 +33,7 @@
 			"slug": "QuantEyes",
 			"name": "QuantEyes",
 			"description": "Quantize your signals to notes on a 12 tone scale",
-			"tags": [ "Quantier", "Polyphonic" ]
+			"tags": [ "Quantizer", "Polyphonic" ]
 		},
 		{
 			"slug": "SampleDelay",
