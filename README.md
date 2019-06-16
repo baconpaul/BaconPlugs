@@ -1,12 +1,14 @@
 # The Bacon Music VCVRack Modules
 
 "Bacon Music" is my set of EuroRack style plugins for 
-[VCVRack](http://www.vcvrack.com). The modules are mostly inspired by me noodling around, and 
+[VCVRack](http://www.vcvrack.com). The modules are mostly inspired by me noodling around with the platform
+since v0.5.something, and 
 they sort of fall into a few groups: 
 
 * Control voltage manipulation on 1v/oct signals to do things like glissando and musical quantization and a polyrhytmic clock;
 * Classic synth algorithms, including an implementation of the NES oscillators and a Karplus Strong implementation.
-* and finally, not very useful modulations and  distortions and stuff.
+* A polyphonic signal generator
+* and finally, not very useful modulations and distortions and stuff.
 
 
 All the source is here, released as of version 1.0.0 under a GPL3 license. (Prior versions were Apache 2). 
@@ -15,24 +17,8 @@ these modules as you see fit. If you happen to use them to make music you want t
 do let me know, either by raising an issue on this github or by tagging me on twitter (@baconpaul) or
 soundcloud (@baconpaul).
 
-As of the release of Rack 0.6, these plugins will be built as part of the 
-[v2 community distribution](https://github.com/VCVRack/community/tree/v2) so they should just be
-available for you to try. A massive thanks to the [Rack community team](https://github.com/VCVRack/community/issues/248)
-for maintaining these builds. 
-
 I'm happy to hear any feedback and bug reports. The best way
 to reach me is to just open a github issue [right here on github](https://github.com/baconpaul/BaconPlugs/issues). 
-
-If you choose to build the modules yourself you need to run
-
-```
-git submodule update --init --recursive
-```
-
-before you build. 
-
-Finally, all the [sample patches I used to make the screen-shots](https://github.com/baconpaul/BaconPlugs/tree/master/patches) are
-on the github here. 
 
 I hope you enjoy the plugins! 
 
@@ -40,22 +26,22 @@ I hope you enjoy the plugins!
 
 ### HarMoNee
 
-HarMoNee is a plugin which takes a 1v/oct CV signal and outputs two signals,
-one which is the original, and the second which is modified by a musical amount,
+HarMoNee is a plugin which takes a 1v/oct CV signal and outputs that signal
+is modified by a musical amount,
 like a minor 3rd. It spans plus or minus one octave, and is controlled by toggles.
 
 The toggles are additive. So if you want a fourth, choose a major third and a half step 
-both.
+both. Each of the toggles has a CV control.
 
-With release v0.6.3 each of the toggles is controllable by CV. To avoid sudden clicks and
+To avoid sudden clicks and
 pops when the voltage changes rapidly, HarMoNee also provides a smooth transition between
 values at a rate set by the Gliss knob.
 
-<a href="https://baconpaul.github.io/audio/HarMoNee.mp3">
+The module is polyphonic and will apply the shift to each element of a polyphonic input
+with polyphonic width triggered by the 1v/oct input.
+
 <img src="docs/HarMoNee.png" alt="ExampleQuanteyes Patch">
-<br>
-<img src="docs/SpeakerIconSmall.png" alt="Hear HarMoNee Sample">
-</a>
+
 
 
 ### Glissinator
@@ -69,13 +55,13 @@ of gliss time. There is a gate output which is +10v when the module is glissing 
 slope gliss (which is what a slew limiter would do). A future version may have a switch
 to pick between the modes.
 
+The Glissinator is polyphonic, independently sliding multiple signals, with polyphonic
+width triggered by the 1v/oct input.
+
 Here's a sample patch.
 
-<a href="https://baconpaul.github.io/audio/Glissinator.mp3">
 <img src="docs/Glissinator.png" alt="ExampleQuanteyes Patch">
-<br>
-<img src="docs/SpeakerIconSmall.png" alt="Hear Glissinator Sample">
-</a>
+
 
 
 ### QuantEyes
@@ -85,9 +71,6 @@ Functionally this means that CV signals which are changing on input will be clam
 a chromatic scale on output if all the notes are activated. But you can also deactivate
 certain notes to allow you to pick scales to which you quantize.
 
-Since quantizing to scales could be useful for multiple things driving oscillators, 
-you can apply this quantization to up to 3 inputs using the same scale.
-
 If you would like some scale presets, the right mouse button will set to a few scales.
 If you want to add more pre-canned scales it's easy for me to do. Just open a github issue.
 
@@ -96,33 +79,24 @@ Finally, you can choose where the "root" note is in CV space. The default is tha
 understand this, send in a changing signal, select only the R note in the set of LED buttons, 
 and then twiddle the root note.
 
-Here's a (pretty cool sounding, I think) patch which combines QuantEyes with the 
-Glissinator and HarMoNee modules.
+QuantEyes is polyphonic, applying the clamp independently to each polyphonic channel,
+with polyphonic width driven by the input field.
 
-<a href="https://baconpaul.github.io/audio/QuantEyes.mp3">
+QuantEyes pairs particularly nicely with Glissinator, clamping the gliss to constrained
+notes for a keyboard-style step gliss.
+
 <img src="docs/QuantEyes.png" alt="ExampleQuanteyes Patch">
-<br>
-<img src="docs/SpeakerIconSmall.png" alt="Hear QuantEyes Sample">
-</a>
+
 
 
 ### PolyGnome
 
 PolyGnome is a polyrhytmic clock generator. It can output up to 5 clock signals with strict 
-fractional relationships between them. There is one clock which is the "1/1" clock controlled by
-the speed settings implemented exactly like the clock rate controls in SEQ3. Then there are 4
+fractional relationships between them. There is one clock which is the "1/1". Then there are 4
 other clocks which are fractionally adjusted clocks. This way you can do a 1/1 vs a 5/3 vs a 4/5
 polyrhythm easily in your rack.
 
-Here's an example which uses this to drive 3 independent oscillator / envelope sets all of which have
-pitch set through the QuantEyes module.
-
-<a href="https://baconpaul.github.io/audio/PolyGnome.mp3">
-<img src="docs/PolyGnome.png" alt="Example PolyGnome Patch">
-<br>
-<img src="docs/SpeakerIconSmall.png" alt="Hear PolyGnome Sample">
-</a>
-
+PolyGnome outputs both a gate and a tempo CV level for each clock it has configured.
 
 ## Classic and 8-bit algorithms
 
@@ -141,14 +115,9 @@ to CV in exactly the same way as VCO-1. So the conversion from 1v/oct signal
 to the 2^11 different wavelengths based on the simulated clock frequency (I chose NTSC)
 is all done for you.
 
-Basically, it just works like an oscillator. Drop it in and go chip crazy. The sample
-patch runs it mixed along with a VCO-1 so I could check tuning. Here's how I did it.
+Basically, it just works like an oscillator. Drop it in and go chip crazy. 
 
-<a href="https://baconpaul.github.io/audio/ChipWaves.mp3">
-<img src="docs/ChipWaves.png" alt="Example ChipWaves Patch">
-<br>
-<img src="docs/SpeakerIconSmall.png" alt="Hear ChipWaves Sample">
-</a>
+The oscillator is polyphonic, with polyphony width driven by the 1v/octave inputl
 
 
 
@@ -171,13 +140,6 @@ the 93 patterns you pick is chosen by the "which 93 seq" knob.
 
 This is a lot of information. If you just play with it you'll get the idea.
 
-Here's a simple patch.
-
-<a href="https://baconpaul.github.io/audio/ChipNoise.mp3">
-<img src="docs/ChipNoise.png" alt="Example ChipNoise Patch">
-<br>
-<img src="docs/SpeakerIconSmall.png" alt="Hear ChipNoise Sample">
-</a>
 
 ### ChipYourWaves
 
@@ -195,8 +157,6 @@ To set the values just click or drag on the LED vertical. It's pretty intuitive 
 so you get an idea, here's the sample patch which sets a fixed frequency and hooks it up to the scope so you can
 see the generated waveform is, indeed, the bits you draw in the LED-like controls.
 
-![Example ChipYourWaves Patch](docs/ChipYourWaves.png)
-
 Oh if you have any idea what to put in all that blank space at the top of the module, by the way, please do
 just raise a github issue and let me know!
 
@@ -205,24 +165,12 @@ just raise a github issue and let me know!
 The [Karplus-Strong algorithm](https://en.m.wikipedia.org/wiki/Karplus–Strong_string_synthesis) is one of the
 earlier methods to simulate plucked string instruments. The KarplusStrongPoly module implements a polyphonic
 voides implementation of this. The module maps to the algorithm fairly cleanly. It's probably easier that you 
-just play with it, using the sample patch shown below.
+just play with it.
 
-<a href="https://baconpaul.github.io/audio/KarplusStrongPoly.mp3">
-<img src="docs/KarplusStrongPoly.png" alt="Example ChipNoise Patch">
-<br>
-<img src="docs/SpeakerIconSmall.png" alt="Hear ChipNoise Sample">
-</a>
-
-There's one really important thing to know about this module. Unlike more traditional voltage controlled oscillators 
-which always produce output and are then fed into envelopes and stuff, the KarplusStrongPoly module needs to be
-triggered with a gate signal to produce any sound. When it is triggered it will snap all the parameters set on
-the front panel and play that voice until it fades. The system is configured to play upto 32 voices and will
-voice steal beyond that. But since Rack adds a 1 sample delay to all its signals as they go through each module,
-if you trigger from SEQ-3 and use a frequency you have modified, the trigger will arrive several samples before the modified 
-frequency or filter signal.
-Adding a few sample delay to your trigger may be approrpriate so that your other parameter control signals quiesce through
-the Rack network. There's a really simple SampleDelay module
-which ships with this plugin set if you want to do that.
+The module is polyphonic, but in an unexpected way. Since the module triggers notes which have independent decay,
+the gate signal is polyphonic and the output is; but the output polyphonic signal can have two notes sounding at
+once on a channel. If you send two triggers in one poly channel in quick successeion, the internal voice management
+will keep both voices alive until they finish.
 
 I've only implemented one filter so far, so the only control which does anything in the filter space is the "A" 
 knob and CV input. If/as I add more that will get way more rich, kind of like initial packet is now.
@@ -231,6 +179,15 @@ Finally I think the algorithm is stable under all possible front panel configura
 regimes of parameters in the C++ which can break the synthesis, though. So if you get an
 odd or growing sound, let me know the configuration which did it in a github issue and I'll put a check
 in the widget to synth snap appropriately.
+
+## Polyphonic Signal Test Generator
+
+I realized, while developing various polyphonic modules, I needed a set of good test inputs. As such, I wrote
+PolyGenerator, which has a collection of random/programatic and midi based outputs as polyphonic signals
+on a gate (note on/off) velocity (0->10v) and pitch (1v/oct). This allowed me to do tests of big polyphonic 
+networks without having to hook up a keyboard and mash keys in my dev cycle.
+
+![Example PolyGen Patch](docs/PolyGen.png)
 
 ## Distortions and Modulations and so on
 ### ALingADing 
@@ -242,13 +199,6 @@ I basically use an implementation of a softmax, eye-balling the parameters to ro
 paper. The only control is a wet/dry mix (where wet is the signal modulated by carrier
 and dry is just the signal). Sloppy, sure, but it sounds kinda cool. Here's a sample patch.
 
-<a href="https://baconpaul.github.io/audio/ALingADing.mp3">
-<img src="docs/ALingADing.png" alt="ExampleQuanteyes Patch">
-<br>
-<img src="docs/SpeakerIconSmall.png" alt="Here QuantEyes">
-</a>
-
-
 
 ### Bitulator
 
@@ -258,17 +208,13 @@ weird and sloppy way of basically making sure there are only N values possible i
 output. Apply this to a sine wave with a low value of N and you get sort of stacked squares. 
 Secondly it has a gross digital clipping amplifier. Basically signal is the clamp of input times
 param. Apply this to a sine wave and turn it up and you get pretty much a perfect square.
-Combine them for grunky grunk noise. Dumb, but fun. Here's a sample patch.
+Combine them for grunky grunk noise. Dumb, but fun. Here's a sample patch. It is polyphonic
+on the inputs and outputs as expected.
+
 
 ![Example Bitulator Patch](docs/Bitulator.png)
 
-### SampleDelay
 
-This is an incredibly simple module. All it does is add an n-sample digital delay at the 
-engine clock speed. Radically non-analog, I know. But it's useful since Rack adds a 1 sample
-delay in each module hop to do things like triggering the Karplus Strong poly.
-
-![Example SampleDelay](docs/SampleDelay.png)
 
 ## Credits and Comments
 
