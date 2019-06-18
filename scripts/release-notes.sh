@@ -3,8 +3,8 @@
 cat <<- EOH
 # Automatically generated BaconMusic release
 
-This release is automatically generated every time we push surge-rack
-to master. As such it is the latest version of our code and may be
+This release is automatically generated every time I push BaconMusic
+to master. As such it is the latest version of the code and may be
 unstable, unusable, unsuitable for human consumption, and so on.
 
 These assets were built against

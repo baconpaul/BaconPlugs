@@ -43,6 +43,10 @@ jobs:
       
     displayName: Get Rack 
 
+  - bash: |
+      ./scripts/resetversion.sh
+    displayName: Update Version in plugins.json
+
 
   - bash: |
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
@@ -111,7 +115,7 @@ jobs:
 
   - task: DownloadPipelineArtifact@0
     inputs:
-      artifactName: 'BACONPLUGS_ZIP_WINDOWS'
+      artifactName: 'BACONPLUGS_ZIP_WIN'
       targetPath: $(Build.ArtifactStagingDirectory)
 
   - bash: |
