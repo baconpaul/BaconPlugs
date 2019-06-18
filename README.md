@@ -6,7 +6,8 @@ since v0.5.something, and
 they sort of fall into a few groups: 
 
 * Control voltage manipulation on 1v/oct signals to do things like glissando and musical quantization and a polyrhytmic clock;
-* Classic synth algorithms, including an implementation of the NES oscillators and a Karplus Strong implementation.
+* Classic synth algorithms, including an implementation of the NES oscillators and a Karplus Strong implementation, as well
+  as wrapping [Robin Schmidt's](http://www.rs-met.com) open303 implementation.
 * A polyphonic signal generator
 * and finally, not very useful modulations and distortions and stuff.
 
@@ -180,6 +181,11 @@ regimes of parameters in the C++ which can break the synthesis, though. So if yo
 odd or growing sound, let me know the configuration which did it in a github issue and I'll put a check
 in the widget to synth snap appropriately.
 
+### Open303
+
+Open303 is an implementation of [Robin Schmidt's](http://www.rs-met.com/) open303 library as a rack module. 
+It is currently in alpha and this documentation will be completed before I release into the plugin manager.
+
 ## Polyphonic Signal Test Generator
 
 I realized, while developing various polyphonic modules, I needed a set of good test inputs. As such, I wrote
@@ -229,6 +235,9 @@ and are released under cc-by-sa Germany License as described http://www.piano-mi
 
 The Bacon Emoji is from twitters https://twemoji.twitter.com outstanding free SVG emojis,
 which are cc-sa-4.
+
+The open 303 library in libs/open303-code/ is by Robin Schmidt, released under MIT license, and re-used here
+with his blessing. Robin's software can be found at http://www.rs-met.com
 
 The slug name ('BaconMusic') is different than the repo name ('BaconPlugs'), somewhat confusingly.
 When I made my git repo I had no idea really how anything worked or if I'd write anything. 

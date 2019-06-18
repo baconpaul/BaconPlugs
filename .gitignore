@@ -6,3 +6,4 @@ plugin.dylib
 plugin.so
 standalone/exe_*
 pynb/.ipynb_checkpoints/*
+*/.svn/*
