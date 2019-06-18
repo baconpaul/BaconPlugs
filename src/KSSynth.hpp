@@ -17,7 +17,7 @@ class KSSynth {
         SINCHIRP // if you add remember to fix the count below...
     } InitPacket;
 
-    std::string initPacketName(InitPacket p) {
+    static std::string initPacketName(InitPacket p) {
         switch (p) {
         case RANDOM:
             return "random";
@@ -35,11 +35,11 @@ class KSSynth {
         return "";
     }
 
-    int numInitPackets() { return (int)SINCHIRP + 1; }
+    static int numInitPackets() { return (int)SINCHIRP + 1; }
 
     typedef enum FilterType { WEIGHTED_ONE_SAMPLE } FilterType;
 
-    std::string filterTypeName(FilterType p) {
+    static std::string filterTypeName(FilterType p) {
         switch (p) {
         case WEIGHTED_ONE_SAMPLE:
             return "wgt 1samp";
@@ -47,7 +47,7 @@ class KSSynth {
         return "";
     }
 
-    int numFilterTypes() { return WEIGHTED_ONE_SAMPLE + 1; }
+    static int numFilterTypes() { return (int)WEIGHTED_ONE_SAMPLE + 1; }
 
   public:
     // here's my interior state

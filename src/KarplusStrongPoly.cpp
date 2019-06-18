@@ -71,11 +71,11 @@ struct KarplusStrongPoly : virtual Module {
 
         initPacketStringDirty = true;
         currentInitialPacket = KSSynth::RANDOM;
-        initPacketString = voices[0]->initPacketName(currentInitialPacket);
+        initPacketString = KSSynth::initPacketName(currentInitialPacket);
 
         filterStringDirty = true;
         currentFilter = KSSynth::WEIGHTED_ONE_SAMPLE;
-        filterString = voices[0]->filterTypeName(currentFilter);
+        filterString = KSSynth::filterTypeName(currentFilter);
 
         for( int i=0; i<16; ++i )
             delayTrigger[i] = false;
@@ -86,10 +86,10 @@ struct KarplusStrongPoly : virtual Module {
             delete syn;
     }
 
-    int getNumPackets() { return voices[0]->numInitPackets(); }
+    int getNumPackets() { return KSSynth::numInitPackets(); }
     KSSynth::InitPacket currentInitialPacket;
 
-    int getNumFilters() { return voices[0]->numFilterTypes(); }
+    int getNumFilters() { return KSSynth::numFilterTypes(); }
     KSSynth::FilterType currentFilter;
 
     void process(const ProcessArgs &args) override {
@@ -125,7 +125,7 @@ struct KarplusStrongPoly : virtual Module {
         if (nextInitialPacket != currentInitialPacket) {
             initPacketStringDirty = true;
             currentInitialPacket = (KSSynth::InitPacket)(nextInitialPacket);
-            initPacketString = voices[0]->initPacketName(currentInitialPacket);
+            initPacketString = KSSynth::initPacketName(currentInitialPacket);
         }
 
         int nChan;

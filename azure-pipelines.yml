@@ -38,8 +38,7 @@ jobs:
       git submodule update --init --recursive
 
       pushd $AGENT_TEMPDIRECTORY
-      # There is no 1.0 SDK so
-      curl -o Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-1.dev.ddf06a9.zip
+      curl -o Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-1.dev.b4bd09a.zip
       unzip Rack-SDK.zip
       
     displayName: Get Rack 
@@ -94,4 +93,48 @@ jobs:
     condition: variables.isWindows
 
 
-  
+- job: UpdateGithubRelease
+  dependsOn: Build
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/azure-test')))
+
+  steps:
+
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'BACONPLUGS_ZIP_LINUX'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'BACONPLUGS_ZIP_MACOS'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'BACONPLUGS_ZIP_WINDOWS'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - bash: |
+     ls -l $(Build.ArtifactStagingDirectory)
+     export EXTEND_TAG=`date "+%Y%m%d"`
+     for file in $(Build.ArtifactStagingDirectory)/*.zip; do mv "$file" "${file/.zip/-${EXTEND_TAG}.zip}"; done
+     ls -l $(Build.ArtifactStagingDirectory)         
+    displayName: Tag asset names with Date
+
+  - bash: |
+     scripts/release-notes.sh > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+    displayName: Fake up release notes
+
+  - task: GitHubRelease@0
+    displayName: "Update Github Release"
+    inputs:
+      gitHubConnection: baconpaul
+      repositoryName: baconpaul/BaconPlugs
+      action: edit
+      tag: Nightly
+      target: '$(Build.SourceVersion)'
+      addChangeLog: false
+      releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+      assets: $(Build.ArtifactStagingDirectory)/*.zip
+
+
