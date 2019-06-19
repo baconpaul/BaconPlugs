@@ -2,7 +2,7 @@
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
 CFLAGS +=
-CXXFLAGS += -Wno-array-bounds -Werror -Ilibs/midifile/include
+CXXFLAGS += -Wno-array-bounds -Wno-strict-aliasing -Ilibs/midifile/include -Ilibs/open303-code/Source/DSPCode/
 
 # Careful about linking to shared libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.
@@ -11,6 +11,7 @@ LDFLAGS +=
 # Add .cpp and .c files to the build
 SOURCES += $(wildcard src/*.cpp)
 SOURCES += $(wildcard libs/midifile/src/*.cpp)
+SOURCES += $(wildcard libs/open303-code/Source/DSPCode/*.cpp)
 
 # Add files to the ZIP package when running `make dist`
 # The compiled plugin is automatically added.

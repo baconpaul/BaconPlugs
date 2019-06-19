@@ -19,6 +19,8 @@ void init(rack::Plugin *p) {
     p->addModel(modelChipWaves);
     p->addModel(modelChipYourWave);
 
+    p->addModel(modelOpen303);
+
 #ifdef BUILD_GENERICLSFR
     p->addModel(modelGenericLFSR);
 #endif

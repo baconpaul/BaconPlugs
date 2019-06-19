@@ -7,3 +7,13 @@ http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL)
 The original work can be found at the below location:
 
 http://scruss.com/blog/2017/03/21/keypunch029-for-all-your-punched-card-font-needs/.
+
+The MIDI file of the goldberg variations in res/midi is from Dave Grossman's J.S. Bach page
+at http://www.jsbach.net. The MIDI files of other composers are from Bernd Krueger's piano-midi.de site,
+and are released under cc-by-sa Germany License as described http://www.piano-midi.de/copy.htm
+
+The Bacon Emoji and Smiling Emoji in res/ are from Twitters https://twemoji.twitter.com outstanding free SVG
+emojis, which are cc-sa-4.
+
+The open 303 library in libs/open303-code/ is by Robin Schmidt, released under MIT license, and re-used here
+with his blessing. Robin's software can be found at http://www.rs-met.com

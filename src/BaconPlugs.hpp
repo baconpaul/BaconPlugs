@@ -30,6 +30,8 @@ extern Model *modelChipNoise;
 extern Model *modelChipWaves;
 extern Model *modelChipYourWave;
 
+extern Model *modelOpen303;
+
 extern Model *modelGenericLFSR;
 
 extern Model *modelKarplusStrongPoly;
