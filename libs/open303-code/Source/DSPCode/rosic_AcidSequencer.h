@@ -3,6 +3,7 @@
 
 // rosic-indcludes:
 #include "rosic_AcidPattern.h"
+#include <iostream>
 
 namespace rosic
 {
@@ -52,7 +53,20 @@ namespace rosic
     }
 
     /** Sets the octave for one of the steps (0 is the root octave between C2...B2). */
-    void setOctave(int pattern, int step, int newOctave);
+    void setOctave(int pattern, int step, int newOctave)
+    {
+        auto p = getPattern(pattern);
+        if( p )
+            p->setOctave(step,newOctave);
+    }
+
+    /** Sets the number of steps for which the note is active */
+    void setStepLen(int pattern, int step, int newStepLen)
+    {
+        auto p = getPattern(pattern);
+        if( p )
+            p->setStepLen(step,newStepLen);
+    }
 
     /** Sets the accent flag for one of the steps. */
     void setAccent(int pattern, int step, bool shouldBeAccented) {
@@ -70,7 +84,12 @@ namespace rosic
     }        
 
     /** Sets the gate flag for one of the steps. */
-    void setGate(int pattern, int step, bool shouldBeOpen);
+    void setGate(int pattern, int step, bool shouldBeOpen)
+    {
+        auto p = getPattern(pattern);
+        if( p )
+            p->setGate(step,shouldBeOpen);
+    }
 
     /** Selects one of the modes for the sequencer @see sequencerModes. */
     void setMode(int newMode);
@@ -146,6 +165,8 @@ namespace rosic
     permissible, it will be returned unchanged. */
     INLINE int getClosestPermissibleKey(int key);
 
+    INLINE int getSequencerStep() { return step; }
+    
     //---------------------------------------------------------------------------------------------
     // event handling:
 
@@ -197,7 +218,7 @@ namespace rosic
       double secondsToNextStep = beatsToSeconds(0.25, bpm);
       double samplesToNextStep = secondsToNextStep * sampleRate;
       countDown                = roundToInt(samplesToNextStep);
-
+      
       // keep track of accumulating error due to rounding and compensate when the accumulated error
       // exceeds half a sample:
       driftError += countDown - samplesToNextStep;

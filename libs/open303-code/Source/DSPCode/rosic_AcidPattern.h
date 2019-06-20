@@ -21,6 +21,7 @@ namespace rosic
 
     int  key;
     int  octave;
+    int  steplen;
     bool accent;
     bool slide;
     bool gate;
@@ -29,6 +30,7 @@ namespace rosic
     {
       key    = 0;
       octave = 0;
+      steplen = 1;
       accent = false;
       slide  = false;
       gate   = false;
@@ -68,6 +70,9 @@ namespace rosic
 
     /** Sets the octave for one of the steps (0 is the root octave between C2...B2). */
     void setOctave(int step, int newOctave) { notes[step].octave = newOctave; }
+
+    /** Sets the number of steps for which this note plays */
+    void setStepLen(int step, int newStepLen) { notes[step].steplen = newStepLen; }
 
     /** Sets the accent flag for one of the steps. */
     void setAccent(int step, bool shouldBeAccented) { notes[step].accent = shouldBeAccented; }
