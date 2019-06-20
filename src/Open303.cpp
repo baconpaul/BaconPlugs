@@ -23,6 +23,8 @@ struct Open303Rack : Module {
         FEEDBACK_HPF_KNOB,
         POST_FILTER_HPF_KNOB,
         SQUARE_PHASE_SHIFT_KNOB,
+
+        RUN_SEQ_SWITCH,
         
         NUM_PARAMS
     };
@@ -66,29 +68,65 @@ struct Open303Rack : Module {
         configParam(ENVMOD_KNOB, 0., 1.0, 0.25 );
         configParam(DECAY_KNOB, 200, 2000, 400, "Decay Time", " ms" );
         configParam(VOLUME_KNOB, -60.0, 0.0, 0, "Volume", "dB"); // ct_decibel_narrow
-        configParam(FILTER_TYPE_KNOB, 0, rosic::TeeBeeFilter::NUM_MODES, rosic::TeeBeeFilter::LP_18);
+        configParam(FILTER_TYPE_KNOB, 0, rosic::TeeBeeFilter::NUM_MODES, rosic::TeeBeeFilter::TB_303);
 
         configParam(AMP_SUSTAIN_KNOB, -60, 0, -60);
         configParam(PRE_FILTER_HPF_KNOB, 10, 500, 44.5);
         configParam(FEEDBACK_HPF_KNOB, 10, 500, 150);
         configParam(POST_FILTER_HPF_KNOB, 10, 500, 24);
         configParam(SQUARE_PHASE_SHIFT_KNOB, 0, 360, 189);
+
+        configParam(RUN_SEQ_SWITCH, 0, 1, 0, "Run Sequencer" );
         
         open303.setSampleRate(APP->engine->getSampleRate());
         for( int i=0; i<16; ++i )
         {
             countdown[i] = -1;
+            noteByChannel[i] = -1;
         }
 
         rack::INFO( "Pattern count: %d", open303.sequencer.getNumPatterns());
-        for( auto i=0; i<16; ++i )
+        auto sq = &(open303.sequencer);
+        for( int i=0; i<4; ++i )
         {
-            open303.sequencer.setKey(0, i, i % 11 );
-            open303.sequencer.setAccent(0,i,i%2);
-            open303.sequencer.setSlide(0,i,(i+1)%2);
-            //open303.sequencer.setMode(rosic::AcidSequencer::HOST_SYNC);
-            //open303.sequencer.start();
+            sq->setKey(0,i,0);
+            if( i == 0 )
+                sq->setAccent(0,i,1);
+            sq->setGate(0,i,true);
+            if( i != 3 )
+                sq->setSlide(0,i,true);
         }
+
+        sq->setKey(0,4,3);
+        sq->setGate(0,4,true);
+        sq->setSlide(0,4,true);
+        sq->setKey(0,5,3);
+        sq->setGate(0,5,true);
+        sq->setSlide(0,5,true);
+
+
+        sq->setGate(0,6,true);
+        sq->setKey(0,6,5);
+        sq->setSlide(0,6,true);
+        sq->setGate(0,7,true);
+        sq->setKey(0,7,5);
+        for( int i=8; i<16; i += 2 )
+        {
+            sq->setGate(0,i,true);
+            sq->setAccent(0,i,i % 4);
+            sq->setKey(0,i,12 - i / 2);
+            if( i == 14 )
+            {
+                sq->setGate(0,i+1,true);
+                sq->setAccent(0,i+1,true);
+                sq->setKey(0,i+1,12 - i / 2);
+                sq->setSlide(0, i+1, true );
+
+            }
+        }
+
+        
+
         for( int i=0; i<NUM_PARAMS; ++i )
             priorParams[i] = -12345768.9f;
     }
@@ -122,7 +160,7 @@ struct Open303Rack : Module {
 
         for( int i=0; i<nChan; ++i )
         {
-            if( gateTrigger[i].process(inputs[NOTE_GATE].getVoltage(i)) )
+            if( gateTrigger[i].process(inputs[NOTE_GATE].getVoltage(i)) && ! open303.sequencer.isRunning() )
             {
                 countdown[i] = 8;
             }
@@ -184,6 +222,20 @@ struct Open303Rack : Module {
 
             if( resetParam(AMP_SUSTAIN_KNOB, 6.0, -60, 0, 1, val ) ) open303.setAmpSustain(val);
 
+            auto sval = params[RUN_SEQ_SWITCH].getValue();
+            if( sval != priorParams[RUN_SEQ_SWITCH] )
+            {
+                if( sval )
+                {
+                    open303.sequencer.setMode(rosic::AcidSequencer::HOST_SYNC);
+                    open303.sequencer.start();
+                }
+                else
+                {
+                    open303.sequencer.setMode(rosic::AcidSequencer::OFF);
+                    open303.sequencer.stop();
+                }
+            }
 
             for( int i=0; i<NUM_PARAMS; ++i)
                 priorParams[i] = params[i].getValue();
@@ -201,14 +253,14 @@ struct Open303RackWidget : ModuleWidget {
 
 Open303RackWidget::Open303RackWidget(Open303Rack *model) : ModuleWidget() {
     setModule(model);
-    box.size = Vec(SCREW_WIDTH * 20, RACK_HEIGHT);
+    box.size = Vec(SCREW_WIDTH * 29, RACK_HEIGHT);
 
     BaconBackground *bg = new BaconBackground(box.size, "Open303");
     addChild(bg->wrappedInFramebuffer());
 
 
     std::vector<std::string> params = { "waveform", "tuning", "cutoff", "res", "envmod", "decay", "accent", "volume",
-                                        "filttype", "ampsus", "prehpf", "fbhpf", "posthpf", "sqphase"};
+                                        "filttype" };
     float xp = 10;
     float yp = 30;
     int i = 0;
@@ -227,6 +279,9 @@ Open303RackWidget::Open303RackWidget(Open303Rack *model) : ModuleWidget() {
         }
         i++;
     }
+
+    addParam(rack::createParam<rack::CKSS>(rack::Vec( 10, 130 ), module, Open303Rack::RUN_SEQ_SWITCH));
+    bg->addLabel(rack::Vec(25, 130), "run seq", 11 );
     
     rack::Vec inP = Vec(10, RACK_HEIGHT - 15 - 43 );
     std::vector<std::string> lab = { "1v/o", "gate", "vel" };

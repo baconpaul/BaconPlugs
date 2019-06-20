@@ -319,28 +319,35 @@ namespace rosic
   {
     //if( sequencer.getSequencerMode() == AcidSequencer::OFF && ampEnv.endIsReached() )
     //  return 0.0;
-    if( idle )
+    if( sequencer.getSequencerMode() == AcidSequencer::OFF && idle )
       return 0.0;
 
     // check the sequencer if we have some note to trigger:
     if( sequencer.getSequencerMode() != AcidSequencer::OFF )
     {
       noteOffCountDown--;
-      if( noteOffCountDown == 0 || sequencer.isRunning() == false )
+      if( ( noteOffCountDown == 0 || sequencer.isRunning() == false ) && currentNote != -1 )
+      {
         releaseNote(currentNote);
+        currentNote = -1;
+      }
 
+      
       AcidNote *note = sequencer.getNote();
       if( note != NULL )
       {
-        if( note->gate == true && currentNote != -1)
+        if( note->gate == true )
         {
-          int key = note->key + 12*note->octave + currentNote;
+            
+          int key = note->key + 12*note->octave + 24;
           key = clip(key, 0, 127);
-
+            
           if( !slideToNextNote )
             triggerNote(key, note->accent);
           else
             slideToNote(key, note->accent);
+
+          currentNote = key;
 
           AcidNote* nextNote = sequencer.getNextScheduledNote();
           if( note->slide && nextNote->gate == true )
@@ -350,12 +357,15 @@ namespace rosic
           }
           else
           {
-            noteOffCountDown = sequencer.getStepLengthInSamples();
+            noteOffCountDown = sequencer.getStepLengthInSamples() * note->steplen;
             slideToNextNote  = false;
           }
         }
       }
     }
+
+    if( idle )
+       return 0.0;
 
     // calculate instantaneous oscillator frequency and set up the oscillator:
     double instFreq = pitchSlewLimiter.getSample(oscFreq);
