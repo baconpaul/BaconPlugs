@@ -1,11 +1,6 @@
 #include "BaconPlugs.hpp"
 #include "rosic_Open303.h"
 
-/*
-** ToDo:
-**   Add lights for on/off
-**   Add a 7 segment display for step count
-*/
 
 struct Open303Rack : Module {
     enum ParamIds {
@@ -247,6 +242,76 @@ struct Open303Rack : Module {
     }
 };
 
+struct Open303SequenceDisplay : public rack::TransparentWidget {
+    Open303Rack *module;
+
+    int stepPxW = 16, nStepX = 16;
+    int stepPxH = 6, nStepY = 36;
+    Open303SequenceDisplay(rack::Vec pos, Open303Rack *_module) : module(_module) {
+        this->box.pos = pos;
+        this->box.size = rack::Vec( nStepX  * stepPxW, nStepY * stepPxH );
+        addChild(new BufferedDrawLambdaWidget( rack::Vec(0,0), this->box.size, [this](NVGcontext *c) { this->drawSequence(c); } ));
+    }
+
+    void drawSequence(NVGcontext *vg) {
+        // Background
+        {
+            nvgBeginPath(vg);
+            nvgRect(vg,0,0,this->box.size.x, this->box.size.y);
+            NVGpaint vgr = nvgLinearGradient(vg, 0, 0, 0, box.size.y, nvgRGB(40,40,60), nvgRGB(10,10,15) );
+            nvgFillPaint(vg, vgr);
+            nvgFill(vg);
+        }
+        
+        for( int i=0; i<nStepX; ++i )
+        {
+            for( int j=0; j<nStepY; ++j )
+            {
+                nvgBeginPath(vg);
+                nvgRect(vg, i * stepPxW, j * stepPxH, stepPxW, stepPxH );
+                nvgStrokeColor(vg, nvgRGB(80,80,100));
+                nvgStroke(vg);
+            }
+        }
+
+
+        if( module )
+        {
+            auto noteColor = nvgRGB(190,190,250);
+            auto accentColor = nvgRGB(250,100,10);
+            auto pt = module->open303.sequencer.getPattern(0);
+            for( int i=0; i<pt->getNumSteps(); ++i )
+            {
+                auto g = pt->getGate(i);
+                if( ! g )
+                    continue;
+                
+                auto k = pt->getKey(i);
+                auto o = pt->getOctave(i);
+                auto a = pt->getAccent(i);
+                auto s = pt->getSlide(i);
+
+                auto idx = nStepY - ( k + o * 12 + 12 );
+
+                nvgBeginPath(vg);
+                nvgRect(vg, i * stepPxW , idx * stepPxH + 1, stepPxW - ( s ? 0 : 1 ), stepPxH - 2);
+                if( a )
+                {
+                    auto vgr = nvgLinearGradient(vg, i * stepPxW, idx * stepPxH,
+                                                 (i+0.7) * stepPxW, idx * stepPxH,
+                                                 accentColor, noteColor);
+                    nvgFillPaint(vg, vgr);
+                }
+                else
+                {
+                    nvgFillColor(vg, nvgRGB( 190, 190, 250 ) );
+                }
+                nvgFill(vg);
+            }
+        }
+    }
+};
+
 struct Open303RackWidget : ModuleWidget {
     Open303RackWidget(Open303Rack *model);
 };
@@ -282,6 +347,8 @@ Open303RackWidget::Open303RackWidget(Open303Rack *model) : ModuleWidget() {
 
     addParam(rack::createParam<rack::CKSS>(rack::Vec( 10, 130 ), module, Open303Rack::RUN_SEQ_SWITCH));
     bg->addLabel(rack::Vec(25, 130), "run seq", 11 );
+
+    addChild(new Open303SequenceDisplay(rack::Vec(box.size.x - 10 - 16*16, 130), model));
     
     rack::Vec inP = Vec(10, RACK_HEIGHT - 15 - 43 );
     std::vector<std::string> lab = { "1v/o", "gate", "vel" };
