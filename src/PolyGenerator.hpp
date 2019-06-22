@@ -223,7 +223,7 @@ struct MidiFilePlayer : public PPlayer {
     }
     
     virtual void step(int voiceCount, float sampleTime, float phase, float dPhase, float extra) override {
-        int wantedFile = (int)(extra * nFiles);
+        int wantedFile = rack::clamp((int)(extra * nFiles), 0, nFiles-1);
         if( wantedFile != lastFile )
         {
             loadFile(wantedFile);
