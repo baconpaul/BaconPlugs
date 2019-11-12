@@ -81,11 +81,11 @@ void BaconBackground::draw(const DrawArgs &args) {
 
     if (baconEmoji == nullptr)
     {
-        baconEmoji = rack::APP->window->loadSvg(rack::asset::plugin(pluginInstance, "res/1f953.svg"));
+        baconEmoji = APP->window->loadSvg(rack::asset::plugin(pluginInstance, "res/1f953.svg"));
     }
     if( lovebaconEmoji == nullptr )
     {
-        lovebaconEmoji = rack::APP->window->loadSvg(rack::asset::plugin(pluginInstance, "res/1f60d.svg"));
+        lovebaconEmoji = APP->window->loadSvg(rack::asset::plugin(pluginInstance, "res/1f60d.svg"));
     }
     
     nvgBeginPath(args.vg);

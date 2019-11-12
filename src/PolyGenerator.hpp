@@ -204,7 +204,7 @@ struct MidiFilePlayer : public PPlayer {
     
     virtual void loadFile( int var ) {
         std::string f = fileName(var);
-        rack::INFO( "loading file %s", f.c_str() );
+        INFO( "loading file %s", f.c_str() );
         mf.read(rack::asset::plugin(pluginInstance, f).c_str());
         mf.doTimeAnalysis();
         mf.linkNotePairs();

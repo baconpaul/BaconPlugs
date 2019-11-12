@@ -80,7 +80,7 @@ struct Open303Rack : Module {
             noteByChannel[i] = -1;
         }
 
-        rack::INFO( "Pattern count: %d", open303.sequencer.getNumPatterns());
+        INFO( "Pattern count: %d", open303.sequencer.getNumPatterns());
         auto sq = &(open303.sequencer);
         for( int i=0; i<4; ++i )
         {
