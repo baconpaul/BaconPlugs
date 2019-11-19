@@ -373,6 +373,32 @@ struct ChopinPlayer : public MidiFilePlayer
 
 };
 
+struct DebussyPlayer : public MidiFilePlayer
+{
+    virtual std::string getName() override { return "DEBUSSY"; }
+
+    DebussyPlayer() {
+        nFiles = 2;
+        loadFile(0);
+    }
+
+
+    virtual std::string fileName( int file ) override {
+        if( file == 1 )
+            return "res/midi/debussy/deb_prel.mid";
+        else
+            return "res/midi/debussy/deb_clai.mid";
+    }
+    
+    virtual std::string fileDisp( int file ) override {
+        if( file == 1 )
+            return "PRELUDE";
+        else
+            return "CLAIR D";
+    }
+
+};
+
 struct PolyGenerator : public rack::Module {
     enum ParamIds {
         BPM_PARAM,
@@ -408,7 +434,7 @@ struct PolyGenerator : public rack::Module {
 
         configParam(BPM_PARAM, -2, 3, 1, "Clock Tempo", " bpm", 2.f, 60.f );
         configParam(VOICES_PARAM, 1, 16, 16, "Voice Count" );
-        configParam(PATTERN_PARAM, 0, 7, 0, "Pattern" );
+        configParam(PATTERN_PARAM, 0, 8, 0, "Pattern" );
         configParam(EXTRA_PARAM, 0, 1, 0, "Extra" );
         resetPlayer(0);
     }
@@ -436,6 +462,9 @@ struct PolyGenerator : public rack::Module {
             break;
         case 7:
             np = new ChopinPlayer();
+            break;
+        case 8:
+            np = new DebussyPlayer();
             break;
         case 0:
         default:
