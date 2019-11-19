@@ -68,6 +68,7 @@ jobs:
     condition: variables.isMac
 
   - bash: |
+      sudo apt-get install libglu-dev
       export RACK_DIR=$AGENT_TEMPDIRECTORY/Rack-SDK
       make dist
       mkdir products_lin/
