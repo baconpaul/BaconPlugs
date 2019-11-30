@@ -1,6 +1,6 @@
 # Code of Conduct
 
-The [Contrubitor Covenant](https://www.contributor-covenant.org/version/1/4/code-of-conduct.html) is an excellent code of
+The [Contributor Covenant](https://www.contributor-covenant.org/version/1/4/code-of-conduct.html) is an excellent code of
 conduct, and one by which I'd like to hope I carry myself. Please read it and follow its guidance when
 working with this project.
 
