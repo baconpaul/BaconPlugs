@@ -320,7 +320,7 @@ struct BaconHelpButton : public SvgButton {
 #ifdef RELEASE_BRANCH
         url += TO_STRING(RELEASE_BRANCH);
 #else
-        url += "master/";
+        url += "main/";
 #endif
         url += urli;
         INFO("Help button configured to: %s", url.c_str());
