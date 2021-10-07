@@ -36,9 +36,9 @@ template <int H> struct GraduatedFader : app::SliderKnob {
     }
 
 	void onChange(const event::Change &e) override {
-        if (paramQuantity) {
+        if (getParamQuantity()) {
             // Interpolate handle position
-            float v = paramQuantity->getScaledValue();
+            float v = getParamQuantity()->getScaledValue();
             handle->box.pos = math::Vec(
                 math::rescale(v, 0.f, 1.f, minHandlePos.x, maxHandlePos.x),
                 math::rescale(v, 0.f, 1.f, minHandlePos.y, maxHandlePos.y));

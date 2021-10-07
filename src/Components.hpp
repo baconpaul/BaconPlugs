@@ -355,8 +355,8 @@ struct NStepDraggableLEDWidget : public ParamWidget {
 
     int getStep() {
         float pvalue = 0.0;
-        if(this->paramQuantity)
-            pvalue = this->paramQuantity->getValue();
+        if(this->getParamQuantity())
+            pvalue = this->getParamQuantity()->getValue();
         int step = (int)pvalue;
         return step;
     }
@@ -370,9 +370,9 @@ struct NStepDraggableLEDWidget : public ParamWidget {
     void draw(const DrawArgs &args) override { buffer->draw(args); }
 
     void valueByMouse(float ey) {
-        if (impStep(ey) != getStep() && paramQuantity) {
+        if (impStep(ey) != getStep() && getParamQuantity()) {
             buffer->dirty = true;
-            paramQuantity->setValue(impStep(ey));
+            getParamQuantity()->setValue(impStep(ey));
         }
     }
 
@@ -624,7 +624,7 @@ struct DotMatrixLightTextWidget
         }
     }
 
-    void onZoom(const event::Zoom &e) override { buffer->dirty = true; }
+    // void onZoom(const event::Zoom &e) override { buffer->dirty = true; }
 };
 
 // FIXME: Look at correct switch type
