@@ -48,7 +48,7 @@ typedef signed long long INT64;
 #ifdef _MSC_VER
 typedef unsigned __int32 UINT32;
 #else
-typedef unsigned long UINT32;
+typedef unsigned int UINT32;
 #endif
 
 // ...constants for numerical precision issues, denorm, etc.:
