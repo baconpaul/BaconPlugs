@@ -293,9 +293,15 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget(KarplusStrongPoly *module)
 
         scale *= 0.92;
     };
+
+    #ifdef DARK_BACON
+    #undef SCHEME_BLACK
+    #endif
+
     auto cl = [&](std::string lab, float ys) {
         bg->addLabel(Vec(obuf + margin, outy + ys / 2), lab.c_str(), 13,
-                     NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
+                     NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT,
+                     componentlibrary::SCHEME_BLACK);
     };
 
     yh = SizeTable<PJ301MPort>::Y;

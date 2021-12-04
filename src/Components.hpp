@@ -14,6 +14,10 @@
 #include "BufferedDrawFunction.hpp"
 #include "GraduatedFader.hpp"
 
+#ifdef DARK_BACON
+#define SCHEME_BLACK SCHEME_WHITE
+#endif
+
 using namespace rack;
 
 template <typename T, int px = 4> struct SevenSegmentLight : T {
@@ -659,5 +663,9 @@ struct InternalFontMgr {
 
 
 #include "SizeTable.hpp"
+
+#ifdef DARK_BACON
+#define nvgRGBA(r,g,b,a) nvgRGB(225-r,225-g,255-b)
+#endif
 
 #endif

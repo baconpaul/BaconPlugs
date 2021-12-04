@@ -116,7 +116,11 @@ template <int H> struct GraduatedFader : app::SliderKnob {
             nvgBeginPath(vg);
             nvgMoveTo(vg, 1, slideTop + dx * i);
             nvgLineTo(vg, widget_width - 2, slideTop + dx * i);
+#ifdef DARK_BACON
+            nvgStrokeColor(vg, nvgRGBA(225, 225, 215, 255));
+#else
             nvgStrokeColor(vg, nvgRGBA(00, 00, 40, 255));
+#endif
             nvgStrokeWidth(vg, 0.5);
             nvgStroke(vg);
         }
@@ -125,7 +129,11 @@ template <int H> struct GraduatedFader : app::SliderKnob {
         nvgBeginPath(vg);
         nvgRect(vg, widget_width / 2 - slotWidth, slideTop - slideBump,
                 2 * slotWidth + 1, slideHeight + 2 * slideBump);
+#ifdef DARK_BACON
+        nvgFillColor(vg, nvgRGBA(125, 125, 120, 255));
+#else
         nvgFillColor(vg, componentlibrary::SCHEME_BLACK);
+#endif
         nvgFill(vg);
     }
 };
