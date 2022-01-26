@@ -22,6 +22,8 @@ namespace rosic
   template <class T>
   INLINE T clip(T x, T min, T max);
 
+  INLINE float clip(double x, float min, float max);
+
   /** Evaluates the quartic polynomial y = a4*x^4 + a3*x^3 + a2*x^2 + a1*x + a0 at x. */
   INLINE double evaluateQuartic(double x, double a0, double a1, double a2, double a3, double a4);
 
@@ -73,6 +75,15 @@ namespace rosic
 
   template <class T>
   INLINE T clip(T x, T min, T max)
+  {
+    if( x > max )
+      return max;
+    else if ( x < min )
+      return min;
+    else return x;
+  }
+
+  INLINE float clip(double x, float min, float max)
   {
     if( x > max )
       return max;
