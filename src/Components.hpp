@@ -356,6 +356,9 @@ struct NStepDraggableLEDWidget : public ParamWidget {
             Vec(0, 0), this->box.size, this,
             &NStepDraggableLEDWidget<NSteps, ColorModel>::drawSegments);
     }
+    ~NStepDraggableLEDWidget() override {
+        delete buffer;
+    }
 
     int getStep() {
         float pvalue = 0.0;
@@ -507,6 +510,9 @@ struct DotMatrixLightTextWidget
     float ledSize, padSize;
 
     DotMatrixLightTextWidget() : Widget(), buffer(NULL), currentText("") {}
+    ~DotMatrixLightTextWidget() override {
+        delete buffer;
+    }
 
     void setup() {
         ledSize = 2;
@@ -543,6 +549,7 @@ struct DotMatrixLightTextWidget
             }
             fontData[key[0]] = valmap;
         }
+        json_decref(json);
     }
 
     // create takes a function
