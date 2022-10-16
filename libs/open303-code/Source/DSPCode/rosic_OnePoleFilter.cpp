@@ -6,6 +6,7 @@ using namespace rosic;
 
 OnePoleFilter::OnePoleFilter()
 {
+  mode = 0;
   shelvingGain = 1.0;
   setSampleRate(44100.0);  // sampleRate = 44100 Hz by default
   setMode      (0);        // bypass by default

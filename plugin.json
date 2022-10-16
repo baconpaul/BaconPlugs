@@ -1,13 +1,13 @@
 {
 	"slug": "BaconMusic",
 	"name": "Bacon Music",
-	"version": "1.0.DEVELOPMENT",
+	"version": "2.0.DEVELOPMENT",
 	"license": "GPL-3.0-or-later",
 	"author": "@baconpaul",
 	"authorEmail": "",
-	"authorUrl": "https://www.baconpaul.org/",
+	"authorUrl": "https://baconpaul.org/",
 	"pluginUrl": "https://github.com/baconpaul/BaconPlugs/",
-	"manualUrl": "https://github.com/baconpaul/BaconPlugs/README.md",
+	"manualUrl": "https://github.com/baconpaul/BaconPlugs#readme",
 	"sourceUrl": "https://github.com/baconpaul/BaconPlugs/",
 	"donateUrl": "",
 	"modules": [

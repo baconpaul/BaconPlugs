@@ -14,6 +14,10 @@
 #include "BufferedDrawFunction.hpp"
 #include "GraduatedFader.hpp"
 
+#ifdef DARK_BACON
+#define SCHEME_BLACK SCHEME_WHITE
+#endif
+
 using namespace rack;
 
 template <typename T, int px = 4> struct SevenSegmentLight : T {
@@ -352,11 +356,14 @@ struct NStepDraggableLEDWidget : public ParamWidget {
             Vec(0, 0), this->box.size, this,
             &NStepDraggableLEDWidget<NSteps, ColorModel>::drawSegments);
     }
+    ~NStepDraggableLEDWidget() override {
+        delete buffer;
+    }
 
     int getStep() {
         float pvalue = 0.0;
-        if(this->paramQuantity)
-            pvalue = this->paramQuantity->getValue();
+        if(this->getParamQuantity())
+            pvalue = this->getParamQuantity()->getValue();
         int step = (int)pvalue;
         return step;
     }
@@ -370,9 +377,9 @@ struct NStepDraggableLEDWidget : public ParamWidget {
     void draw(const DrawArgs &args) override { buffer->draw(args); }
 
     void valueByMouse(float ey) {
-        if (impStep(ey) != getStep() && paramQuantity) {
+        if (impStep(ey) != getStep() && getParamQuantity()) {
             buffer->dirty = true;
-            paramQuantity->setValue(impStep(ey));
+            getParamQuantity()->setValue(impStep(ey));
         }
     }
 
@@ -503,6 +510,9 @@ struct DotMatrixLightTextWidget
     float ledSize, padSize;
 
     DotMatrixLightTextWidget() : Widget(), buffer(NULL), currentText("") {}
+    ~DotMatrixLightTextWidget() override {
+        delete buffer;
+    }
 
     void setup() {
         ledSize = 2;
@@ -539,6 +549,7 @@ struct DotMatrixLightTextWidget
             }
             fontData[key[0]] = valmap;
         }
+        json_decref(json);
     }
 
     // create takes a function
@@ -624,7 +635,7 @@ struct DotMatrixLightTextWidget
         }
     }
 
-    void onZoom(const event::Zoom &e) override { buffer->dirty = true; }
+    // void onZoom(const event::Zoom &e) override { buffer->dirty = true; }
 };
 
 // FIXME: Look at correct switch type
@@ -659,5 +670,9 @@ struct InternalFontMgr {
 
 
 #include "SizeTable.hpp"
+
+#ifdef DARK_BACON
+#define nvgRGBA(r,g,b,a) nvgRGB(225-r,225-g,255-b)
+#endif
 
 #endif
