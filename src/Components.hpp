@@ -365,7 +365,7 @@ struct BaconHelpButton : public SvgButton
 
 template <int NSteps, typename ColorModel> struct NStepDraggableLEDWidget : public ParamWidget
 {
-    BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>> *buffer;
+    BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>> *buffer{nullptr};
     bool dragging;
     Vec lastDragPos;
     ColorModel cm;
@@ -380,7 +380,6 @@ template <int NSteps, typename ColorModel> struct NStepDraggableLEDWidget : publ
             Vec(0, 0), this->box.size, this,
             &NStepDraggableLEDWidget<NSteps, ColorModel>::drawSegments);
     }
-    ~NStepDraggableLEDWidget() override { delete buffer; }
 
     int getStep()
     {
@@ -553,7 +552,6 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
     float ledSize, padSize;
 
     DotMatrixLightTextWidget() : Widget(), buffer(NULL), currentText("") {}
-    ~DotMatrixLightTextWidget() override { delete buffer; }
 
     void setup()
     {
