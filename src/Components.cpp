@@ -56,7 +56,7 @@ struct InternalTextLabel : virtual TransparentWidget, baconpaul::rackplugs::Styl
     void draw(const DrawArgs &args) override
     {
         if (memFont < 0)
-            memFont = InternalFontMgr::get(args.vg, "res/Monitorica-Bd.ttf");
+            memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
         auto col = baconpaul::rackplugs::BaconStyle::get()->getColor(color);
         nvgBeginPath(args.vg);
@@ -93,7 +93,7 @@ void BaconBackground::draw(const DrawArgs &args)
 {
     auto style = baconpaul::rackplugs::BaconStyle::get();
     if (memFont < 0)
-        memFont = InternalFontMgr::get(args.vg, "res/Monitorica-Bd.ttf");
+        memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
     if (baconEmoji == nullptr)
     {
@@ -113,6 +113,12 @@ void BaconBackground::draw(const DrawArgs &args)
     nvgFill(args.vg);
 
     // Standard Footer
+    auto labelBg = style->getColor(baconpaul::rackplugs::BaconStyle::LABEL_BG);
+    auto labelBgEnd = style->getColor(baconpaul::rackplugs::BaconStyle::LABEL_BG_END);
+    auto labelRule = style->getColor(baconpaul::rackplugs::BaconStyle::LABEL_RULE);
+
+    auto labelColor = style->getColor(baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
+
     float rulePos = 360;
     nvgBeginPath(args.vg);
     nvgRect(args.vg, 0, rulePos, box.size.x, box.size.y - rulePos);
@@ -123,7 +129,7 @@ void BaconBackground::draw(const DrawArgs &args)
     nvgBeginPath(args.vg);
     nvgMoveTo(args.vg, 0, rulePos);
     nvgLineTo(args.vg, box.size.x, rulePos);
-    nvgStrokeColor(args.vg, BaconBackground::labelRule);
+    nvgStrokeColor(args.vg, labelRule);
     nvgStroke(args.vg);
 
     float endB = box.size.x / 2, startM = box.size.x / 2;
@@ -158,8 +164,8 @@ void BaconBackground::draw(const DrawArgs &args)
         nvgBeginPath(args.vg);
         nvgFontFaceId(args.vg, memFont);
         nvgFontSize(args.vg, 14);
-        nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
-        nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
+        nvgFillColor(args.vg, labelColor);
+        nvgStrokeColor(args.vg, labelColor);
         nvgTextAlign(args.vg, NVG_ALIGN_RIGHT | NVG_ALIGN_BOTTOM);
         nvgText(args.vg, endB, box.size.y - 3, "Bacon", NULL);
         nvgTextAlign(args.vg, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
@@ -170,8 +176,8 @@ void BaconBackground::draw(const DrawArgs &args)
         nvgBeginPath(args.vg);
         nvgFontFaceId(args.vg, memFont);
         nvgFontSize(args.vg, 14);
-        nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
-        nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
+        nvgFillColor(args.vg, labelColor);
+        nvgStrokeColor(args.vg, labelColor);
         nvgTextAlign(args.vg, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
         nvgText(args.vg, 3, box.size.y - 3, "Bacon", NULL);
     }
@@ -188,15 +194,15 @@ void BaconBackground::draw(const DrawArgs &args)
     nvgBeginPath(args.vg);
     nvgMoveTo(args.vg, 1, rulePos);
     nvgLineTo(args.vg, box.size.x, rulePos);
-    nvgStrokeColor(args.vg, BaconBackground::labelRule);
+    nvgStrokeColor(args.vg, labelRule);
     nvgStroke(args.vg);
 
     // Header label
     nvgBeginPath(args.vg);
     nvgFontFaceId(args.vg, memFont);
     nvgFontSize(args.vg, 16);
-    nvgFillColor(args.vg, componentlibrary::SCHEME_BLACK);
-    nvgStrokeColor(args.vg, componentlibrary::SCHEME_BLACK);
+    nvgFillColor(args.vg, labelColor);
+    nvgStrokeColor(args.vg, labelColor);
     nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
     nvgText(args.vg, box.size.x / 2, 5, title.c_str(), NULL);
 
@@ -206,7 +212,7 @@ void BaconBackground::draw(const DrawArgs &args)
     nvgLineTo(args.vg, box.size.x, box.size.y);
     nvgLineTo(args.vg, 0, box.size.y);
     nvgLineTo(args.vg, 0, 0);
-    nvgStrokeColor(args.vg, BaconBackground::bgOutline);
+    nvgStrokeColor(args.vg, style->getColor(baconpaul::rackplugs::BaconStyle::MODULE_OUTLINE));
     nvgStroke(args.vg);
 
     if (extraDrawFunction != nullptr)
@@ -267,7 +273,7 @@ void BaconBackground::onButton(const event::Button &e)
 void InternalPlugLabel::draw(const DrawArgs &args)
 {
     if (memFont < 0)
-        memFont = InternalFontMgr::get(args.vg, "res/Monitorica-Bd.ttf");
+        memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
     NVGcolor txtCol = componentlibrary::SCHEME_BLACK;
 
@@ -343,16 +349,11 @@ BaconBackground *BaconBackground::addRoundedBorder(Vec pos, Vec sz, NVGcolor fil
     return this;
 }
 
-NVGcolor BaconBackground::bgOutline = nvgRGBA(120, 120, 160, 255);
 NVGcolor BaconBackground::highlight = nvgRGBA(70, 70, 100, 255);
 NVGcolor BaconBackground::highlightEnd = nvgRGBA(60, 60, 120, 255);
 
 NVGcolor BaconBackground::inputStart = nvgRGBA(225, 225, 255, 255);
 NVGcolor BaconBackground::inputEnd = nvgRGBA(225, 225, 255, 255);
-
-NVGcolor BaconBackground::labelBg = nvgRGBA(170, 170, 190, 255);
-NVGcolor BaconBackground::labelBgEnd = nvgRGBA(220, 220, 240, 255);
-NVGcolor BaconBackground::labelRule = nvgRGBA(120, 120, 190, 255);
 
 BaconBackground::BaconBackground(Vec size, const char *lab) : title(lab)
 {
