@@ -2,7 +2,6 @@
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
 CFLAGS +=
-CXXFLAGS := $(filter-out -std=c++11,$(CXXFLAGS))
 CXXFLAGS += -std=c++17 -Wno-array-bounds -Wno-strict-aliasing -Ilibs/midifile/include -Ilibs/open303-code/Source/DSPCode/
 
 
@@ -22,6 +21,9 @@ DISTRIBUTABLES += $(wildcard LICENSE*) res patches README.md
 # Include the VCV plugin Makefile framework
 RACK_DIR ?= ../..
 include $(RACK_DIR)/plugin.mk
+
+
+CXXFLAGS := $(filter-out -std=c++11,$(CXXFLAGS))
 
 shadist:	dist
 	openssl sha256 dist/$(SLUG)-$(VERSION)-$(ARCH).zip > dist/$(SLUG)-$(VERSION)-$(ARCH).zip.sha256

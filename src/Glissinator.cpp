@@ -18,7 +18,7 @@ GlissinatorWidget::GlissinatorWidget(Glissinator<Module> *model) : ModuleWidget(
     // addChild( new BaconHelpButton( "README.md#glissinator" ) );
 
     ParamWidget *slider =
-        createParam<GraduatedFader<230>>(Vec(bg->cx(29), 23), module, G::GLISS_TIME);
+        createParam<GraduatedFader<188>>(Vec(bg->cx(29), 23), module, G::GLISS_TIME);
 
     addParam(slider);
 
@@ -31,6 +31,15 @@ GlissinatorWidget::GlissinatorWidget(Glissinator<Module> *model) : ModuleWidget(
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "out");
 
     addOutput(createOutput<PJ301MPort>(outP, module, G::SLID_OUTPUT));
+
+    bg->addRoundedBorder(Vec(5, RACK_HEIGHT - 162), Vec(box.size.x - 10, 38),
+                         BaconBackground::inputStart);
+    bg->addLabel(Vec(10, RACK_HEIGHT - 144), "gliss", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
+                 componentlibrary::SCHEME_BLACK);
+    bg->addLabel(Vec(10, RACK_HEIGHT - 132), "cv", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
+                 componentlibrary::SCHEME_BLACK);
+    addInput(
+        createInput<PJ301MPort>(Vec(bg->cx() + 5, RACK_HEIGHT - 156), module, G::GLISS_CV_INPUT));
 
     bg->addRoundedBorder(Vec(5, RACK_HEIGHT - 120), Vec(box.size.x - 10, 38),
                          BaconBackground::highlight);
