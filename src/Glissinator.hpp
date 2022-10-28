@@ -1,3 +1,4 @@
+#include <algorithm>
 
 template <typename TBase> struct Glissinator : public TBase
 {
@@ -11,6 +12,7 @@ template <typename TBase> struct Glissinator : public TBase
     enum InputIds
     {
         SOURCE_INPUT,
+        GLISS_CV_INPUT,
         NUM_INPUTS
     };
 
@@ -41,6 +43,10 @@ template <typename TBase> struct Glissinator : public TBase
     {
         TBase::config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         TBase::configParam(GLISS_TIME, 0, 1, 0.1, "Time to gliss, in seconds");
+        TBase::configInput(SOURCE_INPUT, "Input to Slew/Gliss");
+        TBase::configInput(GLISS_CV_INPUT, "Modify Input Time: +/-5v for full range");
+        TBase::configOutput(SLID_OUTPUT, "Slewed/Glissed Output");
+        TBase::configOutput(GLISSING_GATE, "Gate at end of Gliss");
         for (int i = 0; i < 16; ++i)
             offsetCount[i] = -1;
     }
@@ -48,9 +54,7 @@ template <typename TBase> struct Glissinator : public TBase
     void process(const typename TBase::ProcessArgs &args) override
     {
         float glist_sec = params[GLISS_TIME].getValue();
-        int shift_time = args.sampleRate * glist_sec;
-        if (shift_time < 10)
-            shift_time = 10;
+
 
         int nChan = inputs[SOURCE_INPUT].getChannels();
         outputs[SLID_OUTPUT].setChannels(nChan);
@@ -59,6 +63,11 @@ template <typename TBase> struct Glissinator : public TBase
 
         for (int i = 0; i < nChan; ++i)
         {
+            auto cglist = std::clamp(glist_sec + inputs[GLISS_CV_INPUT].getVoltage(i) * 0.2f, 0.f, 1.f);
+            int shift_time = args.sampleRate * cglist;
+            if (shift_time < 10)
+                shift_time = 10;
+
             float thisIn = inputs[SOURCE_INPUT].getVoltage(i);
 
             // This means I am being intialized
