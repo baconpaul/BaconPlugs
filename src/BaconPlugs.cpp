@@ -2,6 +2,9 @@
 
 Plugin *pluginInstance;
 
+
+std::unordered_map<std::string, int> memDebugger;
+
 void init(rack::Plugin *p)
 {
     pluginInstance = p;

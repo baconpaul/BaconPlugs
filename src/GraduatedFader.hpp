@@ -7,8 +7,8 @@ template <int H> struct GraduatedFader : app::SliderKnob
     int slider_height = 41;
     int slider_width = 20;
     int widget_width = 28;
-    widget::Widget *notches, *handle, *shadow;
-    widget::FramebufferWidget *fb;
+    widget::Widget *notches{nullptr}, *handle{nullptr}, *shadow{nullptr};
+    widget::FramebufferWidget *fb{nullptr};
 
     math::Vec minHandlePos, maxHandlePos;
 
@@ -21,16 +21,15 @@ template <int H> struct GraduatedFader : app::SliderKnob
         fb = new widget::FramebufferWidget();
         addChild(fb);
 
-        notches = new BufferedDrawFunctionWidget<GraduatedFader<H>>(
-            Vec(0, 0), box.size, this, &GraduatedFader<H>::drawBackground);
+        notches = new BufferedDrawFunctionWidget(
+            Vec(0, 0), box.size, [this](auto vg) { drawBackground(vg);});
         fb->addChild(notches);
 
-        shadow = new BufferedDrawFunctionWidget<GraduatedFader<H>>(
-            Vec(0, 0), Vec(20, 41), this, &GraduatedFader<H>::drawHandleShadow);
+        shadow = new BufferedDrawFunctionWidget(
+            Vec(0, 0), Vec(20, 41), [this](auto vg) {drawHandleShadow(vg);});
         fb->addChild(shadow);
 
-        handle = new BufferedDrawFunctionWidget<GraduatedFader<H>>(Vec(0, 0), Vec(20, 41), this,
-                                                                   &GraduatedFader<H>::drawHandle);
+        handle = new BufferedDrawFunctionWidget(Vec(0, 0), Vec(20, 41), [this](auto vg) {drawHandle(vg);});
         fb->addChild(handle);
     }
 
