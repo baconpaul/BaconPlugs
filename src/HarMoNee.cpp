@@ -76,6 +76,18 @@ struct HarMoNee : Module
         for (int i = 0; i < OCTAVE; ++i)
             offsets.push_back(0);
 
+        configInput(UP_OR_DOWN_CV, "Gate to force toggle to UP");
+        configInput(HALF_STEP_CV, "Gate to add an extra half step");
+        configInput(WHOLE_STEP_CV, "Gate to add an extra whole step");
+        configInput(MINOR_THIRD_CV, "Gate to add an extra minor third");
+        configInput(MAJOR_THIRD_CV, "Gate to add an extra major third");
+        configInput(FIFTH_CV, "Gate to add an extra fifth");
+        configInput(OCTAVE_CV, "Gate to add an extra octave");
+
+        configInput(SOURCE_INPUT, "V/Oct input to be harmonized");
+        configOutput(ECHO_OUTPUT, "Echo of Input");
+        configOutput(INCREASED_OUTPUT, "Harmonized Output");
+
         offsets[HALF_STEP] = 1;
         offsets[WHOLE_STEP] = 2;
         offsets[MINOR_THIRD] = 3;
@@ -134,7 +146,7 @@ void HarMoNee::process(const ProcessArgs &args)
     ld = HALF_STEP_LIGHT - HALF_STEP_CV;
     for (int i = UP_OR_DOWN_CV; i <= OCTAVE_CV; ++i)
     {
-        if (inputs[i].getVoltage() > 5.0f)
+        if (inputs[i].getVoltage() > 2.0f)
         {
             if (i == UP_OR_DOWN_CV)
             {
