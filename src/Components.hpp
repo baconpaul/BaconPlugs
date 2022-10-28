@@ -44,7 +44,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
     int decimalPos{0};
     bool hexMode{false};
 
-    BufferedDrawFunctionWidget *buffer{nullptr};
+    BufferedDrawFunctionWidget *buffer{nullptr}, *bufferLight{nullptr};
 
     SevenSegmentLight()
     {
@@ -66,8 +66,12 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         unscaledLoc.push_back(Rect(Vec(2, 5), Vec(3, 1)));
 
         buffer = new BufferedDrawFunctionWidget(
-            Vec(0, 0), this->box.size, [this](auto vg) { drawSegments(vg);});
+            Vec(0, 0), this->box.size, [this](auto vg) { drawBackground(vg);});
         this->addChild(buffer);
+
+        bufferLight = new BufferedDrawFunctionWidgetOnLayer(
+            Vec(0, 0), this->box.size, [this](auto vg) { drawSegments(vg);});
+        this->addChild(bufferLight);
     }
 
     void step() override {
@@ -88,6 +92,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         if (value != pvalue)
         {
             buffer->dirty = true;
+            bufferLight->dirty =true;
         }
 
         pvalue = value;
@@ -100,7 +105,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         }
     }
 
-    void drawSegments(NVGcontext *vg)
+    void drawBackground(NVGcontext *vg)
     {
         // This is now buffered to only be called when the value has changed
         int w = this->box.size.x;
@@ -110,7 +115,10 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         nvgRect(vg, 0, 0, w, h);
         nvgFillColor(vg, nvgRGBA(25, 35, 25, 255));
         nvgFill(vg);
+    }
 
+    void drawSegments(NVGcontext *vg)
+    {
         int i = 0;
         // float fvalue = this->module->lights[ this->firstLightId ].value;
         // int value = clamp( fvalue, 0.0f, 9.0f );
@@ -522,7 +530,7 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
     typedef std::function<std::string(Module *)> stringGetter;
     typedef std::function<bool(Module *)> stringDirtyGetter;
 
-    BufferedDrawFunctionWidget *buffer{nullptr};
+    BufferedDrawFunctionWidget *buffer{nullptr}, *bufferLight{nullptr};
 
     int charCount{0};
     std::string currentText{""};
@@ -539,8 +547,11 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
         box.size = Vec(charCount * (5 * ledSize + padSize) + 2 * padSize,
                        7 * ledSize + 4.5 * padSize); // 5 x 7 data structure
         buffer = new BufferedDrawFunctionWidget(
-            Vec(0, 0), this->box.size, [this](auto vg) {drawText(vg);});
+            Vec(0, 0), this->box.size, [this](auto vg) {drawBackground(vg);});
         addChild(buffer);
+        bufferLight = new BufferedDrawFunctionWidgetOnLayer(
+            Vec(0, 0), this->box.size, [this](auto vg) {drawText(vg);});
+        addChild(bufferLight);
 
         INFO("BaconMusic loading DMP json: %s",
              asset::plugin(pluginInstance, "res/Keypunch029.json").c_str());
@@ -596,6 +607,7 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
         {
             currentText = getfn(this->module);
             buffer->dirty = true;
+            bufferLight->dirty = true;
         }
     }
 
@@ -641,13 +653,15 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
         }
     }
 
-    void drawText(NVGcontext *vg)
+    void drawBackground(NVGcontext *vg)
     {
         nvgBeginPath(vg);
         nvgRect(vg, 0, 0, box.size.x, box.size.y);
         nvgFillColor(vg, nvgRGBA(15, 15, 55, 255));
         nvgFill(vg);
-
+    }
+    void drawText(NVGcontext *vg)
+    {
         Vec cpos = Vec(padSize, padSize);
         for (const char *c = currentText.c_str(); *c != 0; ++c)
         {

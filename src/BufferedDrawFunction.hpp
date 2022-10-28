@@ -49,6 +49,26 @@ struct BufferedDrawFunctionWidget : virtual FramebufferWidget /* widget::Widget*
 #endif
 };
 
+
+struct BufferedDrawFunctionWidgetOnLayer : BufferedDrawFunctionWidget
+{
+    int layer{1};
+    BufferedDrawFunctionWidgetOnLayer(rack::Vec pos, rack::Vec sz, drawfn_t draw_, int ly = 1)
+        : BufferedDrawFunctionWidget(pos, sz, draw_), layer(ly)
+    {
+    }
+
+    void draw(const DrawArgs &args) override { return; }
+    void drawLayer(const DrawArgs &args, int dl) override
+    {
+        if (dl == layer)
+        {
+            BufferedDrawFunctionWidget::draw(args);
+        }
+    }
+};
+
+
 struct BufferedDrawLambdaWidget : virtual FramebufferWidget
 {
     typedef std::function<void(NVGcontext *)> drawfn_t;
