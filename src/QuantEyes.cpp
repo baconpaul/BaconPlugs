@@ -27,6 +27,7 @@ struct QuantEyes : virtual bp::BaconModule
     enum OutputIds
     {
         QUANTIZED_OUT,
+        CHANGE_TRIG_OUT,
         NUM_OUTPUTS
     };
 
@@ -40,6 +41,8 @@ struct QuantEyes : virtual bp::BaconModule
 
     int scaleState[SCALE_LENGTH];
     dsp::SchmittTrigger scaleTriggers[SCALE_LENGTH];
+    float priorOut[16]; // max-poly
+    int trigOut[16];
 
     QuantEyes() : bp::BaconModule()
     {
@@ -52,6 +55,12 @@ struct QuantEyes : virtual bp::BaconModule
 
         configInput(CV_INPUT, "V/Oct Input");
         configOutput(QUANTIZED_OUT, "Quantized Output");
+        configOutput(CHANGE_TRIG_OUT, "Trigger on CHange");
+        for (int i=0; i<16; ++i)
+        {
+            priorOut[i] = 0;
+            trigOut[i] = 0;
+        }
     }
 
     void process(const ProcessArgs &args) override
@@ -74,6 +83,7 @@ struct QuantEyes : virtual bp::BaconModule
 
         int nChan = inputs[CV_INPUT].getChannels();
         outputs[QUANTIZED_OUT].setChannels(nChan);
+        outputs[CHANGE_TRIG_OUT].setChannels(nChan);
         for (int i = 0; i < nChan; ++i)
         {
             if (inputs[CV_INPUT].isConnected())
@@ -117,7 +127,23 @@ struct QuantEyes : virtual bp::BaconModule
 
                 // and figure out the CV
                 float out = 1.0 * noteI / SCALE_LENGTH + octave;
+
+                if (out != priorOut[i])
+                {
+                    priorOut[i] = out;
+                    trigOut[i] = (int)(APP->engine->getSampleRate() * 0.015);
+                }
                 outputs[QUANTIZED_OUT].setVoltage(out, i);
+
+                if (trigOut[i])
+                {
+                    outputs[CHANGE_TRIG_OUT].setVoltage(10.0, i);
+                    trigOut[i] --;
+                }
+                else
+                {
+                    outputs[CHANGE_TRIG_OUT].setVoltage(0.0, i);
+                }
             }
         }
     }
@@ -158,7 +184,7 @@ struct QuantEyesWidget : bp::BaconModuleWidget
 QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : bp::BaconModuleWidget()
 {
     setModule(model);
-    box.size = Vec(SCREW_WIDTH * 11, RACK_HEIGHT);
+    box.size = Vec(SCREW_WIDTH * 12, RACK_HEIGHT);
 
     BaconBackground *bg = new BaconBackground(box.size, "QuantEyes");
     addChild(bg->wrappedInFramebuffer());
@@ -194,22 +220,25 @@ QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : bp::BaconModuleWidget()
     }
 
     int xpospl = box.size.x - 24 - 9;
-    Vec inP = Vec(xpospl - 32, RACK_HEIGHT - 60);
+    Vec inP = Vec(xpospl - 64, RACK_HEIGHT - 60);
+    Vec trigP = Vec(xpospl - 32, RACK_HEIGHT - 60);
     Vec outP = Vec(xpospl, RACK_HEIGHT - 60);
 
     bg->addPlugLabel(inP, BaconBackground::SIG_IN, "in");
     addInput(createInput<PJ301MPort>(inP, module, QuantEyes::CV_INPUT));
 
-    bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "out");
+    bg->addPlugLabel(trigP, BaconBackground::SIG_OUT, "trig");
+    addOutput(createOutput<PJ301MPort>(trigP, module, QuantEyes::CHANGE_TRIG_OUT));
 
+    bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "out");
     addOutput(createOutput<PJ301MPort>(outP, module, QuantEyes::QUANTIZED_OUT));
 
-    bg->addRoundedBorder(Vec(10, box.size.y - 78), Vec(70, 49));
-    bg->addLabel(Vec(45, box.size.y - 74), "Root CV", 12, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-    int ybot = box.size.y - 78 + 24 + 5 + 20;
+    bg->addRoundedBorder(Vec(10, box.size.y - 79.5), Vec(65, 49));
+    bg->addLabel(Vec(45, box.size.y - 79.5 + 2), "Root CV", 12, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+    int ybot = box.size.y - 79.5 + 24 + 5 + 20;
     addParam(
         createParam<RoundSmallBlackKnob>(Vec(16, ybot - 3 - 28), module, QuantEyes::ROOT_STEP));
-    addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(Vec(47, ybot - 5 - 24), module,
+    addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(Vec(42, ybot - 5 - 24), module,
                                                                   QuantEyes::ROOT_LIGHT));
 }
 
