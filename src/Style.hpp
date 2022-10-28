@@ -47,10 +47,17 @@ struct BaconStyle
         BG,
         BG_END,
         DEFAULT_LABEL,
-        DEFAULT_HIGHLIGHT_LABEL
+        DEFAULT_HIGHLIGHT_LABEL,
+
+        LABEL_BG,
+        LABEL_BG_END,
+        LABEL_RULE,
+
+        MODULE_OUTLINE
     };
 
     NVGcolor getColor(Colors c);
+    std::string fontName() { return "res/Monitorica-Bd.ttf"; }
 
   private:
     std::unordered_set<StyleParticipant *> listeners;

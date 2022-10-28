@@ -170,7 +170,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
             }
             else
             {
-                nvgFillColor(vg, nvgRGBA(50, 70, 50, 255));
+                nvgFillColor(vg, nvgRGBA(30, 50, 30, 255));
                 nvgFill(vg);
             }
             ++i;
@@ -234,11 +234,8 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget
 
 struct BaconBackground : virtual TransparentWidget, baconpaul::rackplugs::StyleParticipant
 {
-    static NVGcolor bgOutline;
     static NVGcolor highlight, highlightEnd;
     static NVGcolor inputStart, inputEnd;
-    static NVGcolor labelBg, labelBgEnd;
-    static NVGcolor labelRule;
 
     typedef std::tuple<Rect, NVGcolor, bool> col_rect_t;
     std::vector<col_rect_t> rects;

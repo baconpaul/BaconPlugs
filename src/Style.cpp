@@ -57,6 +57,15 @@ NVGcolor getColorLight(baconpaul::rackplugs::BaconStyle::Colors c)
     case BaconStyle::DEFAULT_LABEL:
         return nvgRGB(10,10,15);
 
+    case BaconStyle::LABEL_BG:
+        return nvgRGB(0xE6, 0xE0, 0XDD);
+    case BaconStyle::LABEL_BG_END:
+        return nvgRGB(0xE6, 0xE6, 0xE3);
+    case BaconStyle::MODULE_OUTLINE:
+    case BaconStyle::LABEL_RULE:
+        return nvgRGB(0xC0, 0xC0, 0xD0);
+
+
 
     }
     return nvgRGBA(255,0,0,255);
@@ -73,6 +82,14 @@ NVGcolor getColorDark(baconpaul::rackplugs::BaconStyle::Colors c)
         return nvgRGB(40,40,45);
     case BaconStyle::DEFAULT_LABEL:
         return nvgRGB(0xF0, 0xF0, 0xFF);
+
+    case BaconStyle::LABEL_BG:
+        return nvgRGB(60,60,65);
+    case BaconStyle::LABEL_BG_END:
+        return nvgRGB(65,65,70);
+    case BaconStyle::LABEL_RULE:
+    case BaconStyle::MODULE_OUTLINE:
+        return nvgRGB(80,80,90);
     }
     return nvgRGBA(255,0,0,255);
 }
