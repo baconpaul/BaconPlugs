@@ -207,7 +207,7 @@ QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : ModuleWidget()
 struct QuantEyesScaleItem : MenuItem
 {
     QuantEyes *quanteyes;
-    typedef std::initializer_list<int> scale_t;
+    typedef std::vector<int> scale_t;
 
     scale_t scale;
 
@@ -232,12 +232,11 @@ struct QuantEyesScaleItem : MenuItem
 void QuantEyesWidget::appendContextMenu(Menu *menu)
 {
     // TODO: Fix me for 1.0
-#if 0    
-    menu->addChild(MenuEntry::create());
+    menu->addChild(new rack::ui::MenuSeparator);
     menu->addChild(createMenuLabel("Scales:"));
     QuantEyes *qe = dynamic_cast<QuantEyes *>(module);
 
-    auto addScale = [&](const char *name, QuantEyesScaleItem::scale_t scale) {
+    auto addScale = [menu, qe](const char *name, QuantEyesScaleItem::scale_t scale) {
         QuantEyesScaleItem *scaleItem =
             createMenuItem<QuantEyesScaleItem>(name);
         scaleItem->quanteyes = qe;
@@ -249,7 +248,6 @@ void QuantEyesWidget::appendContextMenu(Menu *menu)
     addScale("Natural Minor", {2, 1, 2, 2, 1, 2, 2});
     addScale("Harmonic Minor", {2, 1, 2, 2, 1, 3, 1});
     addScale("Whole Tone", {2, 2, 2, 2, 2, 2});
-#endif
 }
 
 Model *modelQuantEyes = createModel<QuantEyes, QuantEyesWidget>("QuantEyes");
