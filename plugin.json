@@ -79,7 +79,8 @@
 			"slug": "ALingADing",
 			"name": "ALingADing",
 			"description": "A sub-par ring modulator",
-			"tags": [ "Ring modulator", "Polyphonic" ]
+			"tags": [ "Ring modulator", "Polyphonic" ],
+			"hidden": true
 		},
 		{
 			"slug": "Bitulator",

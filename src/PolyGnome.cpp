@@ -5,9 +5,15 @@
 #include <algorithm>
 #include <vector>
 
-struct PolyGnomeWidget : ModuleWidget
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
+
+
+namespace bp = baconpaul::rackplugs;
+
+struct PolyGnomeWidget : bp::BaconModuleWidget
 {
-    typedef PolyGnome<Module> M;
+    typedef PolyGnome<bp::BaconModule> M;
     PolyGnomeWidget(M *module);
 
     int clocky0 = 20;
@@ -15,7 +21,7 @@ struct PolyGnomeWidget : ModuleWidget
     void drawBG(NVGcontext *vg) {}
 };
 
-PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module) : ModuleWidget()
+PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module)
 {
     setModule(module);
     box.size = Vec(SCREW_WIDTH * 11, RACK_HEIGHT);

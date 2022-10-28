@@ -3,6 +3,9 @@
 #include "rack.hpp"
 #include "BaconPlugs.hpp"
 #include "MidiFile.h"
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
+
 
 struct PPlayer
 {
@@ -436,7 +439,7 @@ struct DebussyPlayer : public MidiFilePlayer
     }
 };
 
-struct PolyGenerator : public rack::Module
+struct PolyGenerator : public baconpaul::rackplugs::BaconModule
 {
     enum ParamIds
     {
@@ -471,7 +474,7 @@ struct PolyGenerator : public rack::Module
 
     std::unique_ptr<PPlayer> player = nullptr;
 
-    PolyGenerator() : rack::Module()
+    PolyGenerator()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
@@ -479,6 +482,10 @@ struct PolyGenerator : public rack::Module
         configParam(VOICES_PARAM, 1, 16, 16, "Voice Count");
         configParam(PATTERN_PARAM, 0, 8, 0, "Pattern");
         configParam(EXTRA_PARAM, 0, 1, 0, "Extra");
+
+        configOutput(TONE_CV, "Pitch in v/oct");
+        configOutput(VEL_CV, "Velocity");
+        configOutput(GATE_CV, "Note Gate");
         resetPlayer(0);
     }
 

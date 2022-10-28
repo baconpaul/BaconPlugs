@@ -1,6 +1,11 @@
 #include "BaconPlugs.hpp"
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
 
-struct HarMoNee : Module
+
+namespace bp = baconpaul::rackplugs;
+
+struct HarMoNee : bp::BaconModule
 {
     enum ParamIds
     {
@@ -54,7 +59,7 @@ struct HarMoNee : Module
     float targetOffset;
     int offsetCount;
 
-    HarMoNee() : Module()
+    HarMoNee()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(GLISS_RATE, 0.1, 1, 0.55, "Glissando rate when things change");
@@ -228,12 +233,12 @@ void HarMoNee::process(const ProcessArgs &args)
     }
 }
 
-struct HarMoNeeWidget : ModuleWidget
+struct HarMoNeeWidget : bp::BaconModuleWidget
 {
     HarMoNeeWidget(HarMoNee *model);
 };
 
-HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget()
+HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model)
 {
     setModule(model);
     box.size = Vec(SCREW_WIDTH * 8, RACK_HEIGHT);

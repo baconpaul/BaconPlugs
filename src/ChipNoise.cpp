@@ -1,7 +1,12 @@
 #include "BaconPlugs.hpp"
 #include "ChipSym.hpp"
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
 
-struct ChipNoise : virtual Module
+
+namespace bp = baconpaul::rackplugs;
+
+struct ChipNoise : virtual bp::BaconModule
 {
     enum ParamIds
     {
@@ -42,13 +47,16 @@ struct ChipNoise : virtual Module
     int prior_shortlen;
     bool prior_longmode;
 
-    ChipNoise() : Module()
+    ChipNoise()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(LONG_MODE, 0, 1, 1);
         configParam(NOISE_LENGTH, 0, 15, 7, "Length of sequence");
         configParam(SHORT_LEN, 0, 1, 1);
         configParam(PERIOD_93, 0, 351, 17);
+
+        configInput(NOISE_LENGTH_INPUT, "Wavelength (akin to tone roughly)");
+        configOutput(NOISE_OUTPUT, "The Noise");
         prior_shortlen = 1;
         prior_longmode = false;
     }
@@ -106,12 +114,12 @@ struct ChipNoise : virtual Module
     }
 };
 
-struct ChipNoiseWidget : ModuleWidget
+struct ChipNoiseWidget : bp::BaconModuleWidget
 {
     ChipNoiseWidget(ChipNoise *module);
 };
 
-ChipNoiseWidget::ChipNoiseWidget(ChipNoise *module) : ModuleWidget()
+ChipNoiseWidget::ChipNoiseWidget(ChipNoise *module)
 {
     setModule(module);
     box.size = Vec(SCREW_WIDTH * 6, RACK_HEIGHT);

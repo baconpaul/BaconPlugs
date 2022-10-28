@@ -272,7 +272,7 @@ struct Open303SequenceDisplay : public rack::TransparentWidget
     {
         this->box.pos = pos;
         this->box.size = rack::Vec(nStepX * stepPxW, nStepY * stepPxH);
-        addChild(new BufferedDrawLambdaWidget(rack::Vec(0, 0), this->box.size,
+        addChild(new BufferedDrawFunctionWidget(rack::Vec(0, 0), this->box.size,
                                               [this](NVGcontext *c) { this->drawSequence(c); }));
     }
 

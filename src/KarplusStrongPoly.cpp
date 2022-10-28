@@ -299,7 +299,7 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget(KarplusStrongPoly *module) : Mo
         if (!last)
         {
             int w = 70;
-            addChild(new BufferedDrawLambdaWidget(
+            addChild(new BufferedDrawFunctionWidget(
                 Vec(bg->cx() - w / 2, outy + ys + margin), Vec(w, gap), [=](NVGcontext *vg) {
                     nvgBeginPath(vg);
                     nvgMoveTo(vg, 0, 0);
@@ -324,7 +324,7 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget(KarplusStrongPoly *module) : Mo
 
     auto cl = [&](std::string lab, float ys) {
         bg->addLabel(Vec(obuf + margin, outy + ys / 2), lab.c_str(), 13,
-                     NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT, componentlibrary::SCHEME_BLACK);
+                     NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT, baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     };
 
     yh = SizeTable<PJ301MPort>::Y;

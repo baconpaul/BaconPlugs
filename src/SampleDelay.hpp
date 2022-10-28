@@ -41,6 +41,8 @@ template <typename TBase> struct SampleDelay : virtual TBase
     {
         TBase::config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         TBase::configParam(DELAY_KNOB, 1, 99, 1, "Samples to delay");
+        TBase::configInput(SIGNAL_IN, "Input Signal");
+        TBase::configOutput(SIGNAL_OUT, "Output (Input delayed by N samples)");
         ringSize = 100;
         for (int i = 0; i < 16; ++i)
         {

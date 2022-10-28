@@ -1,12 +1,15 @@
 #include "BaconPlugs.hpp"
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
 
+namespace bp = baconpaul::rackplugs;
 /*
 ** ToDo:
 **   Add lights for on/off
 **   Add a 7 segment display for step count
 */
 
-struct Bitulator : Module
+struct Bitulator : bp::BaconModule
 {
     enum ParamIds
     {
@@ -40,7 +43,7 @@ struct Bitulator : Module
         NUM_LIGHTS
     };
 
-    Bitulator() : Module()
+    Bitulator()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(WET_DRY_MIX, 0.0, 1.0, 1.0, "Wet Dry Mix");
@@ -48,6 +51,12 @@ struct Bitulator : Module
         configParam(AMP_LEVEL, 1.0, 11.0, 1, "Amplificaiton level");
         configParam(BITULATE, 0.0, 1.0, 1, "Bittiness");
         configParam(CLIPULATE, 0.0, 1.0, 1, "Clipulation");
+
+        configInput(SIGNAL_INPUT, "Signal");
+        configInput(BIT_CV, "Bittiness Control Voltage");
+        configInput(AMP_CV, "Amplification Control Voltage");
+        configInput(MIX_CV, "Mix Control Voltage");
+        configOutput(CRUNCHED_OUTPUT, "Output. Good luck!");
 
         lights[BITULATING_LIGHT].value = 1;
         lights[CRUNCHING_LIGHT].value = 1;
@@ -96,12 +105,12 @@ struct Bitulator : Module
     }
 };
 
-struct BitulatorWidget : ModuleWidget
+struct BitulatorWidget : bp::BaconModuleWidget
 {
     BitulatorWidget(Bitulator *model);
 };
 
-BitulatorWidget::BitulatorWidget(Bitulator *model) : ModuleWidget()
+BitulatorWidget::BitulatorWidget(Bitulator *model)
 {
     setModule(model);
     box.size = Vec(SCREW_WIDTH * 6, RACK_HEIGHT);

@@ -1,10 +1,16 @@
 #include "BaconPlugs.hpp"
+#include "ChipSym.hpp"
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
+
+
+namespace bp = baconpaul::rackplugs;
 
 /*
 ** Based heavily on http://recherche.ircam.fr/pub/dafx11/Papers/66_e.pdf
 */
 
-struct ALingADing : Module
+struct ALingADing : bp::BaconModule
 {
     enum ParamIds
     {
@@ -32,10 +38,13 @@ struct ALingADing : Module
         NUM_LIGHTS
     };
 
-    ALingADing() : Module()
+    ALingADing()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(WET_DRY_MIX, 0.0, 1.0, 1.0, "Wet Dry Mix");
+        configInput(SIGNAL_INPUT, "Signal");
+        configInput(CARRIER_INPUT, "Carrier");
+        configOutput(MODULATED_OUTPUT, "Output");
     }
 
     inline float diode_sim(float in)
@@ -72,12 +81,12 @@ struct ALingADing : Module
     }
 };
 
-struct ALingADingWidget : ModuleWidget
+struct ALingADingWidget : bp::BaconModuleWidget
 {
     ALingADingWidget(ALingADing *module);
 };
 
-ALingADingWidget::ALingADingWidget(ALingADing *module) : ModuleWidget()
+ALingADingWidget::ALingADingWidget(ALingADing *module)
 {
     setModule(module);
 
