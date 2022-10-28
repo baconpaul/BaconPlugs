@@ -6,9 +6,11 @@
 #include <string>
 #include <vector>
 
-class KSSynth {
+class KSSynth
+{
   public:
-    typedef enum InitPacket {
+    typedef enum InitPacket
+    {
         RANDOM,
         SQUARE,
         SAW,
@@ -17,8 +19,10 @@ class KSSynth {
         SINCHIRP // if you add remember to fix the count below...
     } InitPacket;
 
-    static std::string initPacketName(InitPacket p) {
-        switch (p) {
+    static std::string initPacketName(InitPacket p)
+    {
+        switch (p)
+        {
         case RANDOM:
             return "random";
         case SQUARE:
@@ -37,10 +41,15 @@ class KSSynth {
 
     static int numInitPackets() { return (int)SINCHIRP + 1; }
 
-    typedef enum FilterType { WEIGHTED_ONE_SAMPLE } FilterType;
+    typedef enum FilterType
+    {
+        WEIGHTED_ONE_SAMPLE
+    } FilterType;
 
-    static std::string filterTypeName(FilterType p) {
-        switch (p) {
+    static std::string filterTypeName(FilterType p)
+    {
+        switch (p)
+        {
         case WEIGHTED_ONE_SAMPLE:
             return "wgt 1samp";
         }
@@ -61,7 +70,7 @@ class KSSynth {
 
     bool active;
     int polyChannel;
-    
+
     // private:
     float freq;
     int burstLen;
@@ -81,67 +90,84 @@ class KSSynth {
           active(false), polyChannel(0),
 
           wfMin(minv), wfMax(maxv), sampleRate(sampleRateIn),
-          sampleRateBy100((int)(sampleRate / 100)), pos(0) {
+          sampleRateBy100((int)(sampleRate / 100)), pos(0)
+    {
         setFreq(220);
     }
 
-    void setFreq(float f) {
+    void setFreq(float f)
+    {
         freq = f;
         burstLen = (int)((1.0f * sampleRate / freq + 0.5) * 2);
         filtAttenScaled = filtAtten / 100 / (freq / 440);
         delay.resize(burstLen);
     }
 
-    void silenceGracefully() {
+    void silenceGracefully()
+    {
         filtAtten = 10.0;
         filtAttenScaled = filtAtten / 100 / (freq / 440);
     }
 
-    void trigger(float f) {
+    void trigger(float f)
+    {
         // remember: Interally we work on the range [-1.0f, 1.0f] to match the
         // python (but different from the ChipSym which works on [ 0 1.0f ]
         active = true;
         setFreq(f);
         pos = 1;
-        switch (packet) {
-        case RANDOM: {
-            for (int i = 0; i < burstLen; ++i) {
+        switch (packet)
+        {
+        case RANDOM:
+        {
+            for (int i = 0; i < burstLen; ++i)
+            {
                 delay[i] = (float)rand() * 1.0 / RAND_MAX;
                 delay[i] = delay[i] * 2.0 - 1.0;
             }
             break;
         }
-        case SQUARE: {
+        case SQUARE:
+        {
             int xo = (int)burstLen / 2.0;
-            for (int i = 0; i < burstLen; ++i) {
+            for (int i = 0; i < burstLen; ++i)
+            {
                 delay[i] = (i <= xo ? 1.0 : -1.0);
             }
             break;
         }
-        case SAW: {
-            for (int i = 0; i < burstLen; ++i) {
+        case SAW:
+        {
+            for (int i = 0; i < burstLen; ++i)
+            {
                 delay[i] = (i * 2.0f / burstLen) - 1.0;
             }
             break;
         }
 
-        case NOISYSAW: {
-            for (int i = 0; i < burstLen; ++i) {
+        case NOISYSAW:
+        {
+            for (int i = 0; i < burstLen; ++i)
+            {
                 delay[i] = (i * 1.0f / burstLen) - 0.5;
                 delay[i] += (float)rand() * 1.0f / RAND_MAX - 0.5;
             }
             break;
         }
 
-        case SIN: {
+        case SIN:
+        {
             float scale = 2.0 * M_PI / burstLen;
-            for (int i = 0; i < burstLen; ++i) {
+            for (int i = 0; i < burstLen; ++i)
+            {
                 delay[i] = sin(i * scale);
             }
             break;
         }
-        case SINCHIRP: {
-            for (int i = 0; i < burstLen; ++i) {
+        case SINCHIRP:
+        {
+            for (int i = 0; i < burstLen; ++i)
+            {
                 float ls = 1.0f * i / burstLen;
                 float lse = exp(ls * 2) * 3;
                 delay[i] = sin(lse * 2 * M_PI);
@@ -152,22 +178,26 @@ class KSSynth {
         updateSumDelaySquared();
     }
 
-    void updateSumDelaySquared() {
+    void updateSumDelaySquared()
+    {
         sumDelaySquared = 0;
-        for (int i = 0; i < burstLen; ++i) {
+        for (int i = 0; i < burstLen; ++i)
+        {
             sumDelaySquared += delay[i] * delay[i];
         }
         sumDelaySquared /= burstLen;
     }
 
-    float step() {
+    float step()
+    {
         if (!active)
             return 0;
 
         int dpos = pos % burstLen;
         int dpnext = (pos + 1) % burstLen;
         int dpfill = (pos - 1) % burstLen;
-        if (pos % sampleRateBy100 == 0) {
+        if (pos % sampleRateBy100 == 0)
+        {
             updateSumDelaySquared();
             if (sumDelaySquared < 1e-7) // think about this threshold some
                 active = false;
@@ -175,12 +205,12 @@ class KSSynth {
         pos++;
 
         float filtval = 0.5;
-        switch (filter) {
+        switch (filter)
+        {
         case WEIGHTED_ONE_SAMPLE:
             float ftw = filtParamA;
             float fta = filtAttenScaled;
-            filtval =
-                (ftw * delay[dpos] + (1.0 - ftw) * delay[dpnext]) * (1.0 - fta);
+            filtval = (ftw * delay[dpos] + (1.0 - ftw) * delay[dpnext]) * (1.0 - fta);
             break;
         }
         delay[dpfill] = filtval;

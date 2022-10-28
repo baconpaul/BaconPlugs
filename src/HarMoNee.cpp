@@ -1,7 +1,9 @@
 #include "BaconPlugs.hpp"
 
-struct HarMoNee : Module {
-    enum ParamIds {
+struct HarMoNee : Module
+{
+    enum ParamIds
+    {
         UP_OR_DOWN,
         HALF_STEP,
         WHOLE_STEP,
@@ -12,7 +14,8 @@ struct HarMoNee : Module {
         GLISS_RATE,
         NUM_PARAMS
     };
-    enum InputIds {
+    enum InputIds
+    {
         SOURCE_INPUT,
         UP_OR_DOWN_CV,
         HALF_STEP_CV,
@@ -23,8 +26,14 @@ struct HarMoNee : Module {
         OCTAVE_CV,
         NUM_INPUTS
     };
-    enum OutputIds { ECHO_OUTPUT, INCREASED_OUTPUT, NUM_OUTPUTS };
-    enum LightIds {
+    enum OutputIds
+    {
+        ECHO_OUTPUT,
+        INCREASED_OUTPUT,
+        NUM_OUTPUTS
+    };
+    enum LightIds
+    {
         UP_LIGHT,
         DOWN_LIGHT,
         HALF_STEP_LIGHT,
@@ -45,16 +54,20 @@ struct HarMoNee : Module {
     float targetOffset;
     int offsetCount;
 
-    HarMoNee() : Module() {
+    HarMoNee() : Module()
+    {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-        configParam(GLISS_RATE, 0.1, 1, 0.55,
-                    "Glissando rate when things change");
+        configParam(GLISS_RATE, 0.1, 1, 0.55, "Glissando rate when things change");
         configParam(UP_OR_DOWN_CV, 0, 1, 1, "Increase or Decrease by interval");
-        for (int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i) {
+        for (int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i)
+        {
             int v;
-            if (i == HarMoNee::MAJOR_THIRD) {
+            if (i == HarMoNee::MAJOR_THIRD)
+            {
                 v = 1;
-            } else {
+            }
+            else
+            {
                 v = 0;
             }
             configParam(i, 0, 1, v);
@@ -77,7 +90,8 @@ struct HarMoNee : Module {
     void process(const ProcessArgs &args) override;
 };
 
-void HarMoNee::process(const ProcessArgs &args) {
+void HarMoNee::process(const ProcessArgs &args)
+{
     /* TODO
 
        Display the shift
@@ -89,20 +103,27 @@ void HarMoNee::process(const ProcessArgs &args) {
 
     float offsetI = 0;
     float uod = (params[UP_OR_DOWN].getValue() > 0) ? 1.0 : -1.0;
-    if (uod > 0) {
+    if (uod > 0)
+    {
         lights[UP_LIGHT].value = 1;
         lights[DOWN_LIGHT].value = 0;
-    } else {
+    }
+    else
+    {
         lights[DOWN_LIGHT].value = 1;
         lights[UP_LIGHT].value = 0;
     }
 
     int ld = HALF_STEP_LIGHT - HALF_STEP;
-    for (int i = HALF_STEP; i <= OCTAVE; ++i) {
-        if (params[i].getValue() > 0) {
+    for (int i = HALF_STEP; i <= OCTAVE; ++i)
+    {
+        if (params[i].getValue() > 0)
+        {
             lights[i + ld].value = 1.0;
             offsetI += offsets[i];
-        } else {
+        }
+        else
+        {
             lights[i + ld].value = 0.0;
         }
     }
@@ -111,13 +132,18 @@ void HarMoNee::process(const ProcessArgs &args) {
     ** And the CV inputs
     */
     ld = HALF_STEP_LIGHT - HALF_STEP_CV;
-    for (int i = UP_OR_DOWN_CV; i <= OCTAVE_CV; ++i) {
-        if (inputs[i].getVoltage() > 5.0f) {
-            if (i == UP_OR_DOWN_CV) {
+    for (int i = UP_OR_DOWN_CV; i <= OCTAVE_CV; ++i)
+    {
+        if (inputs[i].getVoltage() > 5.0f)
+        {
+            if (i == UP_OR_DOWN_CV)
+            {
                 lights[UP_LIGHT].value = 1;
                 lights[DOWN_LIGHT].value = 0;
                 uod = 1;
-            } else {
+            }
+            else
+            {
                 lights[i + ld].value = 1.0;
                 offsetI += offsets[i - UP_OR_DOWN_CV + UP_OR_DOWN];
             }
@@ -142,57 +168,61 @@ void HarMoNee::process(const ProcessArgs &args) {
        non-zero is the same as in-gliss.
      */
     bool inGliss = offsetCount != 0;
-    if (!inGliss) {
+    if (!inGliss)
+    {
         // We are not sliding. Should we be?
-        if (offsetI != priorOffset) {
+        if (offsetI != priorOffset)
+        {
             targetOffset = offsetI;
             offsetCount = 1;
             inGliss = true;
         }
     }
 
-    if (inGliss) {
+    if (inGliss)
+    {
         // If the target == the offset we haven't changed anything so
         // just march along linear time
-        if (offsetI != targetOffset) {
-            float lastKnown = ((shift_time - offsetCount) * priorOffset +
-                               offsetCount * targetOffset) /
-                              shift_time;
+        if (offsetI != targetOffset)
+        {
+            float lastKnown =
+                ((shift_time - offsetCount) * priorOffset + offsetCount * targetOffset) /
+                shift_time;
             targetOffset = offsetI;
             priorOffset = lastKnown;
             offsetCount = 0;
         }
 
-        offsetI =
-            ((shift_time - offsetCount) * priorOffset + offsetCount * offsetI) /
-            shift_time;
+        offsetI = ((shift_time - offsetCount) * priorOffset + offsetCount * offsetI) / shift_time;
 
         offsetCount++;
     }
 
     // Finally if we are done, reset it all to zero
-    if (offsetCount == shift_time) {
+    if (offsetCount == shift_time)
+    {
         offsetCount = 0;
         priorOffset = offsetI;
         targetOffset = offsetI;
     }
 
-    for( int i=0; i<nChan; ++i )
+    for (int i = 0; i < nChan; ++i)
     {
         float in = inputs[SOURCE_INPUT].getVoltage(i);
         float increased = in + offsetI;
 
-
-        outputs[ECHO_OUTPUT].setVoltage(in,i);
-        outputs[INCREASED_OUTPUT].setVoltage(increased,i);
+        outputs[ECHO_OUTPUT].setVoltage(in, i);
+        outputs[INCREASED_OUTPUT].setVoltage(increased, i);
     }
 }
 
-struct HarMoNeeWidget : ModuleWidget {
+struct HarMoNeeWidget : ModuleWidget
+{
     HarMoNeeWidget(HarMoNee *model);
 };
 
-HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget() {
+HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget()
+{
     setModule(model);
     box.size = Vec(SCREW_WIDTH * 8, RACK_HEIGHT);
 
@@ -205,51 +235,47 @@ HarMoNeeWidget::HarMoNeeWidget(HarMoNee *model) : ModuleWidget() {
     bg->addPlugLabel(iPos, BaconBackground::SIG_IN, "in");
     addInput(createInput<PJ301MPort>(iPos, module, HarMoNee::SOURCE_INPUT));
 
-    iPos = Vec(box.size.x/2 - 12, RACK_HEIGHT - 15 - 43);
+    iPos = Vec(box.size.x / 2 - 12, RACK_HEIGHT - 15 - 43);
     bg->addPlugLabel(iPos, BaconBackground::SIG_IN, "gliss");
-    addParam(
-        createParam<RoundSmallBlackKnob>(iPos, module, HarMoNee::GLISS_RATE));
+    addParam(createParam<RoundSmallBlackKnob>(iPos, module, HarMoNee::GLISS_RATE));
 
     iPos = Vec(box.size.x - 24 - 7, RACK_HEIGHT - 15 - 43);
 
     bg->addPlugLabel(iPos, BaconBackground::SIG_OUT, "harm");
-    addOutput(
-        createOutput<PJ301MPort>(iPos, module, HarMoNee::INCREASED_OUTPUT));
-
+    addOutput(createOutput<PJ301MPort>(iPos, module, HarMoNee::INCREASED_OUTPUT));
 
     // NKK is 32 x 44
     int x0 = 53;
     addParam(createParam<NKK_UpDown>(Vec(x0, 26), module, HarMoNee::UP_OR_DOWN));
-    addInput(createInput<PJ301MPort>(
-        Vec(x0 + SizeTable<NKK>::X + 5, 26 + diffY2c<NKK, PJ301MPort>()),
-        module, HarMoNee::UP_OR_DOWN_CV));
-    bg->addLabel(Vec(x0-6, 26 + 22 - 4 - 5 - 5), "up", 12,
-                 NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
-    addChild(createLight<MediumLight<GreenLight>>(Vec(x0-10, 26 + 22 - 4 - 5),
-                                                  module, HarMoNee::UP_LIGHT));
+    addInput(
+        createInput<PJ301MPort>(Vec(x0 + SizeTable<NKK>::X + 5, 26 + diffY2c<NKK, PJ301MPort>()),
+                                module, HarMoNee::UP_OR_DOWN_CV));
+    bg->addLabel(Vec(x0 - 6, 26 + 22 - 4 - 5 - 5), "up", 12, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
+    addChild(createLight<MediumLight<GreenLight>>(Vec(x0 - 10, 26 + 22 - 4 - 5), module,
+                                                  HarMoNee::UP_LIGHT));
 
-    bg->addLabel(Vec(x0-6, 26 + 22 - 4 + 5 + 8 + 7), "dn", 12,
-                 NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-    addChild(createLight<MediumLight<RedLight>>(Vec(x0-10, 26 + 22 - 4 + 5),
-                                                module, HarMoNee::DOWN_LIGHT));
+    bg->addLabel(Vec(x0 - 6, 26 + 22 - 4 + 5 + 8 + 7), "dn", 12, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+    addChild(createLight<MediumLight<RedLight>>(Vec(x0 - 10, 26 + 22 - 4 + 5), module,
+                                                HarMoNee::DOWN_LIGHT));
 
-    addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(
-        Vec(7, 38), module, HarMoNee::DIGIT_LIGHT));
+    addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(Vec(7, 38), module,
+                                                                  HarMoNee::DIGIT_LIGHT));
 
     int x = 50;
     int y = 26 + 45 + 14;
     int ld = HarMoNee::HALF_STEP_LIGHT - HarMoNee::HALF_STEP;
 
     const char *labels[] = {"1/2", "W", "m3", "III", "V", "O"};
-    for (int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i) {
+    for (int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i)
+    {
         addParam(createParam<CKSS>(Vec(x, y), module, i));
-        bg->addLabel(Vec(x-14, y + SizeTable<PJ301MPort>::Y/2), labels[i - HarMoNee::HALF_STEP], 14,
-                     NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE);
-        addChild(createLight<SmallLight<BlueLight>>(Vec(x-10, y + SizeTable<PJ301MPort>::Y/2 - 4),
-                                                     module, i + ld));
+        bg->addLabel(Vec(x - 14, y + SizeTable<PJ301MPort>::Y / 2), labels[i - HarMoNee::HALF_STEP],
+                     14, NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE);
+        addChild(createLight<SmallLight<BlueLight>>(
+            Vec(x - 10, y + SizeTable<PJ301MPort>::Y / 2 - 4), module, i + ld));
         addInput(createInput<PJ301MPort>(
-            Vec(x + SizeTable<CKSS>::X + 5, y + diffY2c<CKSS, PJ301MPort>()),
-            module, HarMoNee::HALF_STEP_CV + i - HarMoNee::HALF_STEP));
+            Vec(x + SizeTable<CKSS>::X + 5, y + diffY2c<CKSS, PJ301MPort>()), module,
+            HarMoNee::HALF_STEP_CV + i - HarMoNee::HALF_STEP));
 
         y += 35;
     }

@@ -4,6 +4,11 @@ standalone/bld/*
 dist/
 plugin.dylib
 plugin.so
+plugin.dll
 standalone/exe_*
 pynb/.ipynb_checkpoints/*
-*/.svn/*
+src/#*
+src/.#*
+.idea
+dep/
+cmake-build*

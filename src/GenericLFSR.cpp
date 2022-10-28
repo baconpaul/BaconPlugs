@@ -1,13 +1,14 @@
 #include "GenericLFSR.hpp"
 #include "BaconPlugs.hpp"
 
-struct GenericLFSRWidget : ModuleWidget {
+struct GenericLFSRWidget : ModuleWidget
+{
     typedef GenericLFSR<Module> M;
     GenericLFSRWidget(M *module);
 };
 
-GenericLFSRWidget::GenericLFSRWidget(GenericLFSRWidget::M *module)
-    : ModuleWidget() {
+GenericLFSRWidget::GenericLFSRWidget(GenericLFSRWidget::M *module) : ModuleWidget()
+{
     setModule(module);
     box.size = Vec(SCREW_WIDTH * 14, RACK_HEIGHT);
 
@@ -16,9 +17,7 @@ GenericLFSRWidget::GenericLFSRWidget(GenericLFSRWidget::M *module)
 
     addParam(createParam<RoundBlackKnob>(Vec(30, 30), module, M::SEED_LSB));
 
-    addChild(SevenSegmentLight<BlueLight, 3>::createHex(Vec(30, 100), module,
-                                                        M::SEED_LSB));
+    addChild(SevenSegmentLight<BlueLight, 3>::createHex(Vec(30, 100), module, M::SEED_LSB));
 }
 
-Model *modelGenericLFSR =
-    createModel<GenericLFSRWidget::M, GenericLFSRWidget>("GenericLFSR");
+Model *modelGenericLFSR = createModel<GenericLFSRWidget::M, GenericLFSRWidget>("GenericLFSR");

@@ -2,7 +2,9 @@
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
 CFLAGS +=
-CXXFLAGS += -Wno-array-bounds -Wno-strict-aliasing -Ilibs/midifile/include -Ilibs/open303-code/Source/DSPCode/
+CXXFLAGS := $(filter-out -std=c++11,$(CXXFLAGS))
+CXXFLAGS += -std=c++17 -Wno-array-bounds -Wno-strict-aliasing -Ilibs/midifile/include -Ilibs/open303-code/Source/DSPCode/
+
 
 # Careful about linking to shared libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.

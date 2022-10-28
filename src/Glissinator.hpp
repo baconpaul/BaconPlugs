@@ -1,16 +1,31 @@
 
-template <typename TBase> struct Glissinator : public TBase {
-    enum ParamIds {
+template <typename TBase> struct Glissinator : public TBase
+{
+    enum ParamIds
+    {
         GLISS_TIME,
 
         NUM_PARAMS
     };
 
-    enum InputIds { SOURCE_INPUT, NUM_INPUTS };
+    enum InputIds
+    {
+        SOURCE_INPUT,
+        NUM_INPUTS
+    };
 
-    enum OutputIds { SLID_OUTPUT, GLISSING_GATE, NUM_OUTPUTS };
+    enum OutputIds
+    {
+        SLID_OUTPUT,
+        GLISSING_GATE,
+        NUM_OUTPUTS
+    };
 
-    enum LightIds { SLIDING_LIGHT, NUM_LIGHTS };
+    enum LightIds
+    {
+        SLIDING_LIGHT,
+        NUM_LIGHTS
+    };
 
     float priorIn[16];
     float targetIn[16];
@@ -22,14 +37,16 @@ template <typename TBase> struct Glissinator : public TBase {
     using TBase::outputs;
     using TBase::params;
 
-    Glissinator() : TBase() {
+    Glissinator() : TBase()
+    {
         TBase::config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         TBase::configParam(GLISS_TIME, 0, 1, 0.1, "Time to gliss, in seconds");
-        for( int i=0; i<16; ++i )
+        for (int i = 0; i < 16; ++i)
             offsetCount[i] = -1;
     }
 
-    void process(const typename TBase::ProcessArgs &args) override {
+    void process(const typename TBase::ProcessArgs &args) override
+    {
         float glist_sec = params[GLISS_TIME].getValue();
         int shift_time = args.sampleRate * glist_sec;
         if (shift_time < 10)
@@ -40,12 +57,13 @@ template <typename TBase> struct Glissinator : public TBase {
         outputs[GLISSING_GATE].setChannels(nChan);
         lights[SLIDING_LIGHT].value = 0;
 
-        for( int i=0; i<nChan; ++i )
+        for (int i = 0; i < nChan; ++i)
         {
             float thisIn = inputs[SOURCE_INPUT].getVoltage(i);
 
             // This means I am being intialized
-            if (offsetCount[i] < 0) {
+            if (offsetCount[i] < 0)
+            {
                 priorIn[i] = thisIn;
                 offsetCount[i] = 0;
             }
@@ -58,18 +76,21 @@ template <typename TBase> struct Glissinator : public TBase {
             // now shorter than the offset_time. If that's the case we have
             // basically finished the gliss. This check used to be at the end of the
             // loop but that lead to one bad value even with the >=
-            if (offsetCount[i] >= shift_time) {
+            if (offsetCount[i] >= shift_time)
+            {
                 offsetCount[i] = 0;
                 priorIn[i] = thisIn;
                 targetIn[i] = thisIn;
                 inGliss = false;
             }
-            
+
             // I am not glissing
-            if (!inGliss) {
+            if (!inGliss)
+            {
                 // But I have a new target, so start glissing by setting offset
                 // count to 1.
-                if (thisIn != priorIn[i]) {
+                if (thisIn != priorIn[i])
+                {
                     targetIn[i] = thisIn;
                     offsetCount[i] = 1;
                     inGliss = true;
@@ -78,16 +99,18 @@ template <typename TBase> struct Glissinator : public TBase {
 
             // I am glissing (note this is NOT in an else since inGliss can be reset
             // above)
-            if (inGliss) {
+            if (inGliss)
+            {
                 // OK this means my note has changed underneath me so I have to
                 // simulate my starting point.
-                if (thisIn != targetIn[i]) {
+                if (thisIn != targetIn[i])
+                {
                     // This "-1" is here because we want to know the LAST known step
                     // - so at the prior offset count. Without this a turnaround
                     // will tick above the turnaround point for one sample.
                     float lastKnown = ((shift_time - (offsetCount[i] - 1)) * priorIn[i] +
                                        (offsetCount[i] - 1) * targetIn[i]) /
-                        shift_time;
+                                      shift_time;
                     targetIn[i] = thisIn;
                     priorIn[i] = lastKnown;
                     offsetCount[i] = 0;
@@ -95,17 +118,16 @@ template <typename TBase> struct Glissinator : public TBase {
 
                 // Then the output is just the weighted sum of the prior input and
                 // this input.
-                thisOut =
-                    ((shift_time - offsetCount[i]) * priorIn[i] + offsetCount[i] * thisIn) /
-                    shift_time;
-                
+                thisOut = ((shift_time - offsetCount[i]) * priorIn[i] + offsetCount[i] * thisIn) /
+                          shift_time;
+
                 // and step along one.
                 offsetCount[i]++;
             }
 
-            lights[SLIDING_LIGHT].value += inGliss ? 1.0/nChan : 0;
-            outputs[SLID_OUTPUT].setVoltage(thisOut,i);
-            outputs[GLISSING_GATE].setVoltage(inGliss ? 10 : 0,i);
+            lights[SLIDING_LIGHT].value += inGliss ? 1.0 / nChan : 0;
+            outputs[SLID_OUTPUT].setVoltage(thisOut, i);
+            outputs[GLISSING_GATE].setVoltage(inGliss ? 10 : 0, i);
         }
     }
 };
