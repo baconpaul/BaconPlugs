@@ -51,25 +51,29 @@
 			"slug": "ChipWaves",
 			"name": "ChipWaves",
 			"description": "A recreation of the NES oscillators",
-			"tags": [ "Oscillator", "Polyphonic" ]
+			"tags": [ "Oscillator", "Polyphonic" ],
+			"hidden": true
 		},
 		{
 			"slug": "ChipYourWave",
 			"name": "ChipYourWave",
 			"description": "An 8 bit oscillator where you draw the waveform",
-			"tags": [ "Oscillator", "Polyphonic" ]
+			"tags": [ "Oscillator", "Polyphonic" ],
+			"hidden": true
 		},
 		{
 			"slug": "Open303",
 			"name": "Open303",
 			"description": "A rack wrapper around Robin Schmidt's open-303 codebase",
-			"tags": [ "Oscillator", "Polyphonic" ]
+			"tags": [ "Oscillator", "Polyphonic" ],
+			"hidden": true
 		},
 		{
 			"slug": "KarplusStrongPoly",
 			"name": "KarplusStrongPoly",
 			"description": "An implementation of KS in a module",
-			"tags": [ "Oscillator", "Polyphonic" ]
+			"tags": [ "Oscillator", "Polyphonic" ],
+			"hidden": true
 		},
 		{
 			"slug": "ALingADing",
