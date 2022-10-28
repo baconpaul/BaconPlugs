@@ -68,27 +68,4 @@ struct BufferedDrawFunctionWidgetOnLayer : BufferedDrawFunctionWidget
     }
 };
 
-
-struct BufferedDrawLambdaWidget : virtual FramebufferWidget
-{
-    typedef std::function<void(NVGcontext *)> drawfn_t;
-    drawfn_t drawf;
-
-    struct InternalBDW : TransparentWidget
-    {
-        drawfn_t drawf;
-        InternalBDW(Rect box_, drawfn_t draw_) : drawf(draw_) { box = box_; }
-        void draw(const DrawArgs &args) override { drawf(args.vg); }
-    };
-
-    BufferedDrawLambdaWidget(Vec pos, Vec sz, drawfn_t draw_) : drawf(draw_)
-    {
-        box.pos = pos;
-        box.size = sz;
-        auto kidBox = Rect(Vec(0, 0), box.size);
-        InternalBDW *kid = new InternalBDW(kidBox, drawf);
-        addChild(kid);
-    }
-};
-
 #endif

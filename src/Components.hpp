@@ -13,10 +13,8 @@
 
 #include "BufferedDrawFunction.hpp"
 #include "GraduatedFader.hpp"
+#include "Style.hpp"
 
-#ifdef DARK_BACON
-#define SCHEME_BLACK SCHEME_WHITE
-#endif
 
 using namespace rack;
 
@@ -66,7 +64,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         unscaledLoc.push_back(Rect(Vec(2, 5), Vec(3, 1)));
 
         buffer = new BufferedDrawFunctionWidget(
-            Vec(0, 0), this->box.size, [this](auto vg) { drawBackground(vg);});
+            Vec(0, 0), this->box.size, [this](auto vg) { drawBackgroundBox(vg);});
         this->addChild(buffer);
 
         bufferLight = new BufferedDrawFunctionWidgetOnLayer(
@@ -105,7 +103,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         }
     }
 
-    void drawBackground(NVGcontext *vg)
+    void drawBackgroundBox(NVGcontext *vg)
     {
         // This is now buffered to only be called when the value has changed
         int w = this->box.size.x;
@@ -234,9 +232,8 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget
     }
 };
 
-struct BaconBackground : virtual TransparentWidget
+struct BaconBackground : virtual TransparentWidget, baconpaul::rackplugs::StyleParticipant
 {
-    static NVGcolor bg, bgEnd;
     static NVGcolor bgOutline;
     static NVGcolor highlight, highlightEnd;
     static NVGcolor inputStart, inputEnd;
@@ -273,13 +270,13 @@ struct BaconBackground : virtual TransparentWidget
     BaconBackground *addLabel(Vec pos, const char *lab, int px)
     {
         return addLabel(pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
-                        componentlibrary::SCHEME_BLACK);
+                        baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     }
     BaconBackground *addLabel(Vec pos, const char *lab, int px, int align)
     {
-        return addLabel(pos, lab, px, align, componentlibrary::SCHEME_BLACK);
+        return addLabel(pos, lab, px, align, baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     }
-    BaconBackground *addLabel(Vec pos, const char *lab, int px, int align, NVGcolor col);
+    BaconBackground *addLabel(Vec pos, const char *lab, int px, int align, baconpaul::rackplugs::BaconStyle::Colors col);
 
     BaconBackground *addPlugLabel(Vec plugPos, LabelStyle s, const char *ilabel)
     {
@@ -325,6 +322,7 @@ struct BaconBackground : virtual TransparentWidget
     bool showSmiles = false;
     rack::math::Rect baconBox;
     virtual void onButton(const event::Button &e) override;
+    void onStyleChanged() override {}
 };
 
 struct BaconHelpButton : public SvgButton
@@ -709,8 +707,5 @@ struct InternalFontMgr
 
 #include "SizeTable.hpp"
 
-#ifdef DARK_BACON
-#define nvgRGBA(r, g, b, a) nvgRGB(225 - r, 225 - g, 255 - b)
-#endif
 
 #endif

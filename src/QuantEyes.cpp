@@ -1,9 +1,15 @@
 #include "BaconPlugs.hpp"
 #include <initializer_list>
 
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
+
 #define SCALE_LENGTH 12
 
-struct QuantEyes : virtual Module
+
+namespace bp = baconpaul::rackplugs;
+
+struct QuantEyes : virtual bp::BaconModule
 {
     enum ParamIds
     {
@@ -35,7 +41,7 @@ struct QuantEyes : virtual Module
     int scaleState[SCALE_LENGTH];
     dsp::SchmittTrigger scaleTriggers[SCALE_LENGTH];
 
-    QuantEyes() : Module()
+    QuantEyes() : bp::BaconModule()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(ROOT_STEP, 0, 12, 0, "The root in 1/12 of a volt");
@@ -43,6 +49,9 @@ struct QuantEyes : virtual Module
             configParam(SCALE_PARAM + i, 0, 1, 0);
         for (int i = 0; i < SCALE_LENGTH; ++i)
             scaleState[i] = 1;
+
+        configInput(CV_INPUT, "V/Oct Input");
+        configOutput(QUANTIZED_OUT, "Quantized Output");
     }
 
     void process(const ProcessArgs &args) override
@@ -140,13 +149,13 @@ struct QuantEyes : virtual Module
     }
 };
 
-struct QuantEyesWidget : ModuleWidget
+struct QuantEyesWidget : bp::BaconModuleWidget
 {
     QuantEyesWidget(QuantEyes *model);
-    void appendContextMenu(Menu *) override;
+    void appendModuleSpecificContextMenu(Menu *menu) override;
 };
 
-QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : ModuleWidget()
+QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : bp::BaconModuleWidget()
 {
     setModule(model);
     box.size = Vec(SCREW_WIDTH * 11, RACK_HEIGHT);
@@ -229,7 +238,7 @@ struct QuantEyesScaleItem : MenuItem
     void setScale(scale_t scaleData) { scale = scaleData; }
 };
 
-void QuantEyesWidget::appendContextMenu(Menu *menu)
+void QuantEyesWidget::appendModuleSpecificContextMenu(Menu *menu)
 {
     // TODO: Fix me for 1.0
     menu->addChild(new rack::ui::MenuSeparator);

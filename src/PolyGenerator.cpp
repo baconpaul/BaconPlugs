@@ -1,7 +1,7 @@
 #include "PolyGenerator.hpp"
 #include "BaconPlugs.hpp"
 
-struct PolyGeneratorWidget : ModuleWidget
+struct PolyGeneratorWidget : baconpaul::rackplugs::BaconModuleWidget
 {
     typedef PolyGenerator M;
     PolyGeneratorWidget(PolyGenerator *model);
@@ -26,7 +26,7 @@ struct PolyGeneratorWidget : ModuleWidget
     }
 };
 
-PolyGeneratorWidget::PolyGeneratorWidget(PolyGenerator *model) : ModuleWidget()
+PolyGeneratorWidget::PolyGeneratorWidget(PolyGenerator *model)
 {
     setModule(model);
     box.size = Vec(SCREW_WIDTH * 9, RACK_HEIGHT);

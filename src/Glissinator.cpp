@@ -1,13 +1,17 @@
 #include "Glissinator.hpp"
 #include "BaconPlugs.hpp"
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
 
-struct GlissinatorWidget : ModuleWidget
+namespace bp = baconpaul::rackplugs;
+
+struct GlissinatorWidget : bp::BaconModuleWidget
 {
-    typedef Glissinator<Module> G;
-    GlissinatorWidget(Glissinator<Module> *model);
+    typedef Glissinator<bp::BaconModule> G;
+    GlissinatorWidget(G *model);
 };
 
-GlissinatorWidget::GlissinatorWidget(Glissinator<Module> *model) : ModuleWidget()
+GlissinatorWidget::GlissinatorWidget(GlissinatorWidget::G *model)
 {
     setModule(model);
     box.size = Vec(SCREW_WIDTH * 5, RACK_HEIGHT);
@@ -35,22 +39,22 @@ GlissinatorWidget::GlissinatorWidget(Glissinator<Module> *model) : ModuleWidget(
     bg->addRoundedBorder(Vec(5, RACK_HEIGHT - 162), Vec(box.size.x - 10, 38),
                          BaconBackground::inputStart);
     bg->addLabel(Vec(10, RACK_HEIGHT - 144), "gliss", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
-                 componentlibrary::SCHEME_BLACK);
+                 baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     bg->addLabel(Vec(10, RACK_HEIGHT - 132), "cv", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
-                 componentlibrary::SCHEME_BLACK);
+                 baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     addInput(
         createInput<PJ301MPort>(Vec(bg->cx() + 5, RACK_HEIGHT - 156), module, G::GLISS_CV_INPUT));
 
     bg->addRoundedBorder(Vec(5, RACK_HEIGHT - 120), Vec(box.size.x - 10, 38),
                          BaconBackground::highlight);
     bg->addLabel(Vec(10, RACK_HEIGHT - 102), "gliss", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
-                 componentlibrary::SCHEME_WHITE);
+                 baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
     bg->addLabel(Vec(10, RACK_HEIGHT - 90), "gate", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
-                 componentlibrary::SCHEME_WHITE);
+                 baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
     addChild(createLight<SmallLight<BlueLight>>(Vec(bg->cx() - 4, RACK_HEIGHT - 120 + 38 / 2 - 3),
                                                 module, G::SLIDING_LIGHT));
     addOutput(
         createOutput<PJ301MPort>(Vec(bg->cx() + 5, RACK_HEIGHT - 114), module, G::GLISSING_GATE));
 }
 
-Model *modelGlissinator = createModel<Glissinator<Module>, GlissinatorWidget>("Glissinator");
+Model *modelGlissinator = createModel<GlissinatorWidget::G, GlissinatorWidget>("Glissinator");

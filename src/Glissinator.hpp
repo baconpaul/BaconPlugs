@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "BaconModule.hpp"
 
 template <typename TBase> struct Glissinator : public TBase
 {

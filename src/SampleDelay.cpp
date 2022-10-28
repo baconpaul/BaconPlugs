@@ -2,13 +2,19 @@
 #include "SampleDelay.hpp"
 #include "BaconPlugs.hpp"
 
-struct SampleDelayWidget : ModuleWidget
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
+
+
+namespace bp = baconpaul::rackplugs;
+
+struct SampleDelayWidget : bp::BaconModuleWidget
 {
-    typedef SampleDelay<Module> SD;
+    typedef SampleDelay<bp::BaconModule> SD;
     SampleDelayWidget(SD *module);
 };
 
-SampleDelayWidget::SampleDelayWidget(SD *module) : ModuleWidget()
+SampleDelayWidget::SampleDelayWidget(SD *module)
 {
     setModule(module);
     box.size = Vec(SCREW_WIDTH * 5, RACK_HEIGHT);
