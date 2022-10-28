@@ -20,14 +20,14 @@
 
 using namespace rack;
 
-template <typename T, int px = 4> struct SevenSegmentLight : T {
+template <typename T, int px = 4> struct SevenSegmentLight : T
+{
     int lx, ly, ppl;
     std::vector<Rect> unscaledLoc;
     int elementsByNum[16][7] = {
-        {1, 1, 1, 1, 1, 1, 0}, {0, 1, 1, 0, 0, 0, 0}, {1, 1, 0, 1, 1, 0, 1},
-        {1, 1, 1, 1, 0, 0, 1}, {0, 1, 1, 0, 0, 1, 1}, {1, 0, 1, 1, 0, 1, 1},
-        {1, 0, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 0, 0, 0}, {1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 0, 1, 1},
+        {1, 1, 1, 1, 1, 1, 0}, {0, 1, 1, 0, 0, 0, 0}, {1, 1, 0, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 0, 1},
+        {0, 1, 1, 0, 0, 1, 1}, {1, 0, 1, 1, 0, 1, 1}, {1, 0, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 0, 0, 0},
+        {1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 0, 1, 1},
 
         {1, 1, 1, 0, 1, 1, 1}, // A
         {0, 0, 1, 1, 1, 1, 1}, // b
@@ -46,7 +46,8 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
 
     BufferedDrawFunctionWidget<SevenSegmentLight<T, px>> *buffer;
 
-    SevenSegmentLight() {
+    SevenSegmentLight()
+    {
         lx = 7;
         ly = 11;
         ppl = px;
@@ -65,29 +66,30 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
         unscaledLoc.push_back(Rect(Vec(2, 5), Vec(3, 1)));
 
         buffer = new BufferedDrawFunctionWidget<SevenSegmentLight<T, px>>(
-            Vec(0, 0), this->box.size, this,
-            &SevenSegmentLight<T, px>::drawSegments);
+            Vec(0, 0), this->box.size, this, &SevenSegmentLight<T, px>::drawSegments);
         this->addChild(buffer);
     }
 
-    void step() override {
-        buffer->step();
-    }
-    
-    void draw(const widget::Widget::DrawArgs &args) override {
+    void step() override { buffer->step(); }
+
+    void draw(const widget::Widget::DrawArgs &args) override
+    {
         float fvalue = 0;
-        if(this->module)
+        if (this->module)
             fvalue = this->module->lights[this->firstLightId].value;
         int value = 1;
 
-        if (hexMode) {
+        if (hexMode)
+        {
             value = (int)(fvalue) % 16;
-        } else {
+        }
+        else
+        {
             value = int(fvalue / decimalPos) % 10;
         }
-        
 
-        if (value != pvalue) {
+        if (value != pvalue)
+        {
             buffer->dirty = true;
         }
 
@@ -96,7 +98,8 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
         buffer->draw(args);
     }
 
-    void drawSegments(NVGcontext *vg) {
+    void drawSegments(NVGcontext *vg)
+    {
         // This is now buffered to only be called when the value has changed
         int w = this->box.size.x;
         int h = this->box.size.y;
@@ -114,7 +117,8 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
 
         NVGcolor oncol = this->baseColors[0];
 
-        for (auto it = unscaledLoc.begin(); it < unscaledLoc.end(); ++it) {
+        for (auto it = unscaledLoc.begin(); it < unscaledLoc.end(); ++it)
+        {
             float y = it->pos.y - 0.5;
             float x = it->pos.x - 0.5;
             int ew = it->size.x;
@@ -127,7 +131,8 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
             float h = eh * ppl;
             float tri = ppl / 2;
 
-            if (eh == 1) {
+            if (eh == 1)
+            {
                 // This is a sideways element
                 nvgMoveTo(vg, x0, y0);
                 nvgLineTo(vg, x0 + w, y0);
@@ -136,7 +141,9 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
                 nvgLineTo(vg, x0, y0 + h);
                 nvgLineTo(vg, x0 - tri, y0 + tri);
                 nvgClosePath(vg);
-            } else {
+            }
+            else
+            {
                 nvgMoveTo(vg, x0, y0);
                 nvgLineTo(vg, x0, y0 + h);
                 nvgLineTo(vg, x0 + tri, y0 + h + tri);
@@ -148,10 +155,13 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
             // Old version nvgRect( vg, x * ppl + 1, y * ppl + 1, ew * ppl, eh *
             // ppl
             // );
-            if (ebn[i] > 0) {
+            if (ebn[i] > 0)
+            {
                 nvgFillColor(vg, oncol);
                 nvgFill(vg);
-            } else {
+            }
+            else
+            {
                 nvgFillColor(vg, nvgRGBA(50, 70, 50, 255));
                 nvgFill(vg);
             }
@@ -159,63 +169,67 @@ template <typename T, int px = 4> struct SevenSegmentLight : T {
         }
     }
 
-    static SevenSegmentLight<T, px> *create(Vec pos, Module *module,
-                                            int firstLightId, int decimal) {
-        auto *o =
-            createLight<SevenSegmentLight<T, px>>(pos, module, firstLightId);
+    static SevenSegmentLight<T, px> *create(Vec pos, Module *module, int firstLightId, int decimal)
+    {
+        auto *o = createLight<SevenSegmentLight<T, px>>(pos, module, firstLightId);
         o->decimalPos = decimal;
         return o;
     }
 
-    static SevenSegmentLight<T, px> *createHex(Vec pos, Module *module,
-                                               int firstLightId) {
-        auto *o =
-            createLight<SevenSegmentLight<T, px>>(pos, module, firstLightId);
+    static SevenSegmentLight<T, px> *createHex(Vec pos, Module *module, int firstLightId)
+    {
+        auto *o = createLight<SevenSegmentLight<T, px>>(pos, module, firstLightId);
         o->hexMode = true;
         return o;
     }
 };
 
 template <typename colorClass, int px, int digits>
-struct MultiDigitSevenSegmentLight : ModuleLightWidget {
+struct MultiDigitSevenSegmentLight : ModuleLightWidget
+{
     typedef SevenSegmentLight<colorClass, px> LtClass;
 
-    MultiDigitSevenSegmentLight() : ModuleLightWidget() {
+    MultiDigitSevenSegmentLight() : ModuleLightWidget()
+    {
         this->box.size = Vec(digits * LtClass::sx, LtClass::sy);
     }
 
-    static MultiDigitSevenSegmentLight<colorClass, px, digits> *
-    create(Vec pos, Module *module, int firstLightId) {
-        auto *o =
-            createLight<MultiDigitSevenSegmentLight<colorClass, px, digits>>(
-                pos, module, firstLightId);
+    static MultiDigitSevenSegmentLight<colorClass, px, digits> *create(Vec pos, Module *module,
+                                                                       int firstLightId)
+    {
+        auto *o = createLight<MultiDigitSevenSegmentLight<colorClass, px, digits>>(pos, module,
+                                                                                   firstLightId);
         o->layout();
         return o;
     }
 
-    void layout() {
+    void layout()
+    {
         int dp = 1;
         for (int i = 0; i < digits - 1; ++i)
             dp *= 10;
 
-        for (int i = 0; i < digits; ++i) {
-            addChild(LtClass::create(Vec(i * LtClass::sx, 0), module,
-                                     firstLightId, dp));
+        for (int i = 0; i < digits; ++i)
+        {
+            addChild(LtClass::create(Vec(i * LtClass::sx, 0), module, firstLightId, dp));
             dp /= 10;
         }
     }
 
-    void step() override {
+    void step() override
+    {
         ModuleLightWidget::step();
-        
-        for( auto c : children )
+
+        for (auto c : children)
         {
             c->step();
         }
     }
-    
-    void draw(const DrawArgs &args) override {
-        for (auto it = children.begin(); it != children.end(); ++it) {
+
+    void draw(const DrawArgs &args) override
+    {
+        for (auto it = children.begin(); it != children.end(); ++it)
+        {
             nvgSave(args.vg);
             nvgTranslate(args.vg, (*it)->box.pos.x, (*it)->box.pos.y);
             (*it)->draw(args);
@@ -224,7 +238,8 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget {
     }
 };
 
-struct BaconBackground : virtual TransparentWidget {
+struct BaconBackground : virtual TransparentWidget
+{
     static NVGcolor bg, bgEnd;
     static NVGcolor bgOutline;
     static NVGcolor highlight, highlightEnd;
@@ -238,9 +253,20 @@ struct BaconBackground : virtual TransparentWidget {
     int memFont = -1;
     std::string title;
 
-    enum LabelAt { ABOVE, BELOW, LEFT, RIGHT };
+    enum LabelAt
+    {
+        ABOVE,
+        BELOW,
+        LEFT,
+        RIGHT
+    };
 
-    enum LabelStyle { SIG_IN, SIG_OUT, OTHER };
+    enum LabelStyle
+    {
+        SIG_IN,
+        SIG_OUT,
+        OTHER
+    };
 
     int cx() { return box.size.x / 2; }
     int cx(int w) { return (box.size.x - w) / 2; }
@@ -248,37 +274,34 @@ struct BaconBackground : virtual TransparentWidget {
     BaconBackground(Vec size, const char *lab);
     ~BaconBackground() {}
 
-    BaconBackground *addLabel(Vec pos, const char *lab, int px) {
+    BaconBackground *addLabel(Vec pos, const char *lab, int px)
+    {
         return addLabel(pos, lab, px, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                         componentlibrary::SCHEME_BLACK);
     }
-    BaconBackground *addLabel(Vec pos, const char *lab, int px, int align) {
+    BaconBackground *addLabel(Vec pos, const char *lab, int px, int align)
+    {
         return addLabel(pos, lab, px, align, componentlibrary::SCHEME_BLACK);
     }
-    BaconBackground *addLabel(Vec pos, const char *lab, int px, int align,
-                              NVGcolor col);
+    BaconBackground *addLabel(Vec pos, const char *lab, int px, int align, NVGcolor col);
 
-    BaconBackground *addPlugLabel(Vec plugPos, LabelStyle s,
-                                  const char *ilabel) {
+    BaconBackground *addPlugLabel(Vec plugPos, LabelStyle s, const char *ilabel)
+    {
         return addPlugLabel(plugPos, LabelAt::ABOVE, s, ilabel);
     }
-    BaconBackground *addPlugLabel(Vec plugPos, LabelAt l, LabelStyle s,
-                                  const char *ilabel);
+    BaconBackground *addPlugLabel(Vec plugPos, LabelAt l, LabelStyle s, const char *ilabel);
     BaconBackground *addRoundedBorder(Vec pos, Vec sz);
     BaconBackground *addRoundedBorder(Vec pos, Vec sz, NVGcolor fill);
 
-    BaconBackground *addLabelsForHugeKnob(Vec topLabelPos,
-                                          const char *knobLabel,
-                                          const char *zeroLabel,
-                                          const char *oneLabel,
+    BaconBackground *addLabelsForHugeKnob(Vec topLabelPos, const char *knobLabel,
+                                          const char *zeroLabel, const char *oneLabel,
                                           Vec &putKnobHere);
-    BaconBackground *addLabelsForLargeKnob(Vec topLabelPos,
-                                           const char *knobLabel,
-                                           const char *zeroLabel,
-                                           const char *oneLabel,
+    BaconBackground *addLabelsForLargeKnob(Vec topLabelPos, const char *knobLabel,
+                                           const char *zeroLabel, const char *oneLabel,
                                            Vec &putKnobHere);
 
-    BaconBackground *addFilledRect(Vec pos, Vec sz, NVGcolor fill) {
+    BaconBackground *addFilledRect(Vec pos, Vec sz, NVGcolor fill)
+    {
         Rect r;
         r.pos = pos;
         r.size = sz;
@@ -286,7 +309,8 @@ struct BaconBackground : virtual TransparentWidget {
         return this;
     }
 
-    BaconBackground *addRect(Vec pos, Vec sz, NVGcolor fill) {
+    BaconBackground *addRect(Vec pos, Vec sz, NVGcolor fill)
+    {
         Rect r;
         r.pos = pos;
         r.size = sz;
@@ -296,10 +320,8 @@ struct BaconBackground : virtual TransparentWidget {
 
     typedef std::function<void(NVGcontext *c)> drawFn;
     drawFn extraDrawFunction = nullptr;
-    void addDrawFunction(drawFn f) {
-        extraDrawFunction = f;
-    }
-    
+    void addDrawFunction(drawFn f) { extraDrawFunction = f; }
+
     void draw(const DrawArgs &args) override;
 
     FramebufferWidget *wrappedInFramebuffer();
@@ -309,9 +331,11 @@ struct BaconBackground : virtual TransparentWidget {
     virtual void onButton(const event::Button &e) override;
 };
 
-struct BaconHelpButton : public SvgButton {
+struct BaconHelpButton : public SvgButton
+{
     std::string url;
-    BaconHelpButton(std::string urli) : url(urli) {
+    BaconHelpButton(std::string urli) : url(urli)
+    {
         box.pos = Vec(0, 0);
         box.size = Vec(20, 20);
         // TODO: Make this work
@@ -330,7 +354,8 @@ struct BaconHelpButton : public SvgButton {
         INFO("Help button configured to: %s", url.c_str());
     }
 
-    void onAction(const event::Action &e) override {
+    void onAction(const event::Action &e) override
+    {
         std::thread t([/*this*/]() {
             // systemOpenBrowser(url.c_str() );
         });
@@ -338,53 +363,59 @@ struct BaconHelpButton : public SvgButton {
     }
 };
 
-template <int NSteps, typename ColorModel>
-struct NStepDraggableLEDWidget : public ParamWidget {
-    BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>>
-        *buffer;
+template <int NSteps, typename ColorModel> struct NStepDraggableLEDWidget : public ParamWidget
+{
+    BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>> *buffer;
     bool dragging;
     Vec lastDragPos;
     ColorModel cm;
 
-    NStepDraggableLEDWidget() {
+    NStepDraggableLEDWidget()
+    {
         box.size = Vec(10, 200);
         dragging = false;
         lastDragPos = Vec(-1, -1);
-        
-        buffer = new BufferedDrawFunctionWidget<
-            NStepDraggableLEDWidget<NSteps, ColorModel>>(
+
+        buffer = new BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>>(
             Vec(0, 0), this->box.size, this,
             &NStepDraggableLEDWidget<NSteps, ColorModel>::drawSegments);
     }
-    ~NStepDraggableLEDWidget() override {
-        delete buffer;
-    }
+    ~NStepDraggableLEDWidget() override { delete buffer; }
 
-    int getStep() {
+    int getStep()
+    {
         float pvalue = 0.0;
-        if(this->getParamQuantity())
+        if (this->getParamQuantity())
             pvalue = this->getParamQuantity()->getValue();
         int step = (int)pvalue;
         return step;
     }
 
-    int impStep(float yp) {
+    int impStep(float yp)
+    {
         float py = (box.size.y - yp) / box.size.y;
         return (int)(py * NSteps);
     }
 
-    void step() override { buffer->step(); ParamWidget::step(); }
+    void step() override
+    {
+        buffer->step();
+        ParamWidget::step();
+    }
     void draw(const DrawArgs &args) override { buffer->draw(args); }
 
-    void valueByMouse(float ey) {
-        if (impStep(ey) != getStep() && getParamQuantity()) {
+    void valueByMouse(float ey)
+    {
+        if (impStep(ey) != getStep() && getParamQuantity())
+        {
             buffer->dirty = true;
             getParamQuantity()->setValue(impStep(ey));
         }
     }
 
-    virtual void onButton(const event::Button &e) override {
-        if(e.action == GLFW_PRESS)
+    virtual void onButton(const event::Button &e) override
+    {
+        if (e.action == GLFW_PRESS)
         {
             lastDragPos = e.pos;
             valueByMouse(lastDragPos.y);
@@ -392,43 +423,49 @@ struct NStepDraggableLEDWidget : public ParamWidget {
         ParamWidget::onButton(e);
     }
 
-    virtual void onDragMove(const event::DragMove &e) override {
+    virtual void onDragMove(const event::DragMove &e) override
+    {
         lastDragPos.y += e.mouseDelta.y;
         valueByMouse(lastDragPos.y);
         ParamWidget::onDragMove(e);
     }
-    
+
 #if FALSE
-    void onMouseDown(widget::EventMouseDown &e) override {
+    void onMouseDown(widget::EventMouseDown &e) override
+    {
         ParamWidget::onMouseDown(e);
         valueByMouse(e.pos.y);
         dragging = true;
     }
 
-    void onMouseUp(widget::EventMouseUp &e) override {
+    void onMouseUp(widget::EventMouseUp &e) override
+    {
         ParamWidget::onMouseUp(e);
         valueByMouse(e.pos.y);
         dragging = false;
         lastDragPos = Vec(-1, -1);
     }
 
-    void onMouseMove(widget::EventMouseMove &e) override {
+    void onMouseMove(widget::EventMouseMove &e) override
+    {
         ParamWidget::onMouseMove(e);
-        if (dragging &&
-            (e.pos.x != lastDragPos.x || e.pos.y != lastDragPos.y)) {
+        if (dragging && (e.pos.x != lastDragPos.x || e.pos.y != lastDragPos.y))
+        {
             valueByMouse(e.pos.y);
             lastDragPos = e.pos;
         }
     }
 
-    void onMouseLeave(widget::EventMouseLeave &e) override {
+    void onMouseLeave(widget::EventMouseLeave &e) override
+    {
         ParamWidget::onMouseLeave(e);
         dragging = false;
         lastDragPos = Vec(-1, -1);
     }
 #endif
 
-    void drawSegments(NVGcontext *vg) {
+    void drawSegments(NVGcontext *vg)
+    {
         // This is now buffered to only be called when the value has changed
         int w = this->box.size.x;
         int h = this->box.size.y;
@@ -439,21 +476,22 @@ struct NStepDraggableLEDWidget : public ParamWidget {
         nvgFill(vg);
 
         float dy = box.size.y / NSteps;
-        for (int i = 0; i < NSteps; ++i) {
+        for (int i = 0; i < NSteps; ++i)
+        {
             nvgBeginPath(vg);
             nvgRect(vg, 1, i * dy + 1, w - 2, dy - 2);
-            nvgFillColor(vg,
-                         cm.elementColor(NSteps - 1 - i, NSteps, getStep()));
+            nvgFillColor(vg, cm.elementColor(NSteps - 1 - i, NSteps, getStep()));
             nvgFill(vg);
         }
     }
 };
 
-struct GreenFromZeroColorModel {
+struct GreenFromZeroColorModel
+{
     NVGcolor GREEN, BLACK;
-    GreenFromZeroColorModel()
-        : GREEN(nvgRGB(10, 255, 10)), BLACK(nvgRGB(10, 10, 10)) {}
-    NVGcolor elementColor(int stepNo, int NSteps, int value) {
+    GreenFromZeroColorModel() : GREEN(nvgRGB(10, 255, 10)), BLACK(nvgRGB(10, 10, 10)) {}
+    NVGcolor elementColor(int stepNo, int NSteps, int value)
+    {
         if (stepNo <= value)
             return nvgRGB(10, 155 + 1.0f * stepNo / NSteps * 100, 10);
         else
@@ -461,29 +499,35 @@ struct GreenFromZeroColorModel {
     }
 };
 
-struct RedGreenFromMiddleColorModel {
+struct RedGreenFromMiddleColorModel
+{
     NVGcolor GREEN, BLACK, RED;
     RedGreenFromMiddleColorModel()
-        : GREEN(nvgRGB(10, 255, 10)), BLACK(nvgRGB(10, 10, 10)),
-          RED(nvgRGB(255, 10, 10)) {}
-    NVGcolor elementColor(int stepNo, int NSteps, int value) {
+        : GREEN(nvgRGB(10, 255, 10)), BLACK(nvgRGB(10, 10, 10)), RED(nvgRGB(255, 10, 10))
+    {
+    }
+    NVGcolor elementColor(int stepNo, int NSteps, int value)
+    {
         // This has the 'midpoint' be 0 so we want to compare with NSteps/2
-        if (value < NSteps / 2) {
+        if (value < NSteps / 2)
+        {
             // We are in the bottom half.
             if (stepNo < value || stepNo >= NSteps / 2)
                 return BLACK;
-            else {
+            else
+            {
                 int distance = NSteps / 2 - stepNo;
-                return nvgRGB(155 + 1.0f * distance / (NSteps / 2) * 100, 10,
-                              10);
+                return nvgRGB(155 + 1.0f * distance / (NSteps / 2) * 100, 10, 10);
             }
-        } else {
+        }
+        else
+        {
             if (stepNo > value || stepNo < NSteps / 2)
                 return BLACK;
-            else {
+            else
+            {
                 int distance = stepNo - NSteps / 2;
-                return nvgRGB(10, 155 + 1.0f * distance / (NSteps / 2) * 100,
-                              10);
+                return nvgRGB(10, 155 + 1.0f * distance / (NSteps / 2) * 100, 10);
             }
         }
     }
@@ -493,8 +537,7 @@ struct RedGreenFromMiddleColorModel {
 // Think hard about dirty state management ... later
 // Pixel Sizing
 // Share fontdata
-struct DotMatrixLightTextWidget
-    : public widget::Widget // Thanks http://scruss.com/blog/tag/font/
+struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.com/blog/tag/font/
 {
     typedef std::function<std::string(Module *)> stringGetter;
     typedef std::function<bool(Module *)> stringDirtyGetter;
@@ -510,18 +553,16 @@ struct DotMatrixLightTextWidget
     float ledSize, padSize;
 
     DotMatrixLightTextWidget() : Widget(), buffer(NULL), currentText("") {}
-    ~DotMatrixLightTextWidget() override {
-        delete buffer;
-    }
+    ~DotMatrixLightTextWidget() override { delete buffer; }
 
-    void setup() {
+    void setup()
+    {
         ledSize = 2;
         padSize = 1;
         box.size = Vec(charCount * (5 * ledSize + padSize) + 2 * padSize,
                        7 * ledSize + 4.5 * padSize); // 5 x 7 data structure
         buffer = new BufferedDrawFunctionWidget<DotMatrixLightTextWidget>(
-            Vec(0, 0), this->box.size, this,
-            &DotMatrixLightTextWidget::drawText);
+            Vec(0, 0), this->box.size, this, &DotMatrixLightTextWidget::drawText);
 
         INFO("BaconMusic loading DMP json: %s",
              asset::plugin(pluginInstance, "res/Keypunch029.json").c_str());
@@ -529,21 +570,24 @@ struct DotMatrixLightTextWidget
         json_t *json;
         json_error_t error;
 
-        json = json_load_file(
-            asset::plugin(pluginInstance, "res/Keypunch029.json").c_str(), 0,
-            &error);
-        if (!json) {
+        json = json_load_file(asset::plugin(pluginInstance, "res/Keypunch029.json").c_str(), 0,
+                              &error);
+        if (!json)
+        {
             INFO("JSON FILE not loaded\n");
         }
         const char *key;
         json_t *value;
-        json_object_foreach(json, key, value) {
+        json_object_foreach(json, key, value)
+        {
             fontData_t::mapped_type valmap;
             size_t index;
             json_t *aval;
-            json_array_foreach(value, index, aval) {
+            json_array_foreach(value, index, aval)
+            {
                 std::string s(json_string_value(aval));
-                for (const char *c = s.c_str(); *c != 0; ++c) {
+                for (const char *c = s.c_str(); *c != 0; ++c)
+                {
                     valmap.push_back(*c == '#');
                 }
             }
@@ -553,12 +597,10 @@ struct DotMatrixLightTextWidget
     }
 
     // create takes a function
-    static DotMatrixLightTextWidget *create(Vec pos, Module *module,
-                                            int charCount,
-                                            stringDirtyGetter dgf,
-                                            stringGetter gf) {
-        DotMatrixLightTextWidget *r =
-            createWidget<DotMatrixLightTextWidget>(pos);
+    static DotMatrixLightTextWidget *create(Vec pos, Module *module, int charCount,
+                                            stringDirtyGetter dgf, stringGetter gf)
+    {
+        DotMatrixLightTextWidget *r = createWidget<DotMatrixLightTextWidget>(pos);
         r->getfn = gf;
         r->dirtyfn = dgf;
         r->charCount = charCount;
@@ -571,12 +613,12 @@ struct DotMatrixLightTextWidget
     stringGetter getfn;
     Module *module;
 
-    void step() override {
-        buffer->step();
-    }
-    
-    void draw(const DrawArgs &args) override {
-        if (this->module && dirtyfn(this->module)) {
+    void step() override { buffer->step(); }
+
+    void draw(const DrawArgs &args) override
+    {
+        if (this->module && dirtyfn(this->module))
+        {
             currentText = getfn(this->module);
             buffer->dirty = true;
         }
@@ -584,52 +626,58 @@ struct DotMatrixLightTextWidget
             buffer->draw(args);
     }
 
-    void drawChar(NVGcontext *vg, Vec pos, char c) {
+    void drawChar(NVGcontext *vg, Vec pos, char c)
+    {
         fontData_t::iterator k = fontData.find(std::toupper(c));
-        if (k != fontData.end()) {
+        if (k != fontData.end())
+        {
             fontData_t::mapped_type blist = k->second;
             int row = 0, col = 0;
-            for (auto v = blist.begin(); v != blist.end(); ++v) {
-                if (*v) {
+            for (auto v = blist.begin(); v != blist.end(); ++v)
+            {
+                if (*v)
+                {
                     float xo = (col + 0.5) * ledSize + pos.x;
                     float yo = (row + 0.5) * ledSize + pos.y;
                     nvgBeginPath(vg);
                     // nvgRect( vg, xo, yo, ledSize, ledSize );
-                    nvgCircle(vg, xo + ledSize / 2.0f, yo + ledSize / 2.0f,
-                              ledSize / 2.0f * 1.1);
+                    nvgCircle(vg, xo + ledSize / 2.0f, yo + ledSize / 2.0f, ledSize / 2.0f * 1.1);
                     nvgFillColor(vg, nvgRGBA(25, 35, 25, 255));
                     nvgFill(vg);
 
                     nvgBeginPath(vg);
                     // nvgRect( vg, xo, yo, ledSize, ledSize );
-                    nvgCircle(vg, xo + ledSize / 2.0f, yo + ledSize / 2.0f,
-                              ledSize / 2.0f);
-                    nvgFillColor(
-                        vg,
-                        componentlibrary::SCHEME_BLUE); // Thanks for having
-                                                        // such a nice blue,
-                                                        // Rack!!
+                    nvgCircle(vg, xo + ledSize / 2.0f, yo + ledSize / 2.0f, ledSize / 2.0f);
+                    nvgFillColor(vg,
+                                 componentlibrary::SCHEME_BLUE); // Thanks for having
+                                                                 // such a nice blue,
+                                                                 // Rack!!
                     nvgFill(vg);
                 }
 
                 col++;
-                if (col == 5) {
+                if (col == 5)
+                {
                     col = 0;
                     row++;
                 }
             }
-        } else {
+        }
+        else
+        {
         }
     }
 
-    void drawText(NVGcontext *vg) {
+    void drawText(NVGcontext *vg)
+    {
         nvgBeginPath(vg);
         nvgRect(vg, 0, 0, box.size.x, box.size.y);
         nvgFillColor(vg, nvgRGBA(15, 15, 55, 255));
         nvgFill(vg);
 
         Vec cpos = Vec(padSize, padSize);
-        for (const char *c = currentText.c_str(); *c != 0; ++c) {
+        for (const char *c = currentText.c_str(); *c != 0; ++c)
+        {
             drawChar(vg, cpos, *c);
             cpos.x += ledSize * 5 + padSize;
         }
@@ -639,40 +687,43 @@ struct DotMatrixLightTextWidget
 };
 
 // FIXME: Look at correct switch type
-struct SABROGWhite : SvgSwitch /*, MomentarySwitch */ {
-    SABROGWhite() {
+struct SABROGWhite : SvgSwitch /*, MomentarySwitch */
+{
+    SABROGWhite()
+    {
         momentary = true;
-        addFrame(APP->window->loadSvg(
-            asset::plugin(pluginInstance, "res/sabrog-25-up.svg")));
-        addFrame(APP->window->loadSvg(
-            asset::plugin(pluginInstance, "res/sabrog-25-down.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/sabrog-25-up.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/sabrog-25-down.svg")));
     }
 };
 
-struct NKK_UpDown : app::SvgSwitch {
-	NKK_UpDown() {
-		addFrame(APP->window->loadSvg(asset::system("res/ComponentLibrary/NKK_0.svg")));
-		addFrame(APP->window->loadSvg(asset::system("res/ComponentLibrary/NKK_2.svg")));
-	}
+struct NKK_UpDown : app::SvgSwitch
+{
+    NKK_UpDown()
+    {
+        addFrame(APP->window->loadSvg(asset::system("res/ComponentLibrary/NKK_0.svg")));
+        addFrame(APP->window->loadSvg(asset::system("res/ComponentLibrary/NKK_2.svg")));
+    }
 };
 
-struct InternalFontMgr {
+struct InternalFontMgr
+{
     static std::map<std::string, int> fontMap;
-    static int get(NVGcontext *vg, std::string resName) {
-        if (fontMap.find(resName) == fontMap.end()) {
+    static int get(NVGcontext *vg, std::string resName)
+    {
+        if (fontMap.find(resName) == fontMap.end())
+        {
             fontMap[resName] =
-                nvgCreateFont(vg, resName.c_str(),
-                              asset::plugin(pluginInstance, resName).c_str());
+                nvgCreateFont(vg, resName.c_str(), asset::plugin(pluginInstance, resName).c_str());
         }
         return fontMap[resName];
     }
 };
 
-
 #include "SizeTable.hpp"
 
 #ifdef DARK_BACON
-#define nvgRGBA(r,g,b,a) nvgRGB(225-r,225-g,255-b)
+#define nvgRGBA(r, g, b, a) nvgRGB(225 - r, 225 - g, 255 - b)
 #endif
 
 #endif
