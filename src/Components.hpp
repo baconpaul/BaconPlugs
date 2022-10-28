@@ -39,12 +39,12 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
 
     const static int sx = px * 6 + 2;
     const static int sy = px * 10 + 2; // match with lx-1 and ly-1 below
-    int pvalue;
+    int pvalue{0};
 
-    int decimalPos;
-    bool hexMode;
+    int decimalPos{0};
+    bool hexMode{false};
 
-    BufferedDrawFunctionWidget<SevenSegmentLight<T, px>> *buffer;
+    BufferedDrawFunctionWidget *buffer{nullptr};
 
     SevenSegmentLight()
     {
@@ -65,15 +65,12 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         unscaledLoc.push_back(Rect(Vec(1, 2), Vec(1, 3)));
         unscaledLoc.push_back(Rect(Vec(2, 5), Vec(3, 1)));
 
-        buffer = new BufferedDrawFunctionWidget<SevenSegmentLight<T, px>>(
-            Vec(0, 0), this->box.size, this, &SevenSegmentLight<T, px>::drawSegments);
+        buffer = new BufferedDrawFunctionWidget(
+            Vec(0, 0), this->box.size, [this](auto vg) { drawSegments(vg);});
         this->addChild(buffer);
     }
 
-    void step() override { buffer->step(); }
-
-    void draw(const widget::Widget::DrawArgs &args) override
-    {
+    void step() override {
         float fvalue = 0;
         if (this->module)
             fvalue = this->module->lights[this->firstLightId].value;
@@ -94,8 +91,13 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         }
 
         pvalue = value;
+    }
 
-        buffer->draw(args);
+    void draw(const typename T::DrawArgs &args) override {
+        if (buffer)
+        {
+            buffer->draw(args);
+        }
     }
 
     void drawSegments(NVGcontext *vg)
@@ -182,6 +184,8 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         o->hexMode = true;
         return o;
     }
+
+
 };
 
 template <typename colorClass, int px, int digits>
@@ -219,22 +223,6 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget
     void step() override
     {
         ModuleLightWidget::step();
-
-        for (auto c : children)
-        {
-            c->step();
-        }
-    }
-
-    void draw(const DrawArgs &args) override
-    {
-        for (auto it = children.begin(); it != children.end(); ++it)
-        {
-            nvgSave(args.vg);
-            nvgTranslate(args.vg, (*it)->box.pos.x, (*it)->box.pos.y);
-            (*it)->draw(args);
-            nvgRestore(args.vg);
-        }
     }
 };
 
@@ -365,8 +353,8 @@ struct BaconHelpButton : public SvgButton
 
 template <int NSteps, typename ColorModel> struct NStepDraggableLEDWidget : public ParamWidget
 {
-    BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>> *buffer{nullptr};
-    bool dragging;
+    BufferedDrawFunctionWidget *buffer{nullptr};
+    bool dragging{false};
     Vec lastDragPos;
     ColorModel cm;
 
@@ -376,9 +364,9 @@ template <int NSteps, typename ColorModel> struct NStepDraggableLEDWidget : publ
         dragging = false;
         lastDragPos = Vec(-1, -1);
 
-        buffer = new BufferedDrawFunctionWidget<NStepDraggableLEDWidget<NSteps, ColorModel>>(
-            Vec(0, 0), this->box.size, this,
-            &NStepDraggableLEDWidget<NSteps, ColorModel>::drawSegments);
+        buffer = new BufferedDrawFunctionWidget(
+            Vec(0, 0), this->box.size, [this](auto vg) { drawSegments(vg); });
+        addChild(buffer);
     }
 
     int getStep()
@@ -395,13 +383,6 @@ template <int NSteps, typename ColorModel> struct NStepDraggableLEDWidget : publ
         float py = (box.size.y - yp) / box.size.y;
         return (int)(py * NSteps);
     }
-
-    void step() override
-    {
-        buffer->step();
-        ParamWidget::step();
-    }
-    void draw(const DrawArgs &args) override { buffer->draw(args); }
 
     void valueByMouse(float ey)
     {
@@ -541,17 +522,15 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
     typedef std::function<std::string(Module *)> stringGetter;
     typedef std::function<bool(Module *)> stringDirtyGetter;
 
-    BufferedDrawFunctionWidget<DotMatrixLightTextWidget> *buffer;
+    BufferedDrawFunctionWidget *buffer{nullptr};
 
-    int charCount;
-    std::string currentText;
+    int charCount{0};
+    std::string currentText{""};
 
     typedef std::map<char, std::vector<bool>> fontData_t;
     fontData_t fontData;
 
-    float ledSize, padSize;
-
-    DotMatrixLightTextWidget() : Widget(), buffer(NULL), currentText("") {}
+    float ledSize{0}, padSize{0};
 
     void setup()
     {
@@ -559,8 +538,9 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
         padSize = 1;
         box.size = Vec(charCount * (5 * ledSize + padSize) + 2 * padSize,
                        7 * ledSize + 4.5 * padSize); // 5 x 7 data structure
-        buffer = new BufferedDrawFunctionWidget<DotMatrixLightTextWidget>(
-            Vec(0, 0), this->box.size, this, &DotMatrixLightTextWidget::drawText);
+        buffer = new BufferedDrawFunctionWidget(
+            Vec(0, 0), this->box.size, [this](auto vg) {drawText(vg);});
+        addChild(buffer);
 
         INFO("BaconMusic loading DMP json: %s",
              asset::plugin(pluginInstance, "res/Keypunch029.json").c_str());
@@ -611,17 +591,12 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
     stringGetter getfn;
     Module *module;
 
-    void step() override { buffer->step(); }
-
-    void draw(const DrawArgs &args) override
-    {
+    void step() override {
         if (this->module && dirtyfn(this->module))
         {
             currentText = getfn(this->module);
             buffer->dirty = true;
         }
-        if (buffer)
-            buffer->draw(args);
     }
 
     void drawChar(NVGcontext *vg, Vec pos, char c)
