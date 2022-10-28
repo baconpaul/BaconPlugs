@@ -1,5 +1,10 @@
 name: Build VCV Rack Plugin
-on: [ push, pull_request ]
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull-request:
 
 env:
   rack-sdk-version: 2.1.2
