@@ -1,6 +1,6 @@
 # The Bacon Music VCVRack Modules
 
-"Bacon Music" is my set of EuroRack style plugins for 
+"Bacon Music" is my set of EuroRack style plugins, needing a bit of refresh, for 
 [VCVRack](http://www.vcvrack.com). The modules are mostly inspired by me noodling around with the platform
 since v0.5.something, and 
 they sort of fall into a few groups: 
