@@ -2,7 +2,13 @@
 #include "BaconPlugs.hpp"
 #include "ChipSym.hpp"
 
-struct ChipWaves : virtual Module
+#include "BaconModule.hpp"
+#include "BaconModuleWidget.h"
+
+
+namespace bp = baconpaul::rackplugs;
+
+struct ChipWaves : virtual bp::BaconModule
 {
     enum ParamIds
     {
@@ -34,11 +40,15 @@ struct ChipWaves : virtual Module
     std::vector<std::unique_ptr<ChipSym::NESPulse>> npulse;
     std::vector<std::unique_ptr<ChipSym::NESTriangle>> ntri;
 
-    ChipWaves() : Module()
+    ChipWaves()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(PULSE_CYCLE, 0, 3, 0, "NES Pulse Wave Duty Cycle");
         configParam(FREQ_KNOB, -54.0, 54.0, 0.0, "Frequency");
+
+        configInput(FREQ_CV, "Frequency in v/oct CV");
+        configOutput(PULSE_OUTPUT, "Pulse-Wave Output");
+        configOutput(TRI_OUTPUT, "Triangle-Wave Output");
 
         npulse.resize(16);
         ntri.resize(16);
@@ -95,12 +105,12 @@ struct ChipWaves : virtual Module
     }
 };
 
-struct ChipWavesWidget : ModuleWidget
+struct ChipWavesWidget : bp::BaconModuleWidget
 {
     ChipWavesWidget(ChipWaves *module);
 };
 
-ChipWavesWidget::ChipWavesWidget(ChipWaves *module) : ModuleWidget()
+ChipWavesWidget::ChipWavesWidget(ChipWaves *module)
 {
     setModule(module);
     box.size = Vec(SCREW_WIDTH * 6, RACK_HEIGHT);

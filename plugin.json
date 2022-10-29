@@ -51,8 +51,7 @@
 			"slug": "ChipWaves",
 			"name": "ChipWaves",
 			"description": "A recreation of the NES oscillators",
-			"tags": [ "Oscillator", "Polyphonic" ],
-			"hidden": true
+			"tags": [ "Oscillator", "Polyphonic" ]
 		},
 		{
 			"slug": "ChipYourWave",
