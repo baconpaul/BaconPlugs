@@ -49,7 +49,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
         phase = 0.0f;
         phase_longpart = 274;
 
-        TBase::configParam(CLOCK_PARAM, -2.0, 6.0, 2.0, "Clock tempo", " bpm", 2.f, 60.f);
+        TBase::configParam(CLOCK_PARAM, -2.0, 2.0, 0.0, "Clock tempo", " bpm", 2.f, 60.f);
         for (int i = 0; i < NUM_CLOCKS; ++i)
         {
             TBase::configParam(CLOCK_NUMERATOR_1 + i, 1, 30, 1);
@@ -62,7 +62,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
     void process(const typename TBase::ProcessArgs &args) override
     {
         float clockCV = params[CLOCK_PARAM].getValue();
-        float clockTime = powf(2.0f, clockCV);
+        float clockTime = 2 * powf(2.0f, clockCV);
         outputs[CLOCK_CV_LEVEL_0].setVoltage(clockCV);
 
         float dPhase = clockTime * args.sampleTime;
