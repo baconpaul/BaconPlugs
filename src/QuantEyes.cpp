@@ -189,7 +189,7 @@ QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : bp::BaconModuleWidget()
     BaconBackground *bg = new BaconBackground(box.size, "QuantEyes");
     addChild(bg->wrappedInFramebuffer());
 
-    float rx = 15, ry = 30, sp = 22, slope = 7.5;
+    float rx = 15, ry = 30, sp = 22, slope = 8.5;
     for (int i = 0; i < SCALE_LENGTH; ++i)
     {
         char d[24];
