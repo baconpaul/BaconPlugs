@@ -234,9 +234,6 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget
 
 struct BaconBackground : virtual TransparentWidget, baconpaul::rackplugs::StyleParticipant
 {
-    static NVGcolor highlight, highlightEnd;
-    static NVGcolor inputStart, inputEnd;
-
     typedef std::tuple<Rect, NVGcolor, bool> col_rect_t;
     std::vector<col_rect_t> rects;
 
@@ -281,7 +278,12 @@ struct BaconBackground : virtual TransparentWidget, baconpaul::rackplugs::StyleP
     }
     BaconBackground *addPlugLabel(Vec plugPos, LabelAt l, LabelStyle s, const char *ilabel);
     BaconBackground *addRoundedBorder(Vec pos, Vec sz);
-    BaconBackground *addRoundedBorder(Vec pos, Vec sz, NVGcolor fill);
+    BaconBackground *addRoundedBorder(Vec pos, Vec sz, baconpaul::rackplugs::BaconStyle::Colors fill);
+    BaconBackground *addRoundedBorder(Vec pos, Vec sz, NVGcolor fill)
+    {
+        std::cout << "ERROR" << std::endl;
+        return this;
+    }
 
     BaconBackground *addLabelsForHugeKnob(Vec topLabelPos, const char *knobLabel,
                                           const char *zeroLabel, const char *oneLabel,

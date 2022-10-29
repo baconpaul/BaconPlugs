@@ -55,7 +55,7 @@ struct QuantEyes : virtual bp::BaconModule
 
         configInput(CV_INPUT, "V/Oct Input");
         configOutput(QUANTIZED_OUT, "Quantized Output");
-        configOutput(CHANGE_TRIG_OUT, "Trigger on CHange");
+        configOutput(CHANGE_TRIG_OUT, "Trigger on Change");
         for (int i=0; i<16; ++i)
         {
             priorOut[i] = 0;

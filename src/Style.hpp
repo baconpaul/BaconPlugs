@@ -53,7 +53,18 @@ struct BaconStyle
         LABEL_BG_END,
         LABEL_RULE,
 
-        MODULE_OUTLINE
+        MODULE_OUTLINE,
+
+        INPUT_BG,
+        INPUT_BG_END,
+
+        HIGHLIGHT_BG,
+        HIGHLIGHT_BG_END,
+
+        SECTION_RULE_LINE,
+
+        SLIDER_NOTCH,
+        SLIDER_SLOT
     };
 
     NVGcolor getColor(Colors c);

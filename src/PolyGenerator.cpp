@@ -19,7 +19,7 @@ struct PolyGeneratorWidget : baconpaul::rackplugs::BaconModuleWidget
             nvgBeginPath(vg);
             nvgFontFaceId(vg, memFont);
             nvgFontSize(vg, 14);
-            nvgFillColor(vg, componentlibrary::SCHEME_BLACK);
+            nvgFillColor(vg, baconpaul::rackplugs::BaconStyle::get()->getColor(baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL));
             nvgTextAlign(vg, NVG_ALIGN_TOP | NVG_ALIGN_LEFT);
             nvgText(vg, 7, y0 + i * dy, labels[i].c_str(), NULL);
         }
@@ -71,7 +71,7 @@ PolyGeneratorWidget::PolyGeneratorWidget(PolyGenerator *model)
     Vec velP = Vec(box.size.x / 2 - 12, RACK_HEIGHT - 15 - 43);
     Vec gateP = Vec(box.size.x - 24 - 7, RACK_HEIGHT - 15 - 43);
 
-    bg->addPlugLabel(toneP, BaconBackground::SIG_OUT, "1v/oct");
+    bg->addPlugLabel(toneP, BaconBackground::SIG_OUT, "v/oct");
     addOutput(createOutput<PJ301MPort>(toneP, module, M::TONE_CV));
 
     bg->addPlugLabel(velP, BaconBackground::SIG_OUT, "vel");

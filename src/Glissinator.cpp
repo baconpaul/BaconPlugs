@@ -36,8 +36,9 @@ GlissinatorWidget::GlissinatorWidget(GlissinatorWidget::G *model)
 
     addOutput(createOutput<PJ301MPort>(outP, module, G::SLID_OUTPUT));
 
+    auto style = baconpaul::rackplugs::BaconStyle::get();
     bg->addRoundedBorder(Vec(5, RACK_HEIGHT - 162), Vec(box.size.x - 10, 38),
-                         BaconBackground::inputStart);
+                         baconpaul::rackplugs::BaconStyle::INPUT_BG);
     bg->addLabel(Vec(10, RACK_HEIGHT - 144), "gliss", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
                  baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     bg->addLabel(Vec(10, RACK_HEIGHT - 132), "cv", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
@@ -46,7 +47,7 @@ GlissinatorWidget::GlissinatorWidget(GlissinatorWidget::G *model)
         createInput<PJ301MPort>(Vec(bg->cx() + 5, RACK_HEIGHT - 156), module, G::GLISS_CV_INPUT));
 
     bg->addRoundedBorder(Vec(5, RACK_HEIGHT - 120), Vec(box.size.x - 10, 38),
-                         BaconBackground::highlight);
+                         baconpaul::rackplugs::BaconStyle::HIGHLIGHT_BG);
     bg->addLabel(Vec(10, RACK_HEIGHT - 102), "gliss", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,
                  baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
     bg->addLabel(Vec(10, RACK_HEIGHT - 90), "gate", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM,

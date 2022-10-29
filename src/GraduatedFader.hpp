@@ -2,7 +2,9 @@
 
 #include "BufferedDrawFunction.hpp"
 
-template <int H> struct GraduatedFader : app::SliderKnob
+#include "Style.hpp"
+
+template <int H> struct GraduatedFader : app::SliderKnob, baconpaul::rackplugs::StyleParticipant
 {
     int slider_height = 41;
     int slider_width = 20;
@@ -89,30 +91,15 @@ template <int H> struct GraduatedFader : app::SliderKnob
 
     void drawBackground(NVGcontext *vg)
     {
+        auto style = baconpaul::rackplugs::BaconStyle::get();
         int nStrokes = 10;
         int slideTop = slider_height / 2;
         int slideHeight = H - slider_height;
         int slideBump = 5;
         int slotWidth = 1;
 
-#ifdef DEBUG_NOTCHES
-        nvgBeginPath(vg);
-        nvgRect(vg, 0, 0, widget_width, H);
-        nvgFillColor(vg, COLOR_RED);
-        nvgFill(vg);
-#endif
 
         float dx = (1.0 * slideHeight) / nStrokes;
-
-        // Firest the gray highlights
-        /*
-        for (int i = 0; i <= nStrokes; ++i) {
-            nvgBeginPath(vg);
-            nvgRect(vg, 1, slideTop + dx * i, widget_width - 2, 1);
-            nvgFillColor(vg, nvgRGBA(200, 200, 200, 255));
-            nvgFill(vg);
-        }
-        */
 
         // and now the black notches
         for (int i = 0; i <= nStrokes; ++i)
@@ -120,7 +107,7 @@ template <int H> struct GraduatedFader : app::SliderKnob
             nvgBeginPath(vg);
             nvgMoveTo(vg, 1, slideTop + dx * i);
             nvgLineTo(vg, widget_width - 2, slideTop + dx * i);
-            nvgStrokeColor(vg, nvgRGBA(00, 00, 40, 255));
+            nvgStrokeColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SLIDER_NOTCH));
             nvgStrokeWidth(vg, 0.5);
             nvgStroke(vg);
         }
@@ -129,7 +116,9 @@ template <int H> struct GraduatedFader : app::SliderKnob
         nvgBeginPath(vg);
         nvgRect(vg, widget_width / 2 - slotWidth, slideTop - slideBump, 2 * slotWidth + 1,
                 slideHeight + 2 * slideBump);
-        nvgFillColor(vg, componentlibrary::SCHEME_BLACK);
+        nvgFillColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SLIDER_SLOT));
         nvgFill(vg);
     }
+
+    void onStyleChanged() override { fb->dirty = true; }
 };
