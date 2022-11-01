@@ -1,5 +1,6 @@
 #include <math.h>
 #include "rack.hpp"
+#include <iostream>
 #define NUM_CLOCKS 5
 
 template <typename TBase> struct PolyGnome : virtual TBase
@@ -17,9 +18,9 @@ template <typename TBase> struct PolyGnome : virtual TBase
 
     enum InputIds
     {
-        CLOCK_INPUT,
         RUN_INPUT,
         RESET_INPUT,
+        BPM_INPUT,
         NUM_INPUTS,
     };
 
@@ -41,6 +42,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
         LIGHT_NUMERATOR_1,
         LIGHT_DENOMINATOR_1 = LIGHT_NUMERATOR_1 + NUM_CLOCKS,
         BPM_LIGHT = LIGHT_DENOMINATOR_1 + NUM_CLOCKS,
+        RUNNING_LIGHT,
         NUM_LIGHTS
     };
 
@@ -70,10 +72,16 @@ template <typename TBase> struct PolyGnome : virtual TBase
 
     inline int deni(int i) { return (int)params[CLOCK_DENOMINATOR_0 + i].getValue(); }
     inline int numi(int i) { return (int)params[CLOCK_NUMERATOR_0 + i].getValue(); }
-    bool wasRunning{false};
+    bool wasRunning{false}, wasResetting{false};
+
+    rack::dsp::SchmittTrigger runTrigger, resetTrigger;
+    int32_t resetTriggerOut{0}, runTriggerOut{0};
     void process(const typename TBase::ProcessArgs &args) override
     {
         float clockCV = params[CLOCK_PARAM].getValue();
+        if (inputs[BPM_INPUT].isConnected())
+            clockCV = inputs[BPM_INPUT].getVoltage();
+
         float clockTime = 2 * powf(2.0f, clockCV);
         outputs[CLOCK_CV_LEVEL_0].setVoltage(clockCV);
 
@@ -84,11 +92,51 @@ template <typename TBase> struct PolyGnome : virtual TBase
         lights[BPM_LIGHT].value = beatsPerMinute;
 
         bool useGates = params[RUN_PARAM].getValue() > 0.5;
+        if (inputs[RUN_INPUT].isConnected())
+        {
+            auto tog = runTrigger.process(inputs[RUN_INPUT].getVoltage());
+            if (tog)
+            {
+                useGates = !useGates;
+                params[RUN_PARAM].setValue(useGates ? 1 : 0);
+            }
+        }
+
         bool doReset = params[RESET_PARAM].getValue() > 0.5;
+
+        if (inputs[RESET_INPUT].isConnected())
+        {
+            auto tog = resetTrigger.process(inputs[RESET_INPUT].getVoltage());
+            if (tog)
+            {
+                doReset = true;
+            }
+        }
+
         if (useGates && ! wasRunning)
         {
             wasRunning = true;
             doReset = true;
+            runTriggerOut = 96;
+        }
+        else if (!useGates && wasRunning)
+        {
+            runTriggerOut = 96;
+            wasRunning = false;
+        }
+
+        if (doReset && !wasResetting)
+        {
+            wasResetting = true;
+            resetTriggerOut = 96;
+        }
+        else if (doReset)
+        {
+            doReset = false;
+        }
+        else
+        {
+            wasResetting = false;
         }
 
         for (int i = 0; i < NUM_CLOCKS; ++i)
@@ -113,6 +161,8 @@ template <typename TBase> struct PolyGnome : virtual TBase
             phase_longpart = 274;
             useGates = false;
         }
+
+        lights[RUNNING_LIGHT].value = useGates ? 10 : 0;
 
         /* Alright we have to stop that longpart from getting too big otherwise
            it will swamp the fractional parts but we have to reset it when all
@@ -170,6 +220,17 @@ template <typename TBase> struct PolyGnome : virtual TBase
         {
             lights[LIGHT_NUMERATOR_1 + i].value = (int)params[CLOCK_DENOMINATOR_0 + i].getValue();
             lights[LIGHT_DENOMINATOR_1 + i].value = (int)params[CLOCK_NUMERATOR_0 + i].getValue();
+        }
+
+        outputs[RUN_OUTPUT].setVoltage(runTriggerOut > 0 ? 10 : 0);
+        if (runTriggerOut > 0)
+        {
+            runTriggerOut--;
+        }
+        outputs[RESET_OUTPUT].setVoltage(resetTriggerOut > 0 ? 10 : 0);
+        if (resetTriggerOut > 0)
+        {
+            resetTriggerOut--;
         }
     }
 };

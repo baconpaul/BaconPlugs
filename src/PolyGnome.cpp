@@ -43,25 +43,46 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module)
 
     outP.x += 37;
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "run");
+    addOutput(createOutput<PJ301MPort>(outP, module, M::RUN_OUTPUT));
+
     outP.x += 37;
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "reset");
+    addOutput(createOutput<PJ301MPort>(outP, module, M::RESET_OUTPUT));
     addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 3>::create(Vec(7 + 30, kPos + 2), module,
                                                                   M::BPM_LIGHT));
 
 
-    outP.x = 7;
-    outP.y = 102;
+    outP.x = 15;
+    outP.y = 98;
+    outP.y += 4;
     addParam(createParam<CKSS>(outP, module, M::RUN_PARAM));
+    outP.y -= 4;
+    auto lp = outP;
+    lp.x += 5;
+    lp.y -= 3;
+    bg->addLabel(lp, "run", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
+    lp.x += 12;
+    lp.y -= 8;
+    addChild(createLight<SmallLight<BlueLight>>(
+        lp, module, M::RUNNING_LIGHT));
 
-    outP.x += 30;
+
+    outP.x += 40;
     addParam(createParam<CKD6>(outP, module, M::RESET_PARAM));
+    lp = outP;
+    lp.x += 15;
+    lp.y -= 3;
+    bg->addLabel(lp, "reset", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
 
     outP.x = 93 + 37;
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "bpm");
+    addInput(createInput<PJ301MPort>(outP, module, M::BPM_INPUT));
     outP.x += 37;
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "run");
+    addInput(createInput<PJ301MPort>(outP, module, M::RUN_INPUT));
     outP.x += 37;
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "reset");
+    addInput(createInput<PJ301MPort>(outP, module, M::RESET_INPUT));
     outP.x += 37;
 
     int bh = 41;
