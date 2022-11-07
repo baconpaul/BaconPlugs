@@ -36,6 +36,12 @@
 			"tags": [ "Quantizer", "Polyphonic" ]
 		},
 		{
+			"slug": "LintBuddy",
+			"name": "LintBuddy",
+			"description": "Am I Connected to Someone OK?",
+			"tags": [ ]
+		},
+		{
 			"slug": "SampleDelay",
 			"name": "SampleDelay",
 			"description": "A tiny number of sample delay",

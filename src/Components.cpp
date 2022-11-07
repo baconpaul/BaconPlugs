@@ -71,6 +71,7 @@ struct InternalTextLabel : virtual TransparentWidget, baconpaul::rackplugs::Styl
     {}
 };
 
+
 struct InternalPlugLabel : virtual TransparentWidget
 {
     int memFont = -1;

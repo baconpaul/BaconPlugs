@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "BufferedDrawFunction.hpp"
@@ -271,6 +272,8 @@ struct BaconBackground : virtual TransparentWidget, baconpaul::rackplugs::StyleP
         return addLabel(pos, lab, px, align, baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     }
     BaconBackground *addLabel(Vec pos, const char *lab, int px, int align, baconpaul::rackplugs::BaconStyle::Colors col);
+
+    BaconBackground *addLambdaLabel(Vec pos, std::function<std::string(void)> val, int px, int align, baconpaul::rackplugs::BaconStyle::Colors col);
 
     BaconBackground *addPlugLabel(Vec plugPos, LabelStyle s, const char *ilabel)
     {
@@ -699,6 +702,41 @@ struct InternalFontMgr
         return font->handle;
     }
 };
+
+
+// FIXME - double buffer this
+struct DynamicLabel : virtual TransparentWidget, baconpaul::rackplugs::StyleParticipant
+{
+    int pxSize;
+    int align;
+    std::function<std::string(void)> fn;
+    baconpaul::rackplugs::BaconStyle::Colors color;
+
+    DynamicLabel(Vec pos, std::function<std::string(void)> f, int px, int al,
+                 baconpaul::rackplugs::BaconStyle::Colors col)
+        : fn(std::move(f)), pxSize(px), align(al), color(col)
+    {
+        box.pos = pos;
+    }
+
+    void draw(const DrawArgs &args) override
+    {
+        auto memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+
+        auto col = baconpaul::rackplugs::BaconStyle::get()->getColor(color);
+        nvgBeginPath(args.vg);
+        nvgFontFaceId(args.vg, memFont);
+        nvgFontSize(args.vg, pxSize);
+        nvgFillColor(args.vg, col);
+        nvgTextAlign(args.vg, align);
+        auto label = fn();
+        nvgText(args.vg, 0, 0, label.c_str(), nullptr);
+    }
+
+    void onStyleChanged() override
+    {}
+};
+
 
 #include "SizeTable.hpp"
 
