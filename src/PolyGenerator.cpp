@@ -11,8 +11,7 @@ struct PolyGeneratorWidget : baconpaul::rackplugs::BaconModuleWidget
     int memFont = -1;
     void drawBG(NVGcontext *vg)
     {
-        if (memFont < 0)
-            memFont = InternalFontMgr::get(vg,baconpaul::rackplugs::BaconStyle::get()->fontName());
+        memFont = InternalFontMgr::get(vg,baconpaul::rackplugs::BaconStyle::get()->fontName());
 
         for (int i = 0; i < 4; ++i)
         {

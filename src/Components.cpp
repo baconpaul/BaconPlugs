@@ -1,8 +1,6 @@
 #include "BaconPlugs.hpp"
 #include <jansson.h>
 
-std::map<std::string, int> InternalFontMgr::fontMap;
-
 struct InternalRoundedBorder : virtual TransparentWidget, baconpaul::rackplugs::StyleParticipant
 {
     bool doFill;
@@ -58,8 +56,7 @@ struct InternalTextLabel : virtual TransparentWidget, baconpaul::rackplugs::Styl
 
     void draw(const DrawArgs &args) override
     {
-        if (memFont < 0)
-            memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+        memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
         auto col = baconpaul::rackplugs::BaconStyle::get()->getColor(color);
         nvgBeginPath(args.vg);
@@ -95,8 +92,7 @@ static svg_t lovebaconEmoji = nullptr;
 void BaconBackground::draw(const DrawArgs &args)
 {
     auto style = baconpaul::rackplugs::BaconStyle::get();
-    if (memFont < 0)
-        memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+    memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
     if (baconEmoji == nullptr)
     {

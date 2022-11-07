@@ -193,7 +193,7 @@ QuantEyesWidget::QuantEyesWidget(QuantEyes *model) : bp::BaconModuleWidget()
     for (int i = 0; i < SCALE_LENGTH; ++i)
     {
         char d[24];
-        sprintf(d, "%d", i + 1);
+        snprintf(d, 24, "%d", i + 1);
         if (i == 0)
             d[0] = 'R';
         int x0 = rx + (i + 0.5) * slope;
