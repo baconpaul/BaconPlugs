@@ -6,7 +6,6 @@
 
 #define SCALE_LENGTH 12
 
-
 namespace bp = baconpaul::rackplugs;
 
 struct LintBuddy : virtual bp::BaconModule
@@ -44,25 +43,75 @@ struct LintBuddy : virtual bp::BaconModule
 
     Module *currentTarget{nullptr};
     std::string currentTargetName{"Disconnected"};
+    std::vector<std::string> infoStrings, warningStrings;
+    std::atomic<uint64_t> updateCount{1};
+
     void updateCurrentTarget(Module *m)
     {
         currentTarget = m;
+        // FIXME i should really do this locally then lock and copy. get to that
+        infoStrings.clear();
+        warningStrings.clear();
+
         if (!m || !m->model)
         {
             currentTargetName = "Disconnected";
+            updateCount ++;
             return;
         }
 
+
         currentTargetName = m->model->getFullName();
 
+        int idx{0};
+
+        idx = 0;
         for (auto &pq : m->paramQuantities)
-            std::cout << "pq- " << pq->name << "/" << pq->getLabel() << std::endl;
+        {
+            std::ostringstream oss;
+            oss << "PQ[" << idx++ << "] ";
+            oss << "name='" << pq->name << "' label='" << pq->getLabel() << "'" << std::endl;
+            if (pq->name.empty() || pq->getLabel()[0] == '#')
+            {
+                warningStrings.push_back(oss.str());
+            }
+            else
+            {
+                infoStrings.push_back(oss.str());
+            }
+        }
 
+        idx = 0;
         for (auto &ii : m->inputInfos)
-            std::cout << "ii- " << ii->name << "/" << ii->getFullName() << std::endl;
-
+        {
+            std::ostringstream oss;
+            oss << "IN[" << idx++ << "] ";
+            oss << "name='" << ii->name << "' label='" << ii->getFullName() << "'" << std::endl;
+            if (ii->name.empty() || ii->getFullName()[0] == '#')
+            {
+                warningStrings.push_back(oss.str());
+            }
+            else
+            {
+                infoStrings.push_back(oss.str());
+            }
+        }
         for (auto &oo : m->outputInfos)
-            std::cout << "oo- " << oo->name <<  "/" << oo->getFullName() << std::endl;
+        {
+            std::ostringstream oss;
+            oss << "OUT[" << idx++ << "] ";
+            oss << "name='" << oo->name << "' label='" << oo->getFullName() << "'" << std::endl;
+            if (oo->name.empty() || oo->getFullName()[0] == '#')
+            {
+                warningStrings.push_back(oss.str());
+            }
+            else
+            {
+                infoStrings.push_back(oss.str());
+            }
+        }
+
+        updateCount++;
     }
 
     void process(const ProcessArgs &args) override
@@ -73,27 +122,32 @@ struct LintBuddy : virtual bp::BaconModule
             for (auto c : cid)
             {
                 auto cable = APP->engine->getCable(c);
-                if (cable->outputModule == this && cable->inputModule && cable->inputModule->getModel())
+                if (cable->outputModule == this && cable->inputModule &&
+                    cable->inputModule->getModel())
                 {
                     auto m = cable->inputModule;
                     updateCurrentTarget(m);
                 }
             }
-        } else if (inputs[THE_IN_PROBE].isConnected() && !wasInConnected)
+        }
+        else if (inputs[THE_IN_PROBE].isConnected() && !wasInConnected)
         {
             auto cid = APP->engine->getCableIds();
             for (auto c : cid)
             {
                 auto cable = APP->engine->getCable(c);
-                if (cable->inputModule == this && cable->outputModule && cable->outputModule->getModel())
+                if (cable->inputModule == this && cable->outputModule &&
+                    cable->outputModule->getModel())
                 {
                     auto m = cable->outputModule;
                     updateCurrentTarget(m);
                 }
             }
         }
-        else if (wasInConnected &&
-                 ! (inputs[THE_IN_PROBE].isConnected() || inputs[THE_OUT_PROBE].isConnected()))
+
+        if (currentTarget &&
+            !inputs[THE_IN_PROBE].isConnected()
+            && !outputs[THE_OUT_PROBE].isConnected())
         {
             updateCurrentTarget(nullptr);
         }
@@ -106,6 +160,8 @@ struct LintBuddy : virtual bp::BaconModule
 struct LintBuddyWidget : bp::BaconModuleWidget
 {
     LintBuddyWidget(LintBuddy *model);
+
+    int64_t warnC{0}, infoC{0};
 };
 
 LintBuddyWidget::LintBuddyWidget(LintBuddy *model) : bp::BaconModuleWidget()
@@ -116,12 +172,9 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *model) : bp::BaconModuleWidget()
     BaconBackground *bg = new BaconBackground(box.size, "LintBuddy");
     addChild(bg->wrappedInFramebuffer());
 
-    int xpospl = box.size.x - 24 - 9;
-    Vec outP = Vec(xpospl, RACK_HEIGHT - 60);
-
-
-    auto dl = new DynamicLabel(rack::Vec(box.size.x * 0.5, 40), [this]()
-        {
+    auto dl = new DynamicLabel(
+        rack::Vec(box.size.x * 0.5, 40),
+        [this]() {
             if (module)
             {
                 auto m = dynamic_cast<LintBuddy *>(module);
@@ -130,19 +183,64 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *model) : bp::BaconModuleWidget()
             }
             return std::string("No Module");
         },
-        12, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM, baconpaul::rackplugs::BaconStyle::Colors::DEFAULT_LABEL);
+        12, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
+        baconpaul::rackplugs::BaconStyle::Colors::DEFAULT_LABEL);
     addChild(dl);
 
+    auto start = 45.f;
+    auto end = RACK_HEIGHT - 90;
+    auto d = (end - start) * 0.5;
+
+    auto ss = new ScrollableStringList(
+        rack::Vec(5, start), rack::Vec(box.size.x - 10, d - 3),
+        [this]() {
+            if (!module)
+                return std::vector<std::string>();
+            auto m = dynamic_cast<LintBuddy *>(module);
+            return m->warningStrings;
+        },
+        [this]() {
+            if (!module)
+                return false;
+            auto m = dynamic_cast<LintBuddy *>(module);
+            if (this->warnC != m->updateCount)
+            {
+                this->warnC = m->updateCount;
+                return true;
+            }
+            return false;
+        });
+    addChild(ss);
+
+    auto s2 = new ScrollableStringList(
+        rack::Vec(5, start + d + 6), rack::Vec(box.size.x - 10, d - 3),
+        [this]() {
+            if (!module)
+                return std::vector<std::string>();
+            auto m = dynamic_cast<LintBuddy *>(module);
+            return m->infoStrings;
+        },
+        [this]() {
+            if (!module)
+                return false;
+            auto m = dynamic_cast<LintBuddy *>(module);
+            if (this->infoC != m->updateCount)
+            {
+                this->infoC = m->updateCount;
+                return true;
+            }
+            return false;
+        });
+    addChild(s2);
+
+    int xpospl = box.size.x - 24 - 9;
+    Vec outP = Vec(xpospl, RACK_HEIGHT - 60);
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "lint");
     addOutput(createOutput<PJ301MPort>(outP, module, LintBuddy::THE_OUT_PROBE));
 
-
     outP.x -= 34;
-
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "lint");
     addInput(createInput<PJ301MPort>(outP, module, LintBuddy::THE_IN_PROBE));
-
-
 }
 
 Model *modelLintBuddy = createModel<LintBuddy, LintBuddyWidget>("LintBuddy");

@@ -737,6 +737,74 @@ struct DynamicLabel : virtual TransparentWidget, baconpaul::rackplugs::StylePart
     {}
 };
 
+struct ScrollableStringList : virtual TransparentWidget, baconpaul::rackplugs::StyleParticipant
+{
+    BufferedDrawFunctionWidget *bg{nullptr}, *list{nullptr};
+    std::function<std::vector<std::string>()> getList;
+    std::function<bool()> isListDirty;
+
+    std::vector<std::string> data;
+
+    ScrollableStringList(const rack::Vec &pos, const rack::Vec &size,
+                         std::function<std::vector<std::string>()> getF,
+                         std::function<bool()> dirtyF) :
+    getList(std::move(getF)), isListDirty(std::move(dirtyF)) {
+        box.pos = pos;
+        box.size = size;
+        bg = new BufferedDrawFunctionWidget(rack::Vec(0,0), size,
+                                            [this](auto v) { drawBG(v);});
+        addChild(bg);
+
+        list = new BufferedDrawFunctionWidget(rack::Vec(0,0), size,
+                                            [this](auto v) { drawList(v);});
+        addChild(list);
+    }
+
+    void drawBG(NVGcontext *vg)
+    {
+        nvgBeginPath(vg);
+        nvgRect(vg, 0, 0, box.size.x, box.size.y);
+        nvgFillColor(vg, nvgRGB(0,0,0));
+        nvgStrokeColor(vg, nvgRGB(200,200,220));
+        nvgFill(vg);
+        nvgStrokeWidth(vg, 0.7);
+        nvgStroke(vg);
+    }
+
+    void drawList(NVGcontext *vg)
+    {
+        auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+
+        int y = 3;
+        for (const auto &d : data)
+        {
+            nvgBeginPath(vg);
+            nvgFontFaceId(vg, memFont);
+            nvgFontSize(vg, 10);
+            nvgFillColor(vg, nvgRGB(255,255,255));
+            nvgTextAlign(vg, NVG_ALIGN_TOP | NVG_ALIGN_LEFT);
+            nvgText(vg, 3, y, d.c_str(), nullptr);
+            y += 13;
+
+        }
+    }
+
+    void step() override
+    {
+        if (isListDirty())
+        {
+            data = getList();
+            bg->dirty = true;
+            list->dirty = true;
+        }
+    }
+
+    void onStyleChanged() override
+    {
+        bg->dirty = true;
+    }
+};
+
 
 #include "SizeTable.hpp"
 
