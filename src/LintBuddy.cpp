@@ -111,11 +111,6 @@ struct LintBuddy : virtual bp::BaconModule
             }
         }
 
-        for (const auto &s : warningStrings)
-            std::cout << "WARN " << s << std::endl;
-
-        for (const auto &s : infoStrings)
-            std::cout << "INFO " << s << std::endl;
         updateCount++;
     }
 

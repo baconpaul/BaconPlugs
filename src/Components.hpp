@@ -737,7 +737,7 @@ struct DynamicLabel : virtual TransparentWidget, baconpaul::rackplugs::StylePart
     {}
 };
 
-struct ScrollableStringList : virtual TransparentWidget, baconpaul::rackplugs::StyleParticipant
+struct ScrollableStringList : virtual Widget, baconpaul::rackplugs::StyleParticipant
 {
     BufferedDrawFunctionWidget *bg{nullptr}, *list{nullptr};
     std::function<std::vector<std::string>()> getList;
@@ -776,8 +776,11 @@ struct ScrollableStringList : virtual TransparentWidget, baconpaul::rackplugs::S
         auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
 
         int y = 3;
-        for (const auto &d : data)
+        int start = std::clamp((int)off, 0, (int)data.size()-5);
+
+        for (int i=start; i<data.size(); ++i)
         {
+            const auto &d = data[i];
             nvgBeginPath(vg);
             nvgFontFaceId(vg, memFont);
             nvgFontSize(vg, 10);
@@ -785,10 +788,10 @@ struct ScrollableStringList : virtual TransparentWidget, baconpaul::rackplugs::S
             nvgTextAlign(vg, NVG_ALIGN_TOP | NVG_ALIGN_LEFT);
             nvgText(vg, 3, y, d.c_str(), nullptr);
             y += 13;
-
+            if (y > box.size.y)
+                break;
         }
     }
-
     void step() override
     {
         if (isListDirty())
@@ -799,9 +802,35 @@ struct ScrollableStringList : virtual TransparentWidget, baconpaul::rackplugs::S
         }
     }
 
+    float off{0.f};
+    void onButton(const ButtonEvent &e) override {
+        if (e.button != GLFW_MOUSE_BUTTON_LEFT)
+            return;
+        e.consume(this);
+    }
+    void onDragStart(const DragStartEvent &e) override
+    {
+        if (e.button != GLFW_MOUSE_BUTTON_LEFT)
+            return;
+        e.consume(this);
+    }
+    void onDragMove(const DragMoveEvent& e) override
+    {
+        if (e.button != GLFW_MOUSE_BUTTON_LEFT)
+            return;
+
+        auto yd = e.mouseDelta.y/5;
+        off -= yd;
+
+        off = std::clamp(off, 0.f, data.size() * 1.f);
+        list->dirty = true;
+        e.consume(this);
+    }
+
     void onStyleChanged() override
     {
         bg->dirty = true;
+        list->dirty = true;
     }
 };
 
