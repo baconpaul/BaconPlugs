@@ -44,7 +44,7 @@ struct LintBuddy : virtual bp::BaconModule
     Module *currentTarget{nullptr};
     std::string currentTargetName{"Disconnected"};
     std::vector<std::string> infoStrings, warningStrings;
-    std::atomic<uint64_t> updateCount{1};
+    std::atomic<int64_t> updateCount{1};
 
     void updateCurrentTarget(Module *m)
     {
@@ -64,6 +64,10 @@ struct LintBuddy : virtual bp::BaconModule
         currentTargetName = m->model->getFullName();
 
         int idx{0};
+
+        if (m->paramQuantities.size() != m->params.size())
+            warningStrings.push_back( "Params and ParamQuantities differ" );
+
 
         idx = 0;
         for (auto &pq : m->paramQuantities)

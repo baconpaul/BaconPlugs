@@ -776,7 +776,10 @@ struct ScrollableStringList : virtual Widget, baconpaul::rackplugs::StylePartici
         auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
 
         int y = 3;
-        int start = std::clamp((int)off, 0, (int)data.size()-5);
+        int start = std::clamp((int)off, 0, (int)data.size());
+
+        if (data.size() < 6)
+            start = 0;
 
         for (int i=start; i<data.size(); ++i)
         {
@@ -796,6 +799,7 @@ struct ScrollableStringList : virtual Widget, baconpaul::rackplugs::StylePartici
     {
         if (isListDirty())
         {
+            off = 0;
             data = getList();
             bg->dirty = true;
             list->dirty = true;
