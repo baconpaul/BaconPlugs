@@ -60,11 +60,13 @@ template <typename TBase> struct PolyGnome : virtual TBase
         phase = 0.0f;
         phase_longpart = 274;
 
-        TBase::configParam(CLOCK_PARAM, -2.0, 2.0, 0.0, "Clock tempo", " bpm", 2.f, 60.f);
+        TBase::configParam(CLOCK_PARAM, -2.0, 2.0, 0.0, "Clock tempo", " bpm", 2.f, 120.f);
         for (int i = 0; i < NUM_CLOCKS; ++i)
         {
-            TBase::configParam(CLOCK_DENOMINATOR_0 + i, 1, 30, 1, "Denominator " + std::to_string(i+1));
-            TBase::configParam(CLOCK_NUMERATOR_0 + i, 1, 16, 1, "Numerator " + std::to_string(i+1) );
+            auto d = TBase::configParam(CLOCK_DENOMINATOR_0 + i, 1, 32, 1, "Denominator " + std::to_string(i+1));
+            d->snapEnabled = true;
+            auto n = TBase::configParam(CLOCK_NUMERATOR_0 + i, 1, 32, 1, "Numerator " + std::to_string(i+1) );
+            n->snapEnabled = true;
             TBase::configParam(CLOCK_PULSE_WIDTH_0 + i, 0, 1, 0.5, "Pulse Width " + std::to_string(i+1));
         }
         TBase::configParam(RUN_PARAM, 0, 1, 1, "Run");

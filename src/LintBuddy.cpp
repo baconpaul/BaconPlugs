@@ -70,7 +70,7 @@ struct LintBuddy : virtual bp::BaconModule
         {
             std::ostringstream oss;
             oss << "PQ[" << idx++ << "] ";
-            oss << "name='" << pq->name << "' label='" << pq->getLabel() << "'" << std::endl;
+            oss << "name='" << pq->name << "' label='" << pq->getLabel() << "'";
             if (pq->name.empty() || pq->getLabel()[0] == '#')
             {
                 warningStrings.push_back(oss.str());
@@ -86,7 +86,7 @@ struct LintBuddy : virtual bp::BaconModule
         {
             std::ostringstream oss;
             oss << "IN[" << idx++ << "] ";
-            oss << "name='" << ii->name << "' label='" << ii->getFullName() << "'" << std::endl;
+            oss << "name='" << ii->name << "' label='" << ii->getFullName() << "'" ;
             if (ii->name.empty() || ii->getFullName()[0] == '#')
             {
                 warningStrings.push_back(oss.str());
@@ -100,7 +100,7 @@ struct LintBuddy : virtual bp::BaconModule
         {
             std::ostringstream oss;
             oss << "OUT[" << idx++ << "] ";
-            oss << "name='" << oo->name << "' label='" << oo->getFullName() << "'" << std::endl;
+            oss << "name='" << oo->name << "' label='" << oo->getFullName() << "'";
             if (oo->name.empty() || oo->getFullName()[0] == '#')
             {
                 warningStrings.push_back(oss.str());
@@ -111,6 +111,11 @@ struct LintBuddy : virtual bp::BaconModule
             }
         }
 
+        for (const auto &s : warningStrings)
+            std::cout << "WARN " << s << std::endl;
+
+        for (const auto &s : infoStrings)
+            std::cout << "INFO " << s << std::endl;
         updateCount++;
     }
 

@@ -773,7 +773,7 @@ struct ScrollableStringList : virtual TransparentWidget, baconpaul::rackplugs::S
 
     void drawList(NVGcontext *vg)
     {
-        auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+        auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
 
         int y = 3;
         for (const auto &d : data)

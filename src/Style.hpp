@@ -69,6 +69,7 @@ struct BaconStyle
 
     NVGcolor getColor(Colors c);
     std::string fontName() { return "res/Monitorica-Bd.ttf"; }
+    std::string monoFontName() { return "res/FiraMono-Regular.ttf"; }
 
   private:
     std::unordered_set<StyleParticipant *> listeners;
