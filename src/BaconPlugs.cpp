@@ -29,6 +29,7 @@ void init(rack::Plugin *p)
 
     p->addModel(modelPolyGenerator);
     p->addModel(modelLintBuddy);
+    p->addModel(modelLuckyHold);
 
     baconpaul::rackplugs::BaconStyle::get();
 }

@@ -43,5 +43,6 @@ extern Model *modelPhaser;
 extern Model *modelPolyGenerator;
 
 extern Model *modelLintBuddy;
+extern Model *modelLuckyHold;
 
 #endif

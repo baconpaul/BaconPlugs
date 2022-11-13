@@ -52,27 +52,42 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module)
                                                                   M::BPM_LIGHT));
 
 
-    outP.x = 15;
-    outP.y = 98;
-    outP.y += 4;
-    addParam(createParam<CKSS>(outP, module, M::RUN_PARAM));
+    outP.x = 12;
+    outP.y = 108;
+    addParam(createParamCentered<CKSS>(outP, module, M::RUN_PARAM));
     outP.y -= 4;
     auto lp = outP;
-    lp.x += 5;
-    lp.y -= 3;
-    bg->addLabel(lp, "run", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
-    lp.x += 12;
     lp.y -= 8;
-    addChild(createLight<SmallLight<BlueLight>>(
+    bg->addLabel(lp, "run", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);;
+    lp.y -= 15;
+    addChild(createLightCentered<SmallLight<BlueLight>>(
         lp, module, M::RUNNING_LIGHT));
 
 
-    outP.x += 40;
-    addParam(createParam<CKD6>(outP, module, M::RESET_PARAM));
+    outP.x += 23;
+
+    addParam(createParamCentered<TL1105>(outP, module, M::RESET_PARAM));
     lp = outP;
-    lp.x += 15;
-    lp.y -= 3;
+    lp.y -= 8;
     bg->addLabel(lp, "reset", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
+
+    auto srp = outP;
+    srp.x += 30;
+    srp.y += 4;
+    addParam(rack::createParamCentered<RoundSmallBlackKnob>(srp, module, M::SELF_RESET_EVERY));
+
+    lp = srp;
+    lp.y -= 12;
+    lp.x += 20;
+    bg->addLabel(lp, "auto-reset", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
+
+    srp.y -= 10;
+    srp.x += 18;
+    auto srlt = MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(srp, module,
+                                                                  M::SELF_RESET_LIGHT);
+    srlt->blankZero = true;
+    addChild(srlt);
+
 
     outP.x = 93 + 37;
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "bpm");
@@ -84,6 +99,7 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module)
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "reset");
     addInput(createInput<PJ301MPort>(outP, module, M::RESET_INPUT));
     outP.x += 37;
+
 
     int bh = 41;
     std::vector<int> startX{15,43,82,110, 146, 176, 206};

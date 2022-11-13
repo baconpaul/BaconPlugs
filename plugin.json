@@ -42,6 +42,12 @@
 			"tags": [ ]
 		},
 		{
+			"slug": "LuckyHold",
+			"name": "LuckyHold",
+			"description": "A polymult + chances + sample&hold + noise",
+			"tags": [ ]
+		},
+		{
 			"slug": "SampleDelay",
 			"name": "SampleDelay",
 			"description": "A tiny number of sample delay",
