@@ -13,6 +13,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
         CLOCK_PULSE_WIDTH_0 = CLOCK_NUMERATOR_0 + NUM_CLOCKS,
         RUN_PARAM = CLOCK_PULSE_WIDTH_0 + NUM_CLOCKS,
         RESET_PARAM,
+        SELF_RESET_EVERY,
         NUM_PARAMS
     };
 
@@ -43,6 +44,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
         LIGHT_DENOMINATOR_1 = LIGHT_NUMERATOR_1 + NUM_CLOCKS,
         BPM_LIGHT = LIGHT_DENOMINATOR_1 + NUM_CLOCKS,
         RUNNING_LIGHT,
+        SELF_RESET_LIGHT,
         NUM_LIGHTS
     };
 
@@ -52,7 +54,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
     using TBase::params;
 
     float phase;
-    long phase_longpart;
+    long phase_longpart, since_reset{0};
 
     PolyGnome() : TBase()
     {
@@ -69,7 +71,11 @@ template <typename TBase> struct PolyGnome : virtual TBase
             n->snapEnabled = true;
             TBase::configParam(CLOCK_PULSE_WIDTH_0 + i, 0, 1, 0.5, "Pulse Width " + std::to_string(i+1));
         }
-        TBase::configParam(RUN_PARAM, 0, 1, 1, "Run");
+        for (int i=0; i<NUM_CLOCKS + 1; ++i)
+            priorGates[i] = false;
+        TBase::configSwitch(RUN_PARAM, 0, 1, 1, "Run", { "Stop", "Run" });
+        auto sre = TBase::configParam(SELF_RESET_EVERY, 0, 64, 0, "Self Reset Every" );
+        sre->snapEnabled = true;
     }
 
     inline int deni(int i) { return (int)params[CLOCK_DENOMINATOR_0 + i].getValue(); }
@@ -78,20 +84,29 @@ template <typename TBase> struct PolyGnome : virtual TBase
 
     rack::dsp::SchmittTrigger runTrigger, resetTrigger;
     int32_t resetTriggerOut{0}, runTriggerOut{0};
+    float priorClockCV{-1000}, clockTime{0};
+    bool priorGates[NUM_CLOCKS + 1];
     void process(const typename TBase::ProcessArgs &args) override
     {
         float clockCV = params[CLOCK_PARAM].getValue();
         if (inputs[BPM_INPUT].isConnected())
             clockCV = inputs[BPM_INPUT].getVoltage();
 
-        float clockTime = 2 * powf(2.0f, clockCV);
+        if (clockCV != priorClockCV)
+        {
+            clockTime = 2 * powf(2.0f, clockCV);
+            priorClockCV = clockCV;
+        }
         outputs[CLOCK_CV_LEVEL_0].setVoltage(clockCV);
 
         float dPhase = clockTime * args.sampleTime;
         float samplesPerBeat = 1.0 / dPhase;
         float secondsPerBeat = samplesPerBeat / args.sampleRate;
         float beatsPerMinute = 60.0 / secondsPerBeat;
+
+        int selfResetEvery = (int)std::round(params[SELF_RESET_EVERY].getValue());
         lights[BPM_LIGHT].value = beatsPerMinute;
+        lights[SELF_RESET_LIGHT].value = selfResetEvery;
 
         bool useGates = params[RUN_PARAM].getValue() > 0.5;
         if (inputs[RUN_INPUT].isConnected())
@@ -127,6 +142,11 @@ template <typename TBase> struct PolyGnome : virtual TBase
             wasRunning = false;
         }
 
+        if (selfResetEvery > 0 && selfResetEvery == since_reset)
+        {
+            doReset = true;
+        }
+
         if (doReset && !wasResetting)
         {
             wasResetting = true;
@@ -140,6 +160,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
         {
             wasResetting = false;
         }
+
 
         for (int i = 0; i < NUM_CLOCKS; ++i)
         {
@@ -161,6 +182,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
         {
             phase = 0;
             phase_longpart = 274;
+            since_reset = 0;
             useGates = false;
         }
 
@@ -214,6 +236,13 @@ template <typename TBase> struct PolyGnome : virtual TBase
             // enough and blow out the precision in the decimal
             float fractPhase = modf(lphase + liphase, &ipart);
             gateIn = (fractPhase < pw);
+
+            if (gateIn && !priorGates[i] && i == 0)
+            {
+                since_reset ++;
+            }
+
+            priorGates[i] = gateIn;
 
             outputs[CLOCK_GATE_0 + i].setVoltage(gateIn && useGates ? 10.0f : 0.0f);
         }

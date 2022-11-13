@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <array>
 
 #include "BufferedDrawFunction.hpp"
 #include "GraduatedFader.hpp"
@@ -42,6 +43,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
 
     int decimalPos{0};
     bool hexMode{false};
+    bool noDisplay{false};
 
     BufferedDrawFunctionWidget *buffer{nullptr}, *bufferLight{nullptr};
 
@@ -95,6 +97,12 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         }
 
         pvalue = value;
+    }
+
+    void setDirty()
+    {
+        buffer->dirty = true;
+        bufferLight->dirty =true;
     }
 
     void draw(const typename T::DrawArgs &args) override {
@@ -164,7 +172,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
             // Old version nvgRect( vg, x * ppl + 1, y * ppl + 1, ew * ppl, eh *
             // ppl
             // );
-            if (ebn[i] > 0)
+            if (ebn[i] > 0 && !noDisplay)
             {
                 nvgFillColor(vg, oncol);
                 nvgFill(vg);
@@ -199,12 +207,14 @@ template <typename colorClass, int px, int digits>
 struct MultiDigitSevenSegmentLight : ModuleLightWidget
 {
     typedef SevenSegmentLight<colorClass, px> LtClass;
+    bool blankZero{false};
 
     MultiDigitSevenSegmentLight() : ModuleLightWidget()
     {
         this->box.size = Vec(digits * LtClass::sx, LtClass::sy);
     }
 
+    std::array<LtClass  *, digits> childLightWeakRefs;
     static MultiDigitSevenSegmentLight<colorClass, px, digits> *create(Vec pos, Module *module,
                                                                        int firstLightId)
     {
@@ -222,13 +232,34 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget
 
         for (int i = 0; i < digits; ++i)
         {
-            addChild(LtClass::create(Vec(i * LtClass::sx, 0), module, firstLightId, dp));
+            auto cld = LtClass::create(Vec(i * LtClass::sx, 0), module, firstLightId, dp);
+            addChild(cld);
+            childLightWeakRefs[i] = cld;
             dp /= 10;
         }
     }
 
+    int priorFV{-100000};
     void step() override
     {
+        float fvalue = 0;
+        if (this->module)
+            fvalue = this->module->lights[this->firstLightId].value;
+
+        if (fvalue != priorFV)
+        {
+            bool deact{false};
+            if (fvalue == 0 && blankZero)
+            {
+                deact = true;
+            }
+            for (auto *l : childLightWeakRefs)
+            {
+                l->noDisplay = deact;
+                l->setDirty();
+            }
+            priorFV = fvalue;
+        }
         ModuleLightWidget::step();
     }
 };
