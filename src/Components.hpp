@@ -737,6 +737,69 @@ struct DynamicLabel : virtual TransparentWidget, baconpaul::rackplugs::StylePart
     {}
 };
 
+
+struct CBButton : rack::Widget,  baconpaul::rackplugs::StyleParticipant
+{
+    std::function<std::string()> getLabel = [](){return "Label";};
+    std::function<void()> onPressed = [](){ std::cout << "Pressed; No Callback" << std::endl;};
+    BufferedDrawFunctionWidget *bdw{nullptr};
+    std::string label{""};
+    CBButton(const rack::Vec &pos, const rack::Vec &sz)
+    {
+        box.pos = pos;
+        box.size = sz;
+        bdw = new BufferedDrawFunctionWidget(rack::Vec(0,0), sz, [this](auto v) { this->drawB(v);});
+        addChild(bdw);
+    }
+    void onButton(const ButtonEvent &e) override
+    {
+        if (e.action == GLFW_RELEASE)
+        {
+            onPressed();
+            e.consume(this);
+        }
+    }
+
+    void step() override
+    {
+        if (getLabel() != label)
+        {
+            label = getLabel();
+            bdw->dirty = true;
+        }
+        rack::Widget::step();
+    }
+    void drawB(NVGcontext *vg)
+    {
+        auto style = baconpaul::rackplugs::BaconStyle::get();
+        auto labelBg = style->getColor(baconpaul::rackplugs::BaconStyle::LABEL_BG);
+        auto labelBgEnd = style->getColor(baconpaul::rackplugs::BaconStyle::LABEL_BG_END);
+        auto labelRule = style->getColor(baconpaul::rackplugs::BaconStyle::LABEL_RULE);
+
+        auto labelColor = style->getColor(baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
+        nvgBeginPath(vg);
+        nvgRoundedRect(vg, 0, 0, box.size.x, box.size.y, baconpaul::rackplugs::StyleConstants::rectRadius);
+        NVGpaint vgr = nvgLinearGradient(vg, 0, 0, 0, box.size.y, labelBg, labelBgEnd);
+        nvgFillPaint(vg, vgr);
+        nvgFill(vg);
+        nvgStrokeColor(vg, labelRule);
+        nvgStrokeWidth(vg, 1);
+        nvgStroke(vg);
+
+        auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+
+        nvgBeginPath(vg);
+        nvgFontFaceId(vg, memFont);
+        nvgFontSize(vg, 12);
+        nvgFillColor(vg, labelColor);
+        nvgTextAlign(vg, NVG_ALIGN_MIDDLE | NVG_ALIGN_CENTER);
+        nvgText(vg, box.size.x * 0.5, box.size.y * 0.5, label.c_str(), nullptr);
+    }
+    void onStyleChanged() override {
+        bdw->dirty = true;
+    }
+};
+
 struct ScrollableStringList : virtual Widget, baconpaul::rackplugs::StyleParticipant
 {
     BufferedDrawFunctionWidget *bg{nullptr}, *list{nullptr};
