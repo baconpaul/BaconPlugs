@@ -7,6 +7,8 @@
 
 #include "rack.hpp"
 
+#define MAX_POLY 16
+
 namespace baconpaul::rackplugs
 {
 struct BaconModule : rack::engine::Module

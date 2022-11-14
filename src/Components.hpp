@@ -634,11 +634,27 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
     Module *module;
 
     void step() override {
-        if (this->module && dirtyfn(this->module))
+        if (dirtyfn)
         {
-            currentText = getfn(this->module);
-            buffer->dirty = true;
-            bufferLight->dirty = true;
+            if (this->module && dirtyfn(this->module))
+            {
+                currentText = getfn(this->module);
+                buffer->dirty = true;
+                bufferLight->dirty = true;
+            }
+        }
+        else
+        {
+            if (this->module)
+            {
+                auto nextText = getfn(this->module);
+                if (nextText != currentText)
+                {
+                    currentText = nextText;
+                    buffer->dirty = true;
+                    bufferLight->dirty = true;
+                }
+            }
         }
     }
 
