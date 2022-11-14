@@ -60,6 +60,7 @@ struct EverythingHasAName : LintBuddyTest
                 info.push_back(oss.str());
             }
         }
+        idx = 0;
         for (auto &oo : m->outputInfos)
         {
             std::ostringstream oss;
@@ -100,10 +101,10 @@ struct ProbeBypass : LintBuddyTest
             auto o = br.outputId;
 
             std::string in{"unnamed_input"}, on{"unnamed_output"};
-            if (i > 0 && i < m->inputInfos.size())
+            if (i >= 0 && i < m->inputInfos.size())
                 in = m->inputInfos[i]->name;
-            if (i > 0 && i < m->outputInfos.size())
-                on = m->outputInfos[i]->name;
+            if (o >= 0 && o < m->outputInfos.size())
+                on = m->outputInfos[o]->name;
 
             info.push_back("Bypass from " + std::to_string(i) + " (" + in + ") to "
                            + std::to_string(o) + " (" + on + ")");
