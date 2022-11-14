@@ -849,12 +849,39 @@ struct CBButton : rack::Widget,  baconpaul::rackplugs::StyleParticipant
 
 struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleParticipant
 {
-    BufferedDrawFunctionWidget *bg{nullptr}, *list{nullptr};
+    BufferedDrawFunctionWidget *bg{nullptr};
     rack::ui::ScrollWidget *sw{nullptr};
     std::function<std::vector<std::string>()> getList;
     std::function<bool()> isListDirty;
 
     std::vector<std::string> data;
+
+    struct ListRender : rack::Widget
+    {
+        ScrollableStringList *that{nullptr};
+
+        void draw(const DrawArgs &args) override
+        {
+            auto vg = args.vg;
+            auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
+
+            int y = 3;
+             for (int i=0; i<that->data.size(); ++i)
+            {
+                auto d = that->data[i];
+                if (y > args.clipBox.pos.y - rowHeight && y < args.clipBox.pos.y + box.size.y + 2 * rowHeight)
+                {
+                    nvgBeginPath(vg);
+                    nvgFontFaceId(vg, memFont);
+                    nvgFontSize(vg, 10);
+                    nvgFillColor(vg, nvgRGB(255, 255, 255));
+                    nvgTextAlign(vg, NVG_ALIGN_TOP | NVG_ALIGN_LEFT);
+                    nvgText(vg, 3, y, d.c_str(), nullptr);
+                }
+                y += rowHeight;
+            }
+        }
+    } *list{nullptr};
 
     ScrollableStringList(const rack::Vec &pos, const rack::Vec &size,
                          std::function<std::vector<std::string>()> getF,
@@ -870,8 +897,11 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
         sw->box.pos = rack::Vec(0,0);
         sw->box.size = size;
         addChild(sw);
-        list = new BufferedDrawFunctionWidget(rack::Vec(0,0), rack::Vec(1000,1000),
-                                            [this](auto v) { drawList(v);});
+        list = new ListRender;
+        list->box.pos = rack::Vec(0,0);
+        list->box.size = rack::Vec(1000,1000);
+        list->that = this;
+
         sw->container->addChild(list);
     }
 
@@ -887,22 +917,7 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
     }
 
     static constexpr int rowHeight{13};
-    void drawList(NVGcontext *vg)
-    {
-        auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
 
-        int y = 3;
-        for (const auto &d : data)
-        {
-            nvgBeginPath(vg);
-            nvgFontFaceId(vg, memFont);
-            nvgFontSize(vg, 10);
-            nvgFillColor(vg, nvgRGB(255,255,255));
-            nvgTextAlign(vg, NVG_ALIGN_TOP | NVG_ALIGN_LEFT);
-            nvgText(vg, 3, y, d.c_str(), nullptr);
-            y += rowHeight;
-        }
-    }
     int h0{-1}, w0{-1};
     void step() override
     {
@@ -917,10 +932,9 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
             auto w = w0;
             for (const auto & d : data)
             {
-                w = std::max((int)d.size() * 11, w);
+                w = std::max((int)d.size() * 8, w);
             }
             bg->dirty = true;
-            list->dirty = true;
             list->box.size.x = w;
             list->box.size.y = h;
         }
@@ -930,7 +944,6 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
     void onStyleChanged() override
     {
         bg->dirty = true;
-        list->dirty = true;
     }
 };
 
