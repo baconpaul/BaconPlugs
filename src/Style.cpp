@@ -83,6 +83,9 @@ NVGcolor getColorLight(baconpaul::rackplugs::BaconStyle::Colors c)
     case BaconStyle::SLIDER_SLOT:
         return nvgRGB(0,0,40);
 
+    case BaconStyle::LIGHT_BG:
+        return nvgRGB(200,200,220);
+
     }
     return nvgRGBA(255,0,0,255);
 }
@@ -128,6 +131,10 @@ NVGcolor getColorDark(baconpaul::rackplugs::BaconStyle::Colors c)
         return nvgRGB(120,120,140);
     case BaconStyle::SLIDER_SLOT:
         return nvgRGB(0,0,40);
+
+
+    case BaconStyle::LIGHT_BG:
+        return nvgRGB(20, 20, 30);
 
     }
     return nvgRGBA(255,0,0,255);

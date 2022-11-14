@@ -63,6 +63,8 @@ struct BaconStyle
 
         SECTION_RULE_LINE,
 
+        LIGHT_BG,
+
         SLIDER_NOTCH,
         SLIDER_SLOT
     };

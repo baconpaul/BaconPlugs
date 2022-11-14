@@ -17,7 +17,7 @@ struct LuckyHold : virtual bp::BaconModule
         POLY_COUNT,
         CHANCE,
         RNG_SCALE,
-        RNG_IS_UNI,
+        RNG_OFFSET,
         LATCH,
         NUM_PARAMS
     };
@@ -35,21 +35,22 @@ struct LuckyHold : virtual bp::BaconModule
         A_RNG,
         B_CLOCK,
         B_RNG,
+        U_CLOCK,
         U_RNG,
         NUM_OUTPUTS
     };
 
     enum LightIds
     {
+        POLY_LIGHT,
         GATE_0,
         NUM_LIGHTS = GATE_0 + MAX_POLY,
     };
 
     std::default_random_engine gen;
     std::uniform_real_distribution<float> ud;
-    std::normal_distribution<float> nd;
 
-    LuckyHold() : bp::BaconModule(), ud(0,1), nd(0, 0.333)
+    LuckyHold() : bp::BaconModule(), ud(0,1)
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
@@ -58,7 +59,7 @@ struct LuckyHold : virtual bp::BaconModule
 
         configParam(CHANCE, -1, 1, 0, "A (-1) or B (1) chance?", "%", 0, 100);
         configParam(RNG_SCALE, 0, 10, 10, "RNG Scale?", "V");
-        configSwitch(RNG_IS_UNI, 0, 1, 0, "RNG Polarity", { "Unipolar", "Bipolar" }  );
+        configParam(RNG_OFFSET, -5, 5, 0, "RNG Center", "V");
         configSwitch(LATCH, 0, 1, 1, "Latch vs Passthrough", { "Passthrough", "Latch" } );
 
         configInput(CLOCK_IN, "Clock");
@@ -92,20 +93,22 @@ struct LuckyHold : virtual bp::BaconModule
         if (pc != nChan)
         {
             nChan = pc;
+            lights[POLY_LIGHT].value = nChan;
+            for (int i=0; i<MAX_POLY; ++i)
+            {
+                lights[GATE_0 + i].value = 0;
+            }
         }
 
         auto lv = (bool)std::round(params[LATCH].getValue());
 
         if (inTrig.process(inputs[CLOCK_IN].getVoltageSum()))
         {
-            auto uni = (bool)std::round(params[RNG_IS_UNI].getValue());
             for (int c = 0; c < nChan; ++c)
             {
                 auto ch = ud(gen) * 2 - 1;
                 auto rv{0.f};
                 rv = ud(gen);
-                if (uni)
-                    rv = rv - 0.5;
 
                 rU[c] = rv;
                 float chThresh = params[CHANCE].getValue();
@@ -126,6 +129,8 @@ struct LuckyHold : virtual bp::BaconModule
                     aGate[c] = true;
                     bGate[c] = false;
                 }
+
+                lights[GATE_0 + c].value = aGate[c] ? 1 : -1;
             }
         }
 
@@ -134,19 +139,111 @@ struct LuckyHold : virtual bp::BaconModule
         outputs[A_RNG].setChannels(nChan);
         outputs[B_RNG].setChannels(nChan);
         outputs[U_RNG].setChannels(nChan);
+        outputs[U_CLOCK].setChannels(nChan);
 
         auto sc = params[RNG_SCALE].getValue();
+        auto of = params[RNG_OFFSET].getValue();
         for (int c = 0; c < nChan; ++c)
         {
             outputs[A_CLOCK].setVoltage(aGate[c] * (lv ? 10 : inputs[CLOCK_IN].getVoltageSum()), c);
             outputs[B_CLOCK].setVoltage(bGate[c] * (lv ? 10 : inputs[CLOCK_IN].getVoltageSum()), c);
-            outputs[A_RNG].setVoltage(rA[c] * sc, c);
-            outputs[B_RNG].setVoltage(rB[c] * sc, c);
-            outputs[U_RNG].setVoltage(rU[c] * sc, c);
+            outputs[A_RNG].setVoltage(rA[c] * sc + of, c);
+            outputs[B_RNG].setVoltage(rB[c] * sc + of, c);
+            outputs[U_RNG].setVoltage(rU[c] * sc + of, c);
+            outputs[U_CLOCK].setVoltage(inputs[CLOCK_IN].getVoltage(), c);
         }
     }
 };
 
+struct ABLights : rack::TransparentWidget, baconpaul::rackplugs::StyleParticipant
+{
+    BufferedDrawFunctionWidget *bdw{nullptr}, *bdwLight{nullptr};
+    LuckyHold *module{nullptr};
+    float cSize{0}, xc0, yc0, dx, dy;
+    void setup()
+    {
+        bdw = new BufferedDrawFunctionWidget(rack::Vec(0,0), box.size,
+                                             [this](auto v) {
+                                                 drawBG(v);
+                                             });
+        addChild(bdw);
+
+        bdwLight = new BufferedDrawFunctionWidgetOnLayer(rack::Vec(0,0), box.size,
+                                             [this](auto v) {
+                                                 drawLight(v);
+                                             });
+        addChild(bdwLight);
+        for (int i=0; i<MAX_POLY; ++i)
+            vals[i] = 0.f;
+
+        cSize = std::min(box.size.x / 17.f, box.size.y / 4.f ) * 0.45;
+        dx = box.size.x / 16.f;
+        xc0 = dx * 0.5;
+
+        dy = box.size.y / 3.f;
+        yc0 = dy * 0.5;
+    }
+
+    float vals[MAX_POLY];
+    void step() override {
+        if (module)
+        {
+            for (int i=0; i<MAX_POLY; ++i)
+            {
+                if (vals[i] != module->lights[LuckyHold::GATE_0 + i].value)
+                {
+                    vals[i] = module->lights[LuckyHold::GATE_0 + i].value;
+                    bdw->dirty = true;
+                    bdwLight->dirty = true;
+                }
+            }
+        }
+        rack::TransparentWidget::step();
+    }
+
+    void drawBG(NVGcontext *vg) {
+        auto style = baconpaul::rackplugs::BaconStyle::get();
+
+        for (int i=0; i<MAX_POLY; ++i)
+        {
+            for (int j=0; j<3; ++j)
+            {
+                nvgBeginPath(vg);
+                nvgEllipse(vg, xc0 + dx * i, yc0 + dy * j, cSize, cSize);
+                nvgFillColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::LIGHT_BG));
+                nvgStrokeColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+                nvgFill(vg);
+                nvgStrokeWidth(vg, 0.5);
+                nvgStroke(vg);
+            }
+        }
+    }
+    void drawLight(NVGcontext *vg) {
+        auto style = baconpaul::rackplugs::BaconStyle::get();
+        for (int i=0; i<MAX_POLY; ++i)
+        {
+            if (vals[i] == 0)
+                continue;
+
+            int j=1;
+            if (vals[i] > 0) j = 0;
+            if (vals[i] < 0) j = 2;
+            nvgBeginPath(vg);
+            nvgEllipse(vg, xc0 + dx * i, yc0 + dy * j, cSize, cSize);
+            nvgFillColor(vg, SCHEME_BLUE);
+            nvgStrokeColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+            nvgFill(vg);
+            nvgStrokeWidth(vg, 0.5);
+            nvgStroke(vg);
+        }
+    }
+
+    void onStyleChanged() override
+    {
+        bdw->dirty = true;
+        bdwLight->dirty = true;
+    }
+};
 struct LuckyHoldWidget : bp::BaconModuleWidget
 {
     typedef LuckyHold M;
@@ -156,129 +253,92 @@ struct LuckyHoldWidget : bp::BaconModuleWidget
 LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
 {
     setModule(m);
-    box.size = Vec(SCREW_WIDTH * 12, RACK_HEIGHT);
+    box.size = Vec(SCREW_WIDTH * 9, RACK_HEIGHT);
 
     BaconBackground *bg = new BaconBackground(box.size, "LuckyHold");
     addChild(bg->wrappedInFramebuffer());
 
     int dmdig = 6;
+    // Poly Knob and light
     {
-        float kPos = 45;
-        bg->addLabel(rack::Vec(10, kPos), "Poly", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
-        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(60, kPos), module, M::POLY_COUNT));
-        auto srlt = DotMatrixLightTextWidget::create(rack::Vec(80, kPos),
-                                                     module, dmdig,
-            nullptr,
-                                                     [](auto m)
-                                                     {
-                            return m->paramQuantities[M::POLY_COUNT]->getDisplayValueString();
-                                                     });
-        srlt->box.pos.y = kPos - srlt->box.size.y * 0.5;
-        addChild(srlt);
+        int yp = 30, h = 40;
+        bg->addRoundedBorder(rack::Vec(5, yp), rack::Vec(box.size.x - 10, h));
+        bg->addLabel(rack::Vec(8, yp + h * 0.5), "Poly", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
+        addParam(createParamCentered<RoundBlackKnob>(Vec(60, yp + h * 0.5), module, M::POLY_COUNT));
+        auto msg = MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(rack::Vec(90, yp + h * 0.5), module,
+                                                                                    M::POLY_LIGHT);
+        msg->box.pos.y -= msg->box.size.y * 0.5;
+        addChild(msg);
+
     }
 
+    // Chance Knob CV In and Switch
     {
-        float kPos = 70;
-        bg->addLabel(rack::Vec(10, kPos), "Chance", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
-        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(60, kPos), module, M::CHANCE));
-        auto srlt = DotMatrixLightTextWidget::create(rack::Vec(80, kPos),
-                                                     module, dmdig,
-                                                     nullptr,
-                                                     [](auto m)
-                                                     {
-                                                         return m->paramQuantities[M::CHANCE]->getDisplayValueString();
-                                                     });
-        srlt->box.pos.y = kPos - srlt->box.size.y * 0.5;
-        addChild(srlt);
+        int yp = 75, h = 40;
+        bg->addRoundedBorder(rack::Vec(5, yp), rack::Vec(box.size.x - 10, h));
+        bg->addLabel(rack::Vec(8, yp + h * 0.5), "Chance", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
+        addParam(createParamCentered<RoundBlackKnob>(Vec(60, yp + h * 0.5), module, M::CHANCE));
 
-        addInput(createInputCentered<PJ301MPort>(rack::Vec(60, kPos + 25),
+        addInput(createInputCentered<PJ301MPort>(rack::Vec(90, yp + h * 0.5),
                                                  module,
                                                  M::CHANCE_CV));
+
+        addParam(createParamCentered<CKSS>(rack::Vec(115, yp + h * 0.5 + 3), module, M::LATCH));
+        bg->addLabel(rack::Vec(115, yp + h * 0.5 - 9), "latch", 8, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
+
     }
 
+    // Scale and Offset Knobs
     {
-        float kPos = 120;
-        bg->addLabel(rack::Vec(10, kPos), "Scale", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
-        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(60, kPos), module, M::RNG_SCALE));
-        auto srlt = DotMatrixLightTextWidget::create(rack::Vec(80, kPos),
-                                                     module, dmdig,
-                                                     nullptr,
-                                                     [](auto m)
-                                                     {
-                                                         return m->paramQuantities[M::RNG_SCALE]->getDisplayValueString();
-                                                     });
-        srlt->box.pos.y = kPos - srlt->box.size.y * 0.5;
-        addChild(srlt);
+        int yp = 120, h = 40;
+        bg->addRoundedBorder(rack::Vec(5, yp), rack::Vec(box.size.x - 10, h));
+        bg->addLabel(rack::Vec(8, yp + h * 0.5), "RNG", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
+
+        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(65, yp + h * 0.5 - 3), module, M::RNG_SCALE));
+        bg->addLabel(rack::Vec(65, yp + h * 0.5 + 10), "scale", 8, NVG_ALIGN_TOP | NVG_ALIGN_CENTER);
+        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(105, yp + h * 0.5 - 3), module, M::RNG_OFFSET));
+        bg->addLabel(rack::Vec(105, yp + h * 0.5 + 10), "center", 8, NVG_ALIGN_TOP | NVG_ALIGN_CENTER);
     }
 
-    rack::Vec outP;
-    outP.x = 20;
-    outP.y = 170;
-    addParam(createParamCentered<CKSS>(outP, module, M::LATCH));
-    auto lp = outP;
-    lp.y -= 12;
-    bg->addLabel(lp, "latch", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);;
+    auto lt = new ABLights;
+    lt->box.pos = rack::Vec(10, 168);
+    lt->box.size = rack::Vec(box.size.x - 20, 30);
+    lt->module = m;
+    lt->setup();
+    addChild(lt);
 
-    outP.x += 30;
-    addParam(createParamCentered<CKSS>(outP, module, M::RNG_IS_UNI));
-    lp = outP;
-    lp.y -= 12;
-    bg->addLabel(lp, "polar", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);;
-
-
+    std::vector<std::string> labels{"A", "B", "Every"};
+    for (int i=0; i<3; ++i)
     {
-        auto h = 120;
-        bg->addRoundedBorder(Vec(5, RACK_HEIGHT - (h + 30)), Vec(box.size.x - 10, 38),
+        auto h = 144 - i * 38;
+        bg->addRoundedBorder(Vec(5, RACK_HEIGHT - (h + 30)), Vec(box.size.x - 10, 35),
                              baconpaul::rackplugs::BaconStyle::HIGHLIGHT_BG);
-        bg->addLabel(Vec(20, RACK_HEIGHT - (h+12)), "A", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
+        bg->addLabel(Vec(20, RACK_HEIGHT - (h+12)), labels[i].c_str(), 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
         bg->addLabel(Vec(20, RACK_HEIGHT - h), "gate", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
         addOutput(
-            createOutput<PJ301MPort>(Vec(35, RACK_HEIGHT - (h+24)), module, M::A_CLOCK));
+            createOutput<PJ301MPort>(Vec(35, RACK_HEIGHT - (h+24)), module, M::A_CLOCK + i * 2));
 
-        bg->addLabel(Vec(75, RACK_HEIGHT - (h+12)), "A", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
+        bg->addLabel(Vec(80, RACK_HEIGHT - (h+12)), labels[i].c_str(), 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
-        bg->addLabel(Vec(75, RACK_HEIGHT - h), "rng", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
+        bg->addLabel(Vec(80, RACK_HEIGHT - h), "rng", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
         addOutput(
-            createOutput<PJ301MPort>(Vec(90, RACK_HEIGHT - (h+24)), module, M::A_RNG));
-
-    }
-    {
-        auto h = 80;
-        bg->addRoundedBorder(Vec(5, RACK_HEIGHT - (h + 30)), Vec(box.size.x - 10, 38),
-                             baconpaul::rackplugs::BaconStyle::HIGHLIGHT_BG);
-        bg->addLabel(Vec(20, RACK_HEIGHT - (h+12)), "B", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
-                     baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
-        bg->addLabel(Vec(20, RACK_HEIGHT - h), "gate", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
-                     baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
-        addOutput(
-            createOutput<PJ301MPort>(Vec(35, RACK_HEIGHT - (h+24)), module, M::B_CLOCK));
-
-        bg->addLabel(Vec(75, RACK_HEIGHT - (h+12)), "B", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
-                     baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
-        bg->addLabel(Vec(75, RACK_HEIGHT - h), "rng", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
-                     baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
-        addOutput(
-            createOutput<PJ301MPort>(Vec(90, RACK_HEIGHT - (h+24)), module, M::B_RNG));
+            createOutput<PJ301MPort>(Vec(95, RACK_HEIGHT - (h+24)), module, M::A_RNG + i * 2));
 
     }
 
     {
-        auto h = 40;
-        bg->addRoundedBorder(Vec(5, RACK_HEIGHT - (h + 30)), Vec(70, 38),
+        auto h = 30;
+        bg->addRoundedBorder(Vec(5, RACK_HEIGHT - (h + 30)), Vec(70, 35),
                              baconpaul::rackplugs::BaconStyle::INPUT_BG);
         bg->addLabel(Vec(20, RACK_HEIGHT - (h+12)), "Clock", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
         bg->addLabel(Vec(20, RACK_HEIGHT - h), "in", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
         addInput(
-            createInput<PJ301MPort>(Vec(35, RACK_HEIGHT - (h+24)), module, M::CLOCK_IN));
-
-        addOutput(
-            createOutput<PJ301MPort>(Vec(70, RACK_HEIGHT - (h+24)), module, M::U_RNG));
-
+            createInput<PJ301MPort>(Vec(43, RACK_HEIGHT - (h+24)), module, M::CLOCK_IN));
 
     }
 }
