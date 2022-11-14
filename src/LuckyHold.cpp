@@ -18,21 +18,19 @@ struct LuckyHold : virtual bp::BaconModule
         CHANCE,
         RNG_SCALE,
         RNG_IS_UNI,
-        RNG_IS_NORMAL,
-        LATCN_STYLE,
+        LATCH,
         NUM_PARAMS
     };
 
     enum InputIds
     {
         CLOCK_IN,
+        CHANCE_CV,
         NUM_INPUTS
     };
 
     enum OutputIds
     {
-        CLOCK_OUT,
-        RNG,
         A_CLOCK,
         A_RNG,
         B_CLOCK,
@@ -42,17 +40,15 @@ struct LuckyHold : virtual bp::BaconModule
 
     enum LightIds
     {
-        POLY_COUNT_LIGHT,
-        CHANCE_LIGHT,
-        SCALE_LIGHT,
         GATE_0,
         NUM_LIGHTS = GATE_0 + MAX_POLY,
     };
 
     std::default_random_engine gen;
     std::uniform_real_distribution<float> ud;
+    std::normal_distribution<float> nd;
 
-    LuckyHold() : bp::BaconModule(), ud(0,1)
+    LuckyHold() : bp::BaconModule(), ud(0,1), nd(0, 0.333)
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
@@ -61,8 +57,15 @@ struct LuckyHold : virtual bp::BaconModule
 
         configParam(CHANCE, -1, 1, 0, "A (-1) or B (1) chance?", "%", 0, 100);
         configParam(RNG_SCALE, 0, 10, 10, "RNG Scale?", "V");
+        configSwitch(RNG_IS_UNI, 0, 1, 0, "RNG Polarity", { "Unipolar", "Bipolar" }  );
+        configSwitch(LATCH, 0, 1, 1, "Latch vs Passthrough", { "Passthrough", "Latch" } );
 
-        configBypass(CLOCK_IN, CLOCK_OUT);
+        configInput(CLOCK_IN, "Clock");
+        configInput(CHANCE_CV, "Chance");
+        configOutput(A_CLOCK, "A Clock");
+        configOutput(A_RNG, "A Sample and Hold RNG");
+        configOutput(B_CLOCK, "B Clock");
+        configOutput(B_RNG, "B Sample and Hold RNG");
         configBypass(CLOCK_IN, A_CLOCK);
         configBypass(CLOCK_IN, B_CLOCK);
 
@@ -86,25 +89,34 @@ struct LuckyHold : virtual bp::BaconModule
         if (pc != nChan)
         {
             nChan = pc;
-            lights[POLY_COUNT_LIGHT].value = nChan;
         }
+
+        auto lv = (bool)std::round(params[LATCH].getValue());
 
         if (inTrig.process(inputs[CLOCK_IN].getVoltageSum()))
         {
+            auto uni = (bool)std::round(params[RNG_IS_UNI].getValue());
             for (int c = 0; c < nChan; ++c)
             {
-                auto rv = ud(gen), ch = ud(gen) * 2 - 1;
+                auto ch = ud(gen) * 2 - 1;
+                auto rv{0.f};
+                rv = ud(gen);
+                if (uni)
+                    rv = rv - 0.5;
+                float chThresh = params[CHANCE].getValue();
+                chThresh += inputs[CHANCE_CV].getVoltage() * 0.2;
+                chThresh = std::clamp(chThresh, -1.f, 1.f);
 
-                if (ch > params[CHANCE].getValue())
+                if (ch > chThresh)
                 {
-                    if (!bGate[c])
+                    if (!bGate[c] || !lv)
                         rB[c] = rv;
                     aGate[c] = false;
                     bGate[c] = true;
                 }
                 else
                 {
-                    if (!aGate[c])
+                    if (!aGate[c] || !lv)
                         rA[c] = rv;
                     aGate[c] = true;
                     bGate[c] = false;
@@ -117,12 +129,13 @@ struct LuckyHold : virtual bp::BaconModule
         outputs[A_RNG].setChannels(nChan);
         outputs[B_RNG].setChannels(nChan);
 
+        auto sc = params[RNG_SCALE].getValue();
         for (int c = 0; c < nChan; ++c)
         {
-            outputs[A_CLOCK].setVoltage(aGate[c] * 10, c);
-            outputs[B_CLOCK].setVoltage(bGate[c] * 10, c);
-            outputs[A_RNG].setVoltage(rA[c] * 10, c);
-            outputs[B_RNG].setVoltage(rB[c] * 10, c);
+            outputs[A_CLOCK].setVoltage(aGate[c] * (lv ? 10 : inputs[CLOCK_IN].getVoltageSum()), c);
+            outputs[B_CLOCK].setVoltage(bGate[c] * (lv ? 10 : inputs[CLOCK_IN].getVoltageSum()), c);
+            outputs[A_RNG].setVoltage(rA[c] * sc, c);
+            outputs[B_RNG].setVoltage(rB[c] * sc, c);
         }
     }
 };
@@ -170,10 +183,14 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
                                                      });
         srlt->box.pos.y = kPos - srlt->box.size.y * 0.5;
         addChild(srlt);
+
+        addInput(createInputCentered<PJ301MPort>(rack::Vec(60, kPos + 25),
+                                                 module,
+                                                 M::CHANCE_CV));
     }
 
     {
-        float kPos = 95;
+        float kPos = 120;
         bg->addLabel(rack::Vec(10, kPos), "Scale", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(60, kPos), module, M::RNG_SCALE));
         auto srlt = DotMatrixLightTextWidget::create(rack::Vec(80, kPos),
@@ -186,6 +203,21 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
         srlt->box.pos.y = kPos - srlt->box.size.y * 0.5;
         addChild(srlt);
     }
+
+    rack::Vec outP;
+    outP.x = 20;
+    outP.y = 170;
+    addParam(createParamCentered<CKSS>(outP, module, M::LATCH));
+    auto lp = outP;
+    lp.y -= 12;
+    bg->addLabel(lp, "latch", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);;
+
+    outP.x += 30;
+    addParam(createParamCentered<CKSS>(outP, module, M::RNG_IS_UNI));
+    lp = outP;
+    lp.y -= 12;
+    bg->addLabel(lp, "polar", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);;
+
 
     {
         auto h = 120;
