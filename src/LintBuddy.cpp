@@ -98,8 +98,12 @@ struct ProbeBypass : LintBuddyTest
         {
             auto i = br.inputId;
             auto o = br.outputId;
-            auto in = m->inputInfos[i]->name;
-            auto on = m->outputInfos[i]->name;
+
+            std::string in{"unnamed_input"}, on{"unnamed_output"};
+            if (i > 0 && i < m->inputInfos.size())
+                in = m->inputInfos[i]->name;
+            if (i > 0 && i < m->outputInfos.size())
+                on = m->outputInfos[i]->name;
 
             info.push_back("Bypass from " + std::to_string(i) + " (" + in + ") to "
                            + std::to_string(o) + " (" + on + ")");
