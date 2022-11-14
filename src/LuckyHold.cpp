@@ -35,6 +35,7 @@ struct LuckyHold : virtual bp::BaconModule
         A_RNG,
         B_CLOCK,
         B_RNG,
+        U_RNG,
         NUM_OUTPUTS
     };
 
@@ -66,6 +67,7 @@ struct LuckyHold : virtual bp::BaconModule
         configOutput(A_RNG, "A Sample and Hold RNG");
         configOutput(B_CLOCK, "B Clock");
         configOutput(B_RNG, "B Sample and Hold RNG");
+        configOutput(U_RNG, "Clocked UnChanced Sample and Hold");
         configBypass(CLOCK_IN, A_CLOCK);
         configBypass(CLOCK_IN, B_CLOCK);
 
@@ -75,6 +77,7 @@ struct LuckyHold : virtual bp::BaconModule
             bGate[i] = false;
             rA[i] = 0.f;
             rB[i] = 0.f;
+            rU[i] = 0.f;
         }
     }
 
@@ -82,7 +85,7 @@ struct LuckyHold : virtual bp::BaconModule
     int nChan{0};
     rack::dsp::SchmittTrigger inTrig;
     bool aGate[MAX_POLY], bGate[MAX_POLY];
-    float rA[MAX_POLY], rB[MAX_POLY];
+    float rA[MAX_POLY], rB[MAX_POLY], rU[MAX_POLY];
     void process(const ProcessArgs &args) override
     {
         int pc = params[POLY_COUNT].getValue();
@@ -103,6 +106,8 @@ struct LuckyHold : virtual bp::BaconModule
                 rv = ud(gen);
                 if (uni)
                     rv = rv - 0.5;
+
+                rU[c] = rv;
                 float chThresh = params[CHANCE].getValue();
                 chThresh += inputs[CHANCE_CV].getVoltage() * 0.2;
                 chThresh = std::clamp(chThresh, -1.f, 1.f);
@@ -128,6 +133,7 @@ struct LuckyHold : virtual bp::BaconModule
         outputs[B_CLOCK].setChannels(nChan);
         outputs[A_RNG].setChannels(nChan);
         outputs[B_RNG].setChannels(nChan);
+        outputs[U_RNG].setChannels(nChan);
 
         auto sc = params[RNG_SCALE].getValue();
         for (int c = 0; c < nChan; ++c)
@@ -136,6 +142,7 @@ struct LuckyHold : virtual bp::BaconModule
             outputs[B_CLOCK].setVoltage(bGate[c] * (lv ? 10 : inputs[CLOCK_IN].getVoltageSum()), c);
             outputs[A_RNG].setVoltage(rA[c] * sc, c);
             outputs[B_RNG].setVoltage(rB[c] * sc, c);
+            outputs[U_RNG].setVoltage(rU[c] * sc, c);
         }
     }
 };
@@ -268,6 +275,9 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
                      baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
         addInput(
             createInput<PJ301MPort>(Vec(35, RACK_HEIGHT - (h+24)), module, M::CLOCK_IN));
+
+        addOutput(
+            createOutput<PJ301MPort>(Vec(70, RACK_HEIGHT - (h+24)), module, M::U_RNG));
 
 
     }

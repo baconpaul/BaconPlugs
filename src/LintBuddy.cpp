@@ -87,12 +87,6 @@ struct ProbeBypass : LintBuddyTest
     {
         int idx{0};
 
-        if (m->paramQuantities.size() != m->params.size())
-            warnings.push_back( "Params and ParamQuantities differ" );
-
-
-        idx = 0;
-
         if (m->bypassRoutes.empty())
             info.push_back("No Bypass Routes in Module" );
         for (const auto &br : m->bypassRoutes)
@@ -112,6 +106,32 @@ struct ProbeBypass : LintBuddyTest
     }
 };
 
+struct JSONToInfo : LintBuddyTest
+{
+    std::string getName() override { return "JSON Extract"; }
+    void run(rack::Module *m, std::vector<std::string> &warnings,
+             std::vector<std::string> &info) override
+    {
+        if (!m)
+            return;
+        auto json = m->dataToJson();
+
+        if (!json)
+        {
+            warnings.push_back("dataToJSON returned a null" );
+        }
+        else
+        {
+            auto s = std::string(json_dumps(json, JSON_INDENT(2)));
+            std::stringstream ss(s);
+            std::string token;
+            while (std::getline(ss, token, '\n')) {
+                info.push_back(token);
+            }
+            json_decref(json);
+        }
+    }
+};
 
 struct LintBuddy : virtual bp::BaconModule
 {
@@ -327,7 +347,7 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
     butB.pos.x = 10;
     butB.pos.y = outP.y - 2.5 - 17;
     butB.size.x = 100;
-    butB.size.y = 24 + 5 + 20;
+    butB.size.y = 22;
 
     auto cb = new CBButton(butB.pos, butB.size);
     cb->getLabel = [this, m]() {
@@ -344,6 +364,26 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
         men->addChild(rack::createMenuLabel("Select Test"));
         addTest<EverythingHasAName>(men);
         addTest<ProbeBypass>(men);
+        addTest<JSONToInfo>(men);
+    };
+    addChild(cb);
+
+    butB.pos.y += 26;
+    cb = new CBButton(butB.pos, butB.size);
+    cb->getLabel = [this, m]() {
+        return "Dump to STDOUT";
+    };
+    cb->onPressed = [this, m]()
+    {
+        if (!m)
+            return;
+        std::cout << "WARNINGS:\n";
+        for (const auto &w : m->warnings)
+            std::cout << w << "\n";
+        std::cout << "INFO:\n";
+        for (const auto &w : m->info)
+            std::cout << w << "\n";
+        std::cout << std::endl;
     };
     addChild(cb);
 }
