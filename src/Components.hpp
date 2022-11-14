@@ -901,8 +901,6 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
             nvgTextAlign(vg, NVG_ALIGN_TOP | NVG_ALIGN_LEFT);
             nvgText(vg, 3, y, d.c_str(), nullptr);
             y += rowHeight;
-            if (y > box.size.y)
-                break;
         }
     }
     int h0{-1}, w0{-1};
