@@ -134,6 +134,35 @@ struct JSONToInfo : LintBuddyTest
     }
 };
 
+struct WidgetPositions : LintBuddyTest
+{
+    std::string getName() override { return "WidgetPositions"; }
+    void recurseTree(rack::Widget *w, std::vector<std::string> &info, const std::string &pfx = "")
+    {
+        for (auto c : w->children)
+        {
+            std::ostringstream oss;
+            auto nm = typeid(*c).name();
+            oss << pfx << "| box: w=" << w->box.size.x << ", h=" << w->box.size.y
+            << " x=" << w->box.size.x << " y=" << w->box.size.y << " class=[" << nm << "]";
+            info.push_back(oss.str());
+            if (!c->children.empty())
+                recurseTree(c, info, pfx + "|--");
+        }
+    }
+    void run(rack::Module *m, std::vector<std::string> &warnings,
+             std::vector<std::string> &info) override
+    {
+        if (!m)
+            return;
+        auto w = APP->scene->rack->getModule(m->getId());
+        if (!w)
+            warnings.push_back("Unable to locate Widget");
+
+        recurseTree(w, info, "");
+    }
+};
+
 struct LintBuddy : virtual bp::BaconModule
 {
     enum ParamIds
@@ -391,6 +420,7 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
         addTest<EverythingHasAName>(men);
         addTest<ProbeBypass>(men);
         addTest<JSONToInfo>(men);
+        addTest<WidgetPositions>(men);
     };
     addChild(cb);
 
