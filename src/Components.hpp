@@ -847,9 +847,10 @@ struct CBButton : rack::Widget,  baconpaul::rackplugs::StyleParticipant
     }
 };
 
-struct ScrollableStringList : virtual Widget, baconpaul::rackplugs::StyleParticipant
+struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleParticipant
 {
     BufferedDrawFunctionWidget *bg{nullptr}, *list{nullptr};
+    rack::ui::ScrollWidget *sw{nullptr};
     std::function<std::vector<std::string>()> getList;
     std::function<bool()> isListDirty;
 
@@ -865,9 +866,13 @@ struct ScrollableStringList : virtual Widget, baconpaul::rackplugs::StylePartici
                                             [this](auto v) { drawBG(v);});
         addChild(bg);
 
-        list = new BufferedDrawFunctionWidget(rack::Vec(0,0), size,
+        sw = new rack::ui::ScrollWidget;
+        sw->box.pos = rack::Vec(0,0);
+        sw->box.size = size;
+        addChild(sw);
+        list = new BufferedDrawFunctionWidget(rack::Vec(0,0), rack::Vec(1000,1000),
                                             [this](auto v) { drawList(v);});
-        addChild(list);
+        sw->container->addChild(list);
     }
 
     void drawBG(NVGcontext *vg)
@@ -881,64 +886,47 @@ struct ScrollableStringList : virtual Widget, baconpaul::rackplugs::StylePartici
         nvgStroke(vg);
     }
 
+    static constexpr int rowHeight{13};
     void drawList(NVGcontext *vg)
     {
         auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
 
         int y = 3;
-        int start = std::clamp((int)off, 0, (int)data.size());
-
-        if (data.size() < 6)
-            start = 0;
-
-        for (int i=start; i<data.size(); ++i)
+        for (const auto &d : data)
         {
-            const auto &d = data[i];
             nvgBeginPath(vg);
             nvgFontFaceId(vg, memFont);
             nvgFontSize(vg, 10);
             nvgFillColor(vg, nvgRGB(255,255,255));
             nvgTextAlign(vg, NVG_ALIGN_TOP | NVG_ALIGN_LEFT);
             nvgText(vg, 3, y, d.c_str(), nullptr);
-            y += 13;
+            y += rowHeight;
             if (y > box.size.y)
                 break;
         }
     }
+    int h0{-1}, w0{-1};
     void step() override
     {
         if (isListDirty())
         {
-            off = 0;
+            if (h0 < 0) h0 = box.size.y;
+            if (w0 < 0) w0 = box.size.x;
+
             data = getList();
+
+            auto h = std::max(h0, (int)(data.size() + 1) * rowHeight);
+            auto w = w0;
+            for (const auto & d : data)
+            {
+                w = std::max((int)d.size() * 11, w);
+            }
             bg->dirty = true;
             list->dirty = true;
+            list->box.size.x = w;
+            list->box.size.y = h;
         }
-    }
-
-    float off{0.f};
-    void onButton(const ButtonEvent &e) override {
-        if (e.button != GLFW_MOUSE_BUTTON_LEFT)
-            return;
-        e.consume(this);
-    }
-    void onDragStart(const DragStartEvent &e) override
-    {
-        if (e.button != GLFW_MOUSE_BUTTON_LEFT)
-            return;
-        e.consume(this);
-    }
-    void onDragMove(const DragMoveEvent& e) override
-    {
-        if (e.button != GLFW_MOUSE_BUTTON_LEFT)
-            return;
-
-        auto yd = e.mouseDelta.y/5;
-        off -= yd;
-
-        off = std::clamp(off, 0.f, data.size() * 1.f);
-        list->dirty = true;
-        e.consume(this);
+        OpaqueWidget::step();
     }
 
     void onStyleChanged() override
