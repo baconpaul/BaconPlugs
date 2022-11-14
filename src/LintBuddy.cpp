@@ -1,5 +1,6 @@
 #include "BaconPlugs.hpp"
-#include <initializer_list>
+#include <cstdio>
+#include <fstream>
 
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
@@ -263,6 +264,31 @@ struct LintBuddyWidget : bp::BaconModuleWidget
             }
         }));
     }
+
+    void showAsHtml()
+    {
+        std::string name = std::tmpnam(nullptr);
+        name += ".html";
+        auto of = std::ofstream(name);
+        if (of.is_open())
+        {
+            of << "<html><body><pre>\n";
+
+            auto m = dynamic_cast<LintBuddy *>(module);
+            of << "LintBuddy: module=" << m->currentTargetName << "\n";
+            of << "         : test  =" << m->currentTest->getName() << "\n";
+            of << "\nWARNINGS (" << m->warnings.size() << ")\n";
+            for (const auto d : m->warnings)
+                of << d << "\n";
+
+            of << "\nINFO (" << m->info.size() << ")\n";
+            for (const auto d : m->info)
+                of << d << "\n";
+
+            of.close();
+            rack::system::openBrowser("file://" + name );
+        }
+    }
 };
 
 LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
@@ -346,7 +372,7 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
     rack::Rect butB;
     butB.pos.x = 10;
     butB.pos.y = outP.y - 2.5 - 17;
-    butB.size.x = 100;
+    butB.size.x = 120;
     butB.size.y = 22;
 
     auto cb = new CBButton(butB.pos, butB.size);
@@ -369,9 +395,10 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
     addChild(cb);
 
     butB.pos.y += 26;
+    butB.size.x = butB.size.x * 0.5 - 2;
     cb = new CBButton(butB.pos, butB.size);
     cb->getLabel = [this, m]() {
-        return "Dump to STDOUT";
+        return "To STDOUT";
     };
     cb->onPressed = [this, m]()
     {
@@ -384,6 +411,17 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
         for (const auto &w : m->info)
             std::cout << w << "\n";
         std::cout << std::endl;
+    };
+    addChild(cb);
+
+    butB.pos.x  += butB.size.x + 4;
+    cb = new CBButton(butB.pos, butB.size);
+    cb->getLabel = [this, m]() {
+        return "To HTML";
+    };
+    cb->onPressed = [this]()
+    {
+        showAsHtml();
     };
     addChild(cb);
 }
