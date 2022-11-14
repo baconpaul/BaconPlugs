@@ -50,6 +50,8 @@ template <typename TBase> struct SampleDelay : virtual TBase
             pos[i] = 0;
             std::fill(ring[i].begin(), ring[i].end(), 0);
         }
+
+        TBase::configBypass(SIGNAL_IN, SIGNAL_OUT);
     }
 
     void process(const typename TBase::ProcessArgs &args) override

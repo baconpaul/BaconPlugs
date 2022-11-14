@@ -60,6 +60,8 @@ struct Bitulator : bp::BaconModule
 
         lights[BITULATING_LIGHT].value = 1;
         lights[CRUNCHING_LIGHT].value = 1;
+
+        configBypass(SIGNAL_INPUT, CRUNCHED_OUTPUT);
     }
 
     void process(const ProcessArgs &args) override

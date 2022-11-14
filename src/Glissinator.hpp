@@ -50,6 +50,8 @@ template <typename TBase> struct Glissinator : public TBase
         TBase::configOutput(GLISSING_GATE, "Gate at end of Gliss");
         for (int i = 0; i < 16; ++i)
             offsetCount[i] = -1;
+
+        TBase::configBypass(SOURCE_INPUT, SLID_OUTPUT);
     }
 
     void process(const typename TBase::ProcessArgs &args) override

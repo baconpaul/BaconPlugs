@@ -33,7 +33,6 @@ template <typename TBase> struct PolyGnome : virtual TBase
                            1, // the "1" is for the 1/4 note clock which isn't parameterized
         RUN_OUTPUT = CLOCK_CV_LEVEL_0 + NUM_CLOCKS + 1,
         RESET_OUTPUT,
-        BPM_CV_OUTPUT,
 
         NUM_OUTPUTS
     };
@@ -74,7 +73,26 @@ template <typename TBase> struct PolyGnome : virtual TBase
         for (int i=0; i<NUM_CLOCKS + 1; ++i)
             priorGates[i] = false;
         TBase::configSwitch(RUN_PARAM, 0, 1, 1, "Run", { "Stop", "Run" });
+        TBase::configSwitch(RESET_PARAM, 0, 1, 1, "Reset", { "Off", "Reset" });
         auto sre = TBase::configParam(SELF_RESET_EVERY, 0, 64, 0, "Self Reset Every" );
+
+        TBase::configInput(RUN_INPUT, "Run");
+        TBase::configInput(RESET_INPUT, "Reset");
+        TBase::configInput(BPM_INPUT, "BPM CV");
+
+        TBase::configOutput(RUN_OUTPUT, "Run");
+        TBase::configOutput(RESET_OUTPUT, "Reset");
+        TBase::configOutput(CLOCK_GATE_0, "Base Clock Gate");
+        TBase::configOutput(CLOCK_CV_LEVEL_0, "Base BPM CV");
+
+        TBase::configBypass(RUN_INPUT, RUN_OUTPUT);
+        TBase::configBypass(RESET_INPUT, RESET_OUTPUT);
+        TBase::configBypass(BPM_INPUT, CLOCK_CV_LEVEL_0);
+        for (int i=0; i<NUM_CLOCKS; ++i)
+        {
+            TBase::configOutput(CLOCK_GATE_0 + i + 1, "Clock " + std::to_string(i+1) + " Gate");
+            TBase::configOutput(CLOCK_CV_LEVEL_0 + i + 1, "BPM " + std::to_string(i+1) + " CV");
+        }
         sre->snapEnabled = true;
     }
 

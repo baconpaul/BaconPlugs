@@ -49,7 +49,7 @@ struct QuantEyes : virtual bp::BaconModule
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(ROOT_STEP, 0, 12, 0, "The root in 1/12 of a volt");
         for (int i = 0; i < SCALE_LENGTH; ++i)
-            configParam(SCALE_PARAM + i, 0, 1, 0);
+            configParam(SCALE_PARAM + i, 0, 1, 0, "Allow Scale Tone " + std::to_string(i+1));
         for (int i = 0; i < SCALE_LENGTH; ++i)
             scaleState[i] = 1;
 
@@ -61,6 +61,7 @@ struct QuantEyes : virtual bp::BaconModule
             priorOut[i] = 0;
             trigOut[i] = 0;
         }
+        configBypass(CV_INPUT, QUANTIZED_OUT);
     }
 
     void process(const ProcessArgs &args) override

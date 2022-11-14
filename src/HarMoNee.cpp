@@ -63,7 +63,8 @@ struct HarMoNee : bp::BaconModule
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(GLISS_RATE, 0.1, 1, 0.55, "Glissando rate when things change");
-        configParam(UP_OR_DOWN_CV, 0, 1, 1, "Increase or Decrease by interval");
+        configParam(UP_OR_DOWN, 0, 1, 1, "Increase or Decrease by interval");
+        const char *labels[] = {"1/2", "W", "m3", "III", "V", "O"};
         for (int i = HarMoNee::HALF_STEP; i <= HarMoNee::OCTAVE; ++i)
         {
             int v;
@@ -75,7 +76,7 @@ struct HarMoNee : bp::BaconModule
             {
                 v = 0;
             }
-            configParam(i, 0, 1, v);
+            configParam(i, 0, 1, v, "Offset by " + std::string(labels[i-HALF_STEP]));
         }
 
         for (int i = 0; i < OCTAVE; ++i)
@@ -102,6 +103,9 @@ struct HarMoNee : bp::BaconModule
         priorOffset = 0;
         targetOffset = 0;
         offsetCount = 0;
+
+        configBypass(SOURCE_INPUT, ECHO_OUTPUT);
+        configBypass(SOURCE_INPUT, INCREASED_OUTPUT);
     }
 
     void process(const ProcessArgs &args) override;

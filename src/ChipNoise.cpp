@@ -50,10 +50,10 @@ struct ChipNoise : virtual bp::BaconModule
     ChipNoise()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-        configParam(LONG_MODE, 0, 1, 1);
+        configSwitch(LONG_MODE, 0, 1, 1, "Use Long Sequence", {"Off", "On"});
         configParam(NOISE_LENGTH, 0, 15, 7, "Length of sequence");
-        configParam(SHORT_LEN, 0, 1, 1);
-        configParam(PERIOD_93, 0, 351, 17);
+        configSwitch(SHORT_LEN, 0, 1, 1, "Short Sequence Length", {"31", "93"});
+        configParam(PERIOD_93, 0, 351, 17, "Which Length-93 Sequence");
 
         configInput(NOISE_LENGTH_INPUT, "Wavelength (akin to tone roughly)");
         configOutput(NOISE_OUTPUT, "The Noise");
