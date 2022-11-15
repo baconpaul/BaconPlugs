@@ -194,6 +194,8 @@ struct LintBuddy : virtual bp::BaconModule
         configOutput(THE_OUT_PROBE, "THE PROBE (OUT)");
 
         currentTest = std::make_unique<EverythingHasAName>();
+
+        updateCurrentTarget(nullptr);
     }
 
     bool wasOutConnected{false}, wasInConnected{false};
@@ -220,6 +222,12 @@ struct LintBuddy : virtual bp::BaconModule
         if (!m || !m->model)
         {
             currentTargetName = "Disconnected";
+            warnings.push_back( "LintBuddy is a Developer Tool.");
+            warnings.push_back( "" );
+            warnings.push_back("It checks module features but has no");
+            warnings.push_back("musical purpose. Please don't use");
+            warnings.push_back("it in performance patches. Want to add");
+            warnings.push_back("a test or feature? Happy to take a PR!");
             updateCount ++;
             return;
         }
@@ -280,6 +288,14 @@ struct LintBuddyWidget : bp::BaconModuleWidget
     LintBuddyWidget(LintBuddy *model);
 
     int64_t warnC{0}, infoC{0};
+    std::vector<std::string> deleteOnExit;
+    ~LintBuddyWidget()
+    {
+        for (const auto &d : deleteOnExit)
+        {
+            rack::system::remove(d);
+        }
+    }
 
     template<typename T> void addTest(rack::ui::Menu *m)
     {
@@ -294,25 +310,37 @@ struct LintBuddyWidget : bp::BaconModuleWidget
         }));
     }
 
+    std::string plainTextContents()
+    {
+        std::ostringstream of;
+        auto m = dynamic_cast<LintBuddy *>(module);
+        of << "LintBuddy: module=" << m->currentTargetName << "\n";
+        of << "         : test  =" << m->currentTest->getName() << "\n";
+        of << "\nWARNINGS (" << m->warnings.size() << ")\n";
+        for (const auto d : m->warnings)
+            of << d << "\n";
+
+        of << "\nINFO (" << m->info.size() << ")\n";
+        for (const auto d : m->info)
+            of << d << "\n";
+
+        return of.str();
+    }
     void showAsHtml()
     {
-        std::string name = std::tmpnam(nullptr);
-        name += ".html";
+        std::string lintBuddyReports = rack::asset::user("BaconMusic/LintBuddy/");
+        if (!rack::system::isDirectory(lintBuddyReports))
+            rack::system::createDirectory(lintBuddyReports);
+
+        // this is obviously lame
+        auto name = lintBuddyReports + "/rpt-" + std::to_string(rand()) + ".html";
+        deleteOnExit.push_back(name);
         auto of = std::ofstream(name);
         if (of.is_open())
         {
             of << "<html><body><pre>\n";
-
-            auto m = dynamic_cast<LintBuddy *>(module);
-            of << "LintBuddy: module=" << m->currentTargetName << "\n";
-            of << "         : test  =" << m->currentTest->getName() << "\n";
-            of << "\nWARNINGS (" << m->warnings.size() << ")\n";
-            for (const auto d : m->warnings)
-                of << d << "\n";
-
-            of << "\nINFO (" << m->info.size() << ")\n";
-            for (const auto d : m->info)
-                of << d << "\n";
+            of << plainTextContents() << "\n";
+            of << "</html></body></pre>\n";
 
             of.close();
             rack::system::openBrowser("file://" + name );
@@ -425,35 +453,28 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
     addChild(cb);
 
     butB.pos.y += 26;
-    butB.size.x = butB.size.x * 0.5 - 2;
     cb = new CBButton(butB.pos, butB.size);
     cb->getLabel = [this, m]() {
-        return "To STDOUT";
+        return "Output To...";
     };
     cb->onPressed = [this, m]()
     {
         if (!m)
             return;
-        std::cout << "WARNINGS:\n";
-        for (const auto &w : m->warnings)
-            std::cout << w << "\n";
-        std::cout << "INFO:\n";
-        for (const auto &w : m->info)
-            std::cout << w << "\n";
-        std::cout << std::endl;
+        auto men = rack::createMenu();
+        men->addChild(rack::createMenuLabel("Output To"));
+        men->addChild(rack::createMenuItem("STDOUT (if attached)", "", [this](){
+                          std::cout << plainTextContents() << std::endl;
+                }));
+        men->addChild(rack::createMenuItem("HTML", "", [this](){
+               showAsHtml();
+               }));
+        men->addChild(rack::createMenuItem("RACK Log", "", [this](){
+            INFO("%s", ("LintBuddy Log Output\n" + plainTextContents()).c_str());
+        }));
     };
     addChild(cb);
 
-    butB.pos.x  += butB.size.x + 4;
-    cb = new CBButton(butB.pos, butB.size);
-    cb->getLabel = [this, m]() {
-        return "To HTML";
-    };
-    cb->onPressed = [this]()
-    {
-        showAsHtml();
-    };
-    addChild(cb);
 }
 
 Model *modelLintBuddy = createModel<LintBuddy, LintBuddyWidget>("LintBuddy");
