@@ -58,17 +58,17 @@ struct LuckyHold : virtual bp::BaconModule
         s->snapEnabled = true;
 
         configParam(CHANCE, -1, 1, 0, "A (-1) or B (1) chance?", "%", 0, 100);
-        configParam(RNG_SCALE, 0, 10, 10, "RNG Scale?", "V");
-        configParam(RNG_OFFSET, -5, 5, 0, "RNG Center", "V");
+        configParam(RNG_SCALE, 0, 10, 10, "Random CV Scale", "V");
+        configParam(RNG_OFFSET, -5, 5, 0, "Random CV Center", "V");
         configSwitch(LATCH, 0, 1, 1, "Latch vs Passthrough", { "Passthrough", "Latch" } );
 
         configInput(CLOCK_IN, "Clock");
         configInput(CHANCE_CV, "Chance");
         configOutput(A_CLOCK, "A Clock");
-        configOutput(A_RNG, "A Sample and Hold RNG");
+        configOutput(A_RNG, "A Sample and Hold Random CV");
         configOutput(B_CLOCK, "B Clock");
-        configOutput(B_RNG, "B Sample and Hold RNG");
-        configOutput(U_RNG, "Clocked UnChanced Sample and Hold");
+        configOutput(B_RNG, "B Sample and Hold Random CV");
+        configOutput(U_RNG, "Clocked UnChanced Sample and Hold Random CV");
         configBypass(CLOCK_IN, A_CLOCK);
         configBypass(CLOCK_IN, B_CLOCK);
 
@@ -204,15 +204,27 @@ struct ABLights : rack::TransparentWidget, baconpaul::rackplugs::StyleParticipan
     void drawBG(NVGcontext *vg) {
         auto style = baconpaul::rackplugs::BaconStyle::get();
 
+        int nChan = MAX_POLY;
+        if (module)
+            nChan = module->nChan;
         for (int i=0; i<MAX_POLY; ++i)
         {
+            nvgBeginPath(vg);
+            nvgStrokeColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+            nvgMoveTo(vg, xc0 + i * dx, yc0 + cSize);
+            nvgLineTo(vg, xc0 + i * dx, yc0 + 2 * dy - cSize);
+            nvgStrokeWidth(vg, 0.5);
+            nvgStroke(vg);
             for (int j=0; j<3; ++j)
             {
+                if (j==1)
+                    continue;
                 nvgBeginPath(vg);
                 nvgEllipse(vg, xc0 + dx * i, yc0 + dy * j, cSize, cSize);
                 nvgFillColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::LIGHT_BG));
                 nvgStrokeColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
-                nvgFill(vg);
+                if (i < nChan)
+                    nvgFill(vg);
                 nvgStrokeWidth(vg, 0.5);
                 nvgStroke(vg);
             }
@@ -292,7 +304,7 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
     {
         int yp = 120, h = 40;
         bg->addRoundedBorder(rack::Vec(5, yp), rack::Vec(box.size.x - 10, h));
-        bg->addLabel(rack::Vec(8, yp + h * 0.5), "RNG", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
+        bg->addLabel(rack::Vec(8, yp + h * 0.5), "Rand CV", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
 
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(65, yp + h * 0.5 - 3), module, M::RNG_SCALE));
         bg->addLabel(rack::Vec(65, yp + h * 0.5 + 10), "scale", 8, NVG_ALIGN_TOP | NVG_ALIGN_CENTER);
@@ -322,7 +334,7 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
 
         bg->addLabel(Vec(80, RACK_HEIGHT - (h+12)), labels[i].c_str(), 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
-        bg->addLabel(Vec(80, RACK_HEIGHT - h), "rng", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
+        bg->addLabel(Vec(80, RACK_HEIGHT - h), "CV", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
         addOutput(
             createOutput<PJ301MPort>(Vec(95, RACK_HEIGHT - (h+24)), module, M::A_RNG + i * 2));
