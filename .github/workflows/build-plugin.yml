@@ -1,5 +1,5 @@
 name: Build VCV Rack Plugin
--on:
+on:
   push:
     branches:
       - main
