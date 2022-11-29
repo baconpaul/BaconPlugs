@@ -163,6 +163,32 @@ struct WidgetPositions : LintBuddyTest
     }
 };
 
+
+
+
+struct GotAnyWhiteLists : LintBuddyTest
+{
+    std::string getName() override { return "WhiteList"; }
+    void run(rack::Module *m, std::vector<std::string> &warnings,
+             std::vector<std::string> &info) override
+    {
+        int idx{0};
+
+        info.clear();
+        for (const auto & [ k, pl ] : rack::settings::moduleWhitelist)
+        {
+            if (pl.subscribed)
+            {
+                info.push_back("Subscribed: " + k);
+            }
+            else
+            {
+                warnings.push_back("Partial Sub: " + k + " to " + std::to_string(pl.moduleSlugs.size()));
+            }
+        }
+    }
+};
+
 struct LintBuddy : virtual bp::BaconModule
 {
     enum ParamIds
@@ -343,6 +369,8 @@ struct LintBuddyWidget : bp::BaconModuleWidget
             of << "</html></body></pre>\n";
 
             of.close();
+            if (name[0] != '/')
+                name = "/" + name;
             rack::system::openBrowser("file://" + name );
         }
     }
@@ -449,6 +477,7 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
         addTest<ProbeBypass>(men);
         addTest<JSONToInfo>(men);
         addTest<WidgetPositions>(men);
+        addTest<GotAnyWhiteLists>(men);
     };
     addChild(cb);
 
