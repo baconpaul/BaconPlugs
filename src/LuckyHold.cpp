@@ -270,7 +270,6 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
     BaconBackground *bg = new BaconBackground(box.size, "LuckyHold");
     addChild(bg->wrappedInFramebuffer());
 
-    int dmdig = 6;
     // Poly Knob and light
     {
         int yp = 30, h = 40;

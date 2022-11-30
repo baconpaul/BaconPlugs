@@ -761,7 +761,7 @@ struct DynamicLabel : virtual TransparentWidget, baconpaul::rackplugs::StylePart
 
     DynamicLabel(Vec pos, std::function<std::string(void)> f, int px, int al,
                  baconpaul::rackplugs::BaconStyle::Colors col)
-        : fn(std::move(f)), pxSize(px), align(al), color(col)
+        : pxSize(px), align(al), fn(std::move(f)), color(col)
     {
         box.pos = pos;
     }
@@ -866,7 +866,7 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
             auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
 
             int y = 3;
-             for (int i=0; i<that->data.size(); ++i)
+            for (auto i=0U; i<that->data.size(); ++i)
             {
                 auto d = that->data[i];
                 if (y > args.clipBox.pos.y - rowHeight && y < args.clipBox.pos.y + box.size.y + 2 * rowHeight)

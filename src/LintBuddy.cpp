@@ -24,13 +24,10 @@ struct EverythingHasAName : LintBuddyTest
     void run(rack::Module *m, std::vector<std::string> &warnings,
              std::vector<std::string> &info) override
     {
-        int idx{0};
-
         if (m->paramQuantities.size() != m->params.size())
             warnings.push_back( "Params and ParamQuantities differ" );
 
-
-        idx = 0;
+        int idx{0};
         for (auto &pq : m->paramQuantities)
         {
             std::ostringstream oss;
@@ -86,8 +83,6 @@ struct ProbeBypass : LintBuddyTest
     void run(rack::Module *m, std::vector<std::string> &warnings,
              std::vector<std::string> &info) override
     {
-        int idx{0};
-
         if (m->bypassRoutes.empty())
             info.push_back("No Bypass Routes in Module" );
         for (const auto &br : m->bypassRoutes)
@@ -96,9 +91,9 @@ struct ProbeBypass : LintBuddyTest
             auto o = br.outputId;
 
             std::string in{"unnamed_input"}, on{"unnamed_output"};
-            if (i >= 0 && i < m->inputInfos.size())
+            if (i >= 0 && i < (int)m->inputInfos.size())
                 in = m->inputInfos[i]->name;
-            if (o >= 0 && o < m->outputInfos.size())
+            if (o >= 0 && o < (int)m->outputInfos.size())
                 on = m->outputInfos[o]->name;
 
             info.push_back("Bypass from " + std::to_string(i) + " (" + in + ") to "
@@ -172,8 +167,6 @@ struct GotAnyWhiteLists : LintBuddyTest
     void run(rack::Module *m, std::vector<std::string> &warnings,
              std::vector<std::string> &info) override
     {
-        int idx{0};
-
         info.clear();
         for (const auto & [ k, pl ] : rack::settings::moduleWhitelist)
         {
@@ -327,7 +320,7 @@ struct LintBuddyWidget : bp::BaconModuleWidget
     {
         auto tmp = std::make_unique<T>();
         auto lbm = dynamic_cast<LintBuddy *>(module);
-        m->addChild(rack::createMenuItem(tmp->getName(), "", [this, lbm] {
+        m->addChild(rack::createMenuItem(tmp->getName(), "", [lbm] {
             if (lbm)
             {
                 lbm->currentTest = std::make_unique<T>();
@@ -343,11 +336,11 @@ struct LintBuddyWidget : bp::BaconModuleWidget
         of << "LintBuddy: module=" << m->currentTargetName << "\n";
         of << "         : test  =" << m->currentTest->getName() << "\n";
         of << "\nWARNINGS (" << m->warnings.size() << ")\n";
-        for (const auto d : m->warnings)
+        for (const auto &d : m->warnings)
             of << d << "\n";
 
         of << "\nINFO (" << m->info.size() << ")\n";
-        for (const auto d : m->info)
+        for (const auto &d : m->info)
             of << d << "\n";
 
         return of.str();
@@ -461,13 +454,13 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
     butB.size.y = 22;
 
     auto cb = new CBButton(butB.pos, butB.size);
-    cb->getLabel = [this, m]() {
+    cb->getLabel = [m]() {
         if (m)
             return m->currentTest->getName();
         else
             return std::string("Test Selector");
     };
-    cb->onPressed = [this, m]()
+    cb->onPressed = [this,m]()
     {
         if (!m)
             return;
@@ -483,7 +476,7 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
 
     butB.pos.y += 26;
     cb = new CBButton(butB.pos, butB.size);
-    cb->getLabel = [this, m]() {
+    cb->getLabel = []() {
         return "Output To...";
     };
     cb->onPressed = [this, m]()
