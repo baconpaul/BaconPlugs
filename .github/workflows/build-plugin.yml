@@ -9,7 +9,7 @@ on:
   pull_request:
 
 env:
-  rack-sdk-version: 2.2.0
+  rack-sdk-version: 2.2.1
   rack-plugin-toolchain-dir: /home/build/rack-plugin-toolchain
 
 defaults:
@@ -89,17 +89,16 @@ jobs:
           pushd $HOME
           curl -o Rack-SDK.zip https://vcvrack.com/downloads/Rack-SDK-${{ env.rack-sdk-version }}-mac-${{ matrix.platform }}.zip
           unzip Rack-SDK.zip
-      - name: Patch Rack-SDK for arm64
-        if: ${{ matrix.platform == 'arm64' }}
-        run: |
-          patch -ruN -d $HOME/Rack-SDK < ./scripts/rack-sdk-220-cross.patch
       - name: Build plugin
         run: |
           export RACK_DIR=$HOME/Rack-SDK
-          export CROSS_COMPILE=${{ matrix.platform }}
-          make -j dep
-          make -j dist
-          lipo -archs plugin.dylib
+          CROSS_COMPILE_TARGET_x64=x86_64-apple-darwin
+          CROSS_COMPILE_TARGET_arm64=arm64-apple-darwin
+          export RACK_DIR=$HOME/Rack-SDK
+          export CROSS_COMPILE=$CROSS_COMPILE_TARGET_${{ matrix.platform }}
+          make -j 4 dep
+          make -j 4 dist
+          echo "Plugin architecture '$(lipo -archs plugin.dylib)'"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
