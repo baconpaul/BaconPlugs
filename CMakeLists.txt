@@ -15,15 +15,11 @@ list(REMOVE_ITEM SOURCES src/BaconPlugs.cpp)
 
 add_library(${PLUGIN_NAME} STATIC ${SOURCES})
 
-target_link_libraries(${PLUGIN_NAME} LINK_PUBLIC RackSDK)
+target_link_libraries(${PLUGIN_NAME} PUBLIC RackSDK)
 target_include_directories(${PLUGIN_NAME} PRIVATE libs/midifile/include libs/open303-code/Source/DSPCode)
 
 target_sources(${RACK_PLUGIN_LIB} PRIVATE src/BaconPlugs.cpp)
 target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE ${PLUGIN_NAME})
-
-install(TARGETS ${RACK_PLUGIN_LIB} ${PLUGIN_NAME}
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib/static)
 
 add_custom_target(${PROJECT_NAME}_quick_install
         COMMAND cmake -E copy ${CMAKE_BINARY_DIR}/${LIB_NAME}.* ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}

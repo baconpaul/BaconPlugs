@@ -26,6 +26,8 @@ $(libbacon_music):
 # Add .cpp and .c files to the build
 SOURCES += src/BaconPlugs.cpp
 
+dist:	res
+
 # Add files to the ZIP package when running `make dist`
 # The compiled plugin is automatically added.
 DISTRIBUTABLES += $(wildcard LICENSE*) res patches README.md
