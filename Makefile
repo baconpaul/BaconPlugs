@@ -1,18 +1,30 @@
+RACK_DIR ?= ../..
+include $(RACK_DIR)/arch.mk
 
-# FLAGS will be passed to both the C and C++ compiler
-FLAGS +=
-CFLAGS +=
-CXXFLAGS += -std=c++17 -Wno-array-bounds -Wno-strict-aliasing -Ilibs/midifile/include -Ilibs/open303-code/Source/DSPCode/
+CMAKE_BUILD=dep/baconmusic-build
+libbacon_music := $(CMAKE_BUILD)/libBaconMusic.a
 
+OBJECTS += $(libbacon_music)
 
-# Careful about linking to shared libraries, since you can't assume much about the user's environment and library search path.
-# Static libraries are fine.
-LDFLAGS +=
+# Trigger the BaconPlugs CMake build when running `make dep`
+DEPS += $(libbacon_music)
+
+EXTRA_CMAKE :=
+ifdef ARCH_MAC
+ifdef ARCH_ARM64
+    EXTRA_CMAKE += -DCMAKE_OSX_ARCHITECTURES="arm64"
+else
+    EXTRA_CMAKE += -DCMAKE_OSX_ARCHITECTURES="x86_64"
+endif
+endif
+
+$(libbacon_music):
+	$(CMAKE) -B$(CMAKE_BUILD) -DRACK_SDK_DIR=$(RACK_DIR) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CMAKE_BUILD)/dist $(EXTRA_CMAKE)
+	cmake --build $(CMAKE_BUILD) -- -j $(shell getconf _NPROCESSORS_ONLN)
+	cmake --install $(CMAKE_BUILD)
 
 # Add .cpp and .c files to the build
-SOURCES += $(wildcard src/*.cpp)
-SOURCES += $(wildcard libs/midifile/src/*.cpp)
-SOURCES += $(wildcard libs/open303-code/Source/DSPCode/*.cpp)
+SOURCES += src/BaconPlugs.cpp
 
 # Add files to the ZIP package when running `make dist`
 # The compiled plugin is automatically added.
@@ -22,12 +34,7 @@ DISTRIBUTABLES += $(wildcard LICENSE*) res patches README.md
 RACK_DIR ?= ../..
 include $(RACK_DIR)/plugin.mk
 
-
 CXXFLAGS := $(filter-out -std=c++11,$(CXXFLAGS))
-
-shadist:	dist
-	openssl sha256 dist/$(SLUG)-$(VERSION)-$(ARCH).zip > dist/$(SLUG)-$(VERSION)-$(ARCH).zip.sha256
-
 
 COMMUNITY_ISSUE=https://github.com/VCVRack/community/issues/433
 
@@ -43,30 +50,3 @@ issue_blurb:	dist
 	@echo "* Version: v$(VERSION)"
 	@echo "* Transaction: " `git rev-parse HEAD`
 	@echo "* Branch: " `git rev-parse --abbrev-ref HEAD`
-
-install_local:	dist
-	unzip -o dist/$(SLUG)-$(VERSION)-$(ARCH).zip -d ~/Documents/Rack/plugins
-
-run_local:	install_local
-	/Applications/Rack.app/Contents/MacOS/Rack
-
-push_git:
-	@echo "Pushing current branch to git and dropbox"
-	git push dropbox `git rev-parse --abbrev-ref HEAD`
-	git push github `git rev-parse --abbrev-ref HEAD`
-
-win-dist: all
-	rm -rf dist
-	mkdir -p dist/$(SLUG)
-	@# Strip and copy plugin binary
-	cp $(TARGET) dist/$(SLUG)/
-ifdef ARCH_MAC
-	$(STRIP) -S dist/$(SLUG)/$(TARGET)
-else
-	$(STRIP) -s dist/$(SLUG)/$(TARGET)
-endif
-	@# Copy distributables
-	cp -R $(DISTRIBUTABLES) dist/$(SLUG)/
-	@# Create ZIP package
-	echo "cd dist && 7z.exe a $(SLUG)-$(VERSION)-$(ARCH).zip -r $(SLUG)"
-	cd dist && 7z.exe a $(SLUG)-$(VERSION)-$(ARCH).zip -r $(SLUG)
