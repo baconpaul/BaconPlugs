@@ -1,33 +1,31 @@
-cmake_minimum_required(VERSION 3.20)
-set(CMAKE_OSX_ARCHITECTURES "x86_64")
-project(baconplugs-rack-hack VERSION 1.0 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.16)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment version")
+project(BaconMusic VERSION 1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-file(GLOB RACK_SOURCES src/*.cpp libs/midifile/src/*.cpp libs/open303-code/Source/DSPCode/*.cpp)
-set(RACK_DIR "/Users/paul/dev/music/rack/Rack-SDK")
+set(PLUGIN_NAME ${PROJECT_NAME})
+set(ADDITIONAL_PLUGIN_DISTRIBUTABLES patches README.md)
+include(RackSDK.cmake)
 
-add_library(${PROJECT_NAME} STATIC ${RACK_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE
-        ${RACK_DIR}/include
-        ${RACK_DIR}/dep/include
-        libs/midifile/include
-        libs/open303-code/Source/DSPCode
+message(STATUS "Installing into '${CMAKE_INSTALL_PREFIX}'")
+
+file(GLOB SOURCES src/*.cpp libs/midifile/src/*.cpp libs/open303-code/Source/DSPCode/*.cpp)
+list(REMOVE_ITEM SOURCES src/BaconPlugs.cpp)
+
+add_compile_options(-fvisibility=hidden -fvisibility-inlines-hidden)
+
+add_library(${PLUGIN_NAME} STATIC ${SOURCES})
+
+target_link_libraries(${PLUGIN_NAME} PUBLIC RackSDK)
+target_include_directories(${PLUGIN_NAME} PRIVATE libs/midifile/include libs/open303-code/Source/DSPCode)
+
+target_sources(${RACK_PLUGIN_LIB} PRIVATE src/BaconPlugs.cpp)
+target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE ${PLUGIN_NAME})
+
+add_custom_target(${PROJECT_NAME}_quick_install
+        COMMAND cmake -E copy ${CMAKE_BINARY_DIR}/${RACK_PLUGIN_LIB}.* ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
+        COMMAND cmake -E copy ${CMAKE_SOURCE_DIR}/plugin.json ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
         )
-
-add_custom_command(TARGET ${PROJECT_NAME}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND RACK_DIR=${RACK_DIR} arch -x86_64 make -j
-        COMMAND ${CMAKE_COMMAND} -E copy plugin.dylib /Users/paul/Documents/Rack2/plugins/BaconMusic
-        USES_TERMINAL)
-
-
-# This is the full build
-add_custom_target(${PROJECT_NAME}_FULL)
-add_dependencies(${PROJECT_NAME}_FULL ${PROJECT_NAME})
-add_custom_command(TARGET ${PROJECT_NAME}_FULL
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND RACK_DIR=${RACK_DIR} arch -x86_64 make dist -j
-        COMMAND RACK_DIR=${RACK_DIR} arch -x86_64 make install -j
-        USES_TERMINAL)
-
+add_dependencies(${PROJECT_NAME}_quick_install ${PLUGIN_NAME})
+add_dependencies(${PROJECT_NAME}_quick_install ${RACK_PLUGIN_LIB})
