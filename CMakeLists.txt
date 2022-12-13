@@ -22,7 +22,7 @@ target_sources(${RACK_PLUGIN_LIB} PRIVATE src/BaconPlugs.cpp)
 target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE ${PLUGIN_NAME})
 
 add_custom_target(${PROJECT_NAME}_quick_install
-        COMMAND cmake -E copy ${CMAKE_BINARY_DIR}/${LIB_NAME}.* ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
+        COMMAND cmake -E copy ${CMAKE_BINARY_DIR}/plugin.* ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
         COMMAND cmake -E copy ${CMAKE_SOURCE_DIR}/plugin.json ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
         )
 add_dependencies(${PROJECT_NAME}_quick_install ${PLUGIN_NAME})

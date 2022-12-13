@@ -32,6 +32,8 @@ dist:	res
 # The compiled plugin is automatically added.
 DISTRIBUTABLES += $(wildcard LICENSE*) res patches README.md
 
+FLAGS += -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17
+
 # Include the VCV plugin Makefile framework
 RACK_DIR ?= ../..
 include $(RACK_DIR)/plugin.mk
