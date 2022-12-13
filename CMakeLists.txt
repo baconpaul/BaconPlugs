@@ -13,6 +13,8 @@ message(STATUS "Installing into '${CMAKE_INSTALL_PREFIX}'")
 file(GLOB SOURCES src/*.cpp libs/midifile/src/*.cpp libs/open303-code/Source/DSPCode/*.cpp)
 list(REMOVE_ITEM SOURCES src/BaconPlugs.cpp)
 
+add_compile_options(-fvisibility=hidden -fvisibility-inlines-hidden)
+
 add_library(${PLUGIN_NAME} STATIC ${SOURCES})
 
 target_link_libraries(${PLUGIN_NAME} PUBLIC RackSDK)
@@ -22,7 +24,7 @@ target_sources(${RACK_PLUGIN_LIB} PRIVATE src/BaconPlugs.cpp)
 target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE ${PLUGIN_NAME})
 
 add_custom_target(${PROJECT_NAME}_quick_install
-        COMMAND cmake -E copy ${CMAKE_BINARY_DIR}/${LIB_NAME}.* ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
+        COMMAND cmake -E copy ${CMAKE_BINARY_DIR}/${RACK_PLUGIN_LIB}.* ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
         COMMAND cmake -E copy ${CMAKE_SOURCE_DIR}/plugin.json ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
         )
 add_dependencies(${PROJECT_NAME}_quick_install ${PLUGIN_NAME})
