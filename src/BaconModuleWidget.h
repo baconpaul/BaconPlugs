@@ -24,12 +24,14 @@ struct BaconModuleWidget : rack::app::ModuleWidget, StyleParticipant
     }
 
     void appendContextMenu(ui::Menu *menu) override {
+#ifndef USING_CARDINAL_NOT_RACK
         menu->addChild(new rack::ui::MenuSeparator);
         auto st = BaconStyle::get();
         menu->addChild(rack::createMenuItem("Light Mode", CHECKMARK(st->activeStyle == BaconStyle::LIGHT),
                                             [](){BaconStyle::get()->setStyle(BaconStyle::LIGHT);}));
         menu->addChild(rack::createMenuItem("Dark Mode", CHECKMARK(st->activeStyle == BaconStyle::DARK),
                                             [](){BaconStyle::get()->setStyle(BaconStyle::DARK);}));
+#endif
         appendModuleSpecificContextMenu(menu);
     }
 
