@@ -6,7 +6,7 @@ Plugin *pluginInstance;
 
 std::unordered_map<std::string, int> memDebugger;
 
-void init(rack::Plugin *p)
+__attribute__((__visibility__("default"))) void init(rack::Plugin *p)
 {
     pluginInstance = p;
 
