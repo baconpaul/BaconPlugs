@@ -3,7 +3,6 @@
 
 Plugin *pluginInstance;
 
-
 std::unordered_map<std::string, int> memDebugger;
 
 __attribute__((__visibility__("default"))) void init(rack::Plugin *p)
@@ -30,6 +29,7 @@ __attribute__((__visibility__("default"))) void init(rack::Plugin *p)
     p->addModel(modelPolyGenerator);
     p->addModel(modelLintBuddy);
     p->addModel(modelLuckyHold);
+    p->addModel(modelContrastBNDEditor);
 
     baconpaul::rackplugs::BaconStyle::get();
 }

@@ -9,12 +9,11 @@
 
 namespace bp = baconpaul::rackplugs;
 
-
 struct LintBuddyTest
 {
     virtual ~LintBuddyTest() = default;
     virtual void run(rack::Module *m, std::vector<std::string> &warnings,
-             std::vector<std::string> &info) = 0;
+                     std::vector<std::string> &info) = 0;
     virtual std::string getName() = 0;
 };
 
@@ -25,7 +24,7 @@ struct EverythingHasAName : LintBuddyTest
              std::vector<std::string> &info) override
     {
         if (m->paramQuantities.size() != m->params.size())
-            warnings.push_back( "Params and ParamQuantities differ" );
+            warnings.push_back("Params and ParamQuantities differ");
 
         int idx{0};
         for (auto &pq : m->paramQuantities)
@@ -48,7 +47,7 @@ struct EverythingHasAName : LintBuddyTest
         {
             std::ostringstream oss;
             oss << "IN[" << idx++ << "] ";
-            oss << "name='" << ii->name << "' label='" << ii->getFullName() << "'" ;
+            oss << "name='" << ii->name << "' label='" << ii->getFullName() << "'";
             if (ii->name.empty() || ii->getFullName()[0] == '#')
             {
                 warnings.push_back(oss.str());
@@ -76,7 +75,6 @@ struct EverythingHasAName : LintBuddyTest
     }
 };
 
-
 struct ProbeBypass : LintBuddyTest
 {
     std::string getName() override { return "Probe Bypass"; }
@@ -84,7 +82,7 @@ struct ProbeBypass : LintBuddyTest
              std::vector<std::string> &info) override
     {
         if (m->bypassRoutes.empty())
-            info.push_back("No Bypass Routes in Module" );
+            info.push_back("No Bypass Routes in Module");
         for (const auto &br : m->bypassRoutes)
         {
             auto i = br.inputId;
@@ -96,8 +94,8 @@ struct ProbeBypass : LintBuddyTest
             if (o >= 0 && o < (int)m->outputInfos.size())
                 on = m->outputInfos[o]->name;
 
-            info.push_back("Bypass from " + std::to_string(i) + " (" + in + ") to "
-                           + std::to_string(o) + " (" + on + ")");
+            info.push_back("Bypass from " + std::to_string(i) + " (" + in + ") to " +
+                           std::to_string(o) + " (" + on + ")");
         }
     }
 };
@@ -114,14 +112,15 @@ struct JSONToInfo : LintBuddyTest
 
         if (!json)
         {
-            warnings.push_back("dataToJSON returned a null" );
+            warnings.push_back("dataToJSON returned a null");
         }
         else
         {
             auto s = std::string(json_dumps(json, JSON_INDENT(2)));
             std::stringstream ss(s);
             std::string token;
-            while (std::getline(ss, token, '\n')) {
+            while (std::getline(ss, token, '\n'))
+            {
                 info.push_back(token);
             }
             json_decref(json);
@@ -139,7 +138,7 @@ struct WidgetPositions : LintBuddyTest
             std::ostringstream oss;
             auto nm = typeid(*c).name();
             oss << pfx << "| box: w=" << w->box.size.x << ", h=" << w->box.size.y
-            << " x=" << w->box.size.x << " y=" << w->box.size.y << " class=[" << nm << "]";
+                << " x=" << w->box.size.x << " y=" << w->box.size.y << " class=[" << nm << "]";
             info.push_back(oss.str());
             if (!c->children.empty())
                 recurseTree(c, info, pfx + "|--");
@@ -158,9 +157,6 @@ struct WidgetPositions : LintBuddyTest
     }
 };
 
-
-
-
 struct GotAnyWhiteLists : LintBuddyTest
 {
     std::string getName() override { return "WhiteList"; }
@@ -168,7 +164,7 @@ struct GotAnyWhiteLists : LintBuddyTest
              std::vector<std::string> &info) override
     {
         info.clear();
-        for (const auto & [ k, pl ] : rack::settings::moduleWhitelist)
+        for (const auto &[k, pl] : rack::settings::moduleWhitelist)
         {
             if (pl.subscribed)
             {
@@ -176,7 +172,8 @@ struct GotAnyWhiteLists : LintBuddyTest
             }
             else
             {
-                warnings.push_back("Partial Sub: " + k + " to " + std::to_string(pl.moduleSlugs.size()));
+                warnings.push_back("Partial Sub: " + k + " to " +
+                                   std::to_string(pl.moduleSlugs.size()));
             }
         }
     }
@@ -226,10 +223,7 @@ struct LintBuddy : virtual bp::BaconModule
 
     std::unique_ptr<LintBuddyTest> currentTest;
 
-    void rerun()
-    {
-        updateCurrentTarget(currentTarget);
-    }
+    void rerun() { updateCurrentTarget(currentTarget); }
 
     void updateCurrentTarget(Module *m)
     {
@@ -241,16 +235,15 @@ struct LintBuddy : virtual bp::BaconModule
         if (!m || !m->model)
         {
             currentTargetName = "Disconnected";
-            warnings.push_back( "LintBuddy is a Developer Tool.");
-            warnings.push_back( "" );
+            warnings.push_back("LintBuddy is a Developer Tool.");
+            warnings.push_back("");
             warnings.push_back("It checks module features but has no");
             warnings.push_back("musical purpose. Please don't use");
             warnings.push_back("it in performance patches. Want to add");
             warnings.push_back("a test or feature? Happy to take a PR!");
-            updateCount ++;
+            updateCount++;
             return;
         }
-
 
         currentTargetName = m->model->getFullName();
 
@@ -290,9 +283,8 @@ struct LintBuddy : virtual bp::BaconModule
             }
         }
 
-        if (currentTarget &&
-            !inputs[THE_IN_PROBE].isConnected()
-            && !outputs[THE_OUT_PROBE].isConnected())
+        if (currentTarget && !inputs[THE_IN_PROBE].isConnected() &&
+            !outputs[THE_OUT_PROBE].isConnected())
         {
             updateCurrentTarget(nullptr);
         }
@@ -316,7 +308,7 @@ struct LintBuddyWidget : bp::BaconModuleWidget
         }
     }
 
-    template<typename T> void addTest(rack::ui::Menu *m)
+    template <typename T> void addTest(rack::ui::Menu *m)
     {
         auto tmp = std::make_unique<T>();
         auto lbm = dynamic_cast<LintBuddy *>(module);
@@ -364,7 +356,7 @@ struct LintBuddyWidget : bp::BaconModuleWidget
             of.close();
             if (name[0] != '/')
                 name = "/" + name;
-            rack::system::openBrowser("file://" + name );
+            rack::system::openBrowser("file://" + name);
         }
     }
 };
@@ -460,8 +452,7 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
         else
             return std::string("Test Selector");
     };
-    cb->onPressed = [this,m]()
-    {
+    cb->onPressed = [this, m]() {
         if (!m)
             return;
         auto men = rack::createMenu();
@@ -476,27 +467,21 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
 
     butB.pos.y += 26;
     cb = new CBButton(butB.pos, butB.size);
-    cb->getLabel = []() {
-        return "Output To...";
-    };
-    cb->onPressed = [this, m]()
-    {
+    cb->getLabel = []() { return "Output To..."; };
+    cb->onPressed = [this, m]() {
         if (!m)
             return;
         auto men = rack::createMenu();
         men->addChild(rack::createMenuLabel("Output To"));
-        men->addChild(rack::createMenuItem("STDOUT (if attached)", "", [this](){
-                          std::cout << plainTextContents() << std::endl;
-                }));
-        men->addChild(rack::createMenuItem("HTML", "", [this](){
-               showAsHtml();
-               }));
-        men->addChild(rack::createMenuItem("RACK Log", "", [this](){
+        men->addChild(rack::createMenuItem("STDOUT (if attached)", "", [this]() {
+            std::cout << plainTextContents() << std::endl;
+        }));
+        men->addChild(rack::createMenuItem("HTML", "", [this]() { showAsHtml(); }));
+        men->addChild(rack::createMenuItem("RACK Log", "", [this]() {
             INFO("%s", ("LintBuddy Log Output\n" + plainTextContents()).c_str());
         }));
     };
     addChild(cb);
-
 }
 
 Model *modelLintBuddy = createModel<LintBuddy, LintBuddyWidget>("LintBuddy");

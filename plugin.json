@@ -48,6 +48,12 @@
 			"tags": [ ]
 		},
 		{
+			"slug": "ContrastBNDEditor",
+			"name": "Contrast and Other BND Editor",
+			"description": "Lets you change contrast on your tooltips",
+			"tags": [ ]
+		},
+		{
 			"slug": "SampleDelay",
 			"name": "SampleDelay",
 			"description": "A tiny number of sample delay",
