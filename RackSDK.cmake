@@ -22,13 +22,22 @@ if ("${ADDITIONAL_PLUGIN_DISTRIBUTABLES}" STREQUAL "")
 endif ()
 
 # Do not change the RACK_PLUGIN_LIB!
-set(RACK_PLUGIN_LIB plugin)
+if (APPLE)
+  if (${CMAKE_OSX_ARCHITECTURES} MATCHES "arm64")
+    set(RACK_PLUGIN_LIB plugin-arm64)
+  else()
+    set(RACK_PLUGIN_LIB plugin)
+  endif()
+else()
+  set(RACK_PLUGIN_LIB plugin)
+endif()
 
 file(GLOB LICENSE LICENSE*)
 set(PLUGIN_DISTRIBUTABLES plugin.json res ${LICENSE} ${ADDITIONAL_PLUGIN_DISTRIBUTABLES})
 
 message(STATUS "PLUGIN_DISTRIBUTABLES: ${PLUGIN_DISTRIBUTABLES}")
 
+add_compile_options(-fvisibility=hidden $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>)
 # This is needed for Rack for DAWs.
 # Static libs don't usually compiled with -fPIC, but since we're including them in a shared library, it's needed.
 add_compile_options(-fPIC)
@@ -39,11 +48,16 @@ add_compile_options(-fPIC)
 # Debugger symbols. These are removed with `strip`.
 add_compile_options(-g)
 # Optimization
-add_compile_options(-O3 -funsafe-math-optimizations -fno-omit-frame-pointer)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  message(STATUS "Skipping Optimizations for Debug Build")
+else()
+  message(STATUS "Enabling Optimizations for Non-Debug Build")
+  add_compile_options(-O3 -funsafe-math-optimizations -fno-omit-frame-pointer)
+endif()
 # Warnings
 add_compile_options(-Wall -Wextra -Wno-unused-parameter)
 # C++ standard
-if (${CMAKE_CXX_STANDARD} AND (${CMAKE_CXX_STANDARD} GREATER_EQUAL 11))
+if (DEFINED CMAKE_CXX_STANDARD)
   message(STATUS "Retaining CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 else()
   set(CMAKE_CXX_STANDARD 11)
@@ -68,7 +82,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     message(FATAL_ERROR "Rack plugin development environment is only supported for MSYS2/MinGW")
   endif ()
   target_compile_definitions(RackSDK INTERFACE ARCH_WIN _USE_MATH_DEFINES)
-  target_compile_options(RackSDK INTERFACE -Wsuggest-override -municode)
+  target_compile_options(RackSDK INTERFACE -municode -Wsuggest-override)
 endif ()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -92,8 +106,23 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   target_compile_options(RackSDK INTERFACE -Wl,-rpath=/tmp/Rack2)
 endif ()
 
-target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE ${RackSDK})
+target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE RackSDK)
 
 install(TARGETS ${RACK_PLUGIN_LIB} LIBRARY DESTINATION ${PROJECT_BINARY_DIR}/${PLUGIN_NAME} OPTIONAL)
 install(DIRECTORY ${PROJECT_BINARY_DIR}/${PLUGIN_NAME}/ DESTINATION ${PLUGIN_NAME})
-file(INSTALL ${PLUGIN_DISTRIBUTABLES} DESTINATION ${PLUGIN_NAME})
+file(COPY ${PLUGIN_DISTRIBUTABLES} DESTINATION ${PLUGIN_NAME})
+
+# Since the name of RACK_PLUGIN_LIB is no longer stable in SDK 2.2.1 add a stable
+# named target
+set(RACK_BUILD_TARGET build_plugin)
+add_custom_target(${RACK_BUILD_TARGET})
+add_dependencies(${RACK_BUILD_TARGET} ${RACK_PLUGIN_LIB})
+
+# A quick installation target to copy the plugin library and plugin.json into VCV Rack plugin folder for development.
+# CMAKE_INSTALL_PREFIX needs to point to the VCV Rack plugin folder in user documents.
+set(RACK_QUICK_INSTALL ${RACK_BUILD_TARGET}_quick_install)
+add_custom_target(${RACK_QUICK_INSTALL}
+        COMMAND cmake -E copy $<TARGET_FILE:${RACK_PLUGIN_LIB}> ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
+        COMMAND cmake -E copy ${CMAKE_SOURCE_DIR}/plugin.json ${CMAKE_INSTALL_PREFIX}/${PLUGIN_NAME}
+        )
+add_dependencies(${RACK_QUICK_INSTALL} ${RACK_BUILD_TARGET})
