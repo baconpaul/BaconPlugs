@@ -44,5 +44,6 @@ extern Model *modelPolyGenerator;
 
 extern Model *modelLintBuddy;
 extern Model *modelLuckyHold;
+extern Model *modelContrastBNDEditor;
 
 #endif
