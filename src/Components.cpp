@@ -25,14 +25,16 @@ struct InternalRoundedBorder : virtual TransparentWidget, baconpaul::rackplugs::
     {
         auto style = baconpaul::rackplugs::BaconStyle::get();
         nvgBeginPath(args.vg);
-        nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y, baconpaul::rackplugs::StyleConstants::rectRadius);
+        nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y,
+                       baconpaul::rackplugs::StyleConstants::rectRadius);
         if (doFill)
         {
-            nvgFillColor(args.vg,style->getColor(fillColor));
+            nvgFillColor(args.vg, style->getColor(fillColor));
             nvgFill(args.vg);
         }
 
-        nvgStrokeColor(args.vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+        nvgStrokeColor(args.vg,
+                       style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
         nvgStroke(args.vg);
     }
 
@@ -56,7 +58,8 @@ struct InternalTextLabel : virtual TransparentWidget, baconpaul::rackplugs::Styl
 
     void draw(const DrawArgs &args) override
     {
-        memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+        memFont =
+            InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
         auto col = baconpaul::rackplugs::BaconStyle::get()->getColor(color);
         nvgBeginPath(args.vg);
@@ -67,10 +70,8 @@ struct InternalTextLabel : virtual TransparentWidget, baconpaul::rackplugs::Styl
         nvgText(args.vg, 0, 0, label.c_str(), NULL);
     }
 
-    void onStyleChanged() override
-    {}
+    void onStyleChanged() override {}
 };
-
 
 struct InternalPlugLabel : virtual TransparentWidget
 {
@@ -145,6 +146,10 @@ void BaconBackground::draw(const DrawArgs &args)
         {
             x0 = box.size.x - 2 - svgu->handle->width * scaleFactor;
         }
+        if (box.size.x <= 2 * SCREW_WIDTH)
+        {
+            x0 = box.size.x * 0.5 - svgu->handle->width * scaleFactor * 0.5;
+        }
 
         endB = x0 - 2;
         startM = x0 + svgu->handle->width * scaleFactor + 2;
@@ -170,6 +175,9 @@ void BaconBackground::draw(const DrawArgs &args)
         nvgText(args.vg, endB, box.size.y - 3, "Bacon", NULL);
         nvgTextAlign(args.vg, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
         nvgText(args.vg, startM, box.size.y - 3, "Music", NULL);
+    }
+    else if (box.size.x <= 2 * SCREW_WIDTH)
+    {
     }
     else
     {
@@ -274,7 +282,8 @@ void InternalPlugLabel::draw(const DrawArgs &args)
 {
     auto style = baconpaul::rackplugs::BaconStyle::get();
     if (memFont < 0)
-        memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+        memFont =
+            InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
     auto txtCol = style->getColor(baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     switch (st)
@@ -282,29 +291,34 @@ void InternalPlugLabel::draw(const DrawArgs &args)
     case (BaconBackground::SIG_IN):
     {
         nvgBeginPath(args.vg);
-        nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y, baconpaul::rackplugs::StyleConstants::rectRadius);
-        NVGpaint vgr = nvgLinearGradient(args.vg, 0, 0, 0, box.size.y,
-                                         style->getColor(baconpaul::rackplugs::BaconStyle::INPUT_BG),
-                                         style->getColor(baconpaul::rackplugs::BaconStyle::INPUT_BG_END));
+        nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y,
+                       baconpaul::rackplugs::StyleConstants::rectRadius);
+        NVGpaint vgr =
+            nvgLinearGradient(args.vg, 0, 0, 0, box.size.y,
+                              style->getColor(baconpaul::rackplugs::BaconStyle::INPUT_BG),
+                              style->getColor(baconpaul::rackplugs::BaconStyle::INPUT_BG_END));
         nvgFillPaint(args.vg, vgr);
         nvgFill(args.vg);
-        nvgStrokeColor(args.vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+        nvgStrokeColor(args.vg,
+                       style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
         nvgStroke(args.vg);
         break;
     }
     case (BaconBackground::SIG_OUT):
     {
         nvgBeginPath(args.vg);
-        nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y, baconpaul::rackplugs::StyleConstants::rectRadius);
-        NVGpaint vgr = nvgLinearGradient(args.vg, 0, 0, 0, box.size.y,
-                                         style->getColor(baconpaul::rackplugs::BaconStyle::HIGHLIGHT_BG),
-                                         style->getColor(baconpaul::rackplugs::BaconStyle::HIGHLIGHT_BG_END));
+        nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y,
+                       baconpaul::rackplugs::StyleConstants::rectRadius);
+        NVGpaint vgr =
+            nvgLinearGradient(args.vg, 0, 0, 0, box.size.y,
+                              style->getColor(baconpaul::rackplugs::BaconStyle::HIGHLIGHT_BG),
+                              style->getColor(baconpaul::rackplugs::BaconStyle::HIGHLIGHT_BG_END));
 
         nvgFillPaint(args.vg, vgr);
         nvgFill(args.vg);
 
-
-        nvgStrokeColor(args.vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+        nvgStrokeColor(args.vg,
+                       style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
         nvgStroke(args.vg);
 
         txtCol = style->getColor(baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
@@ -313,7 +327,8 @@ void InternalPlugLabel::draw(const DrawArgs &args)
     case (BaconBackground::OTHER):
     {
         nvgBeginPath(args.vg);
-        nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y, baconpaul::rackplugs::StyleConstants::rectRadius);
+        nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y,
+                       baconpaul::rackplugs::StyleConstants::rectRadius);
         nvgStrokeColor(args.vg, componentlibrary::SCHEME_RED);
         nvgStroke(args.vg);
         break;
@@ -353,7 +368,6 @@ BaconBackground *BaconBackground::addRoundedBorder(Vec pos, Vec sz,
     addChild(new InternalRoundedBorder(pos, sz, fill));
     return this;
 }
-
 
 BaconBackground::BaconBackground(Vec size, const char *lab) : title(lab)
 {

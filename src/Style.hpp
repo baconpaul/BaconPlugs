@@ -43,10 +43,12 @@ struct BaconStyle
     friend struct StyleParticipant;
     void notifyStyleListeners();
 
-    enum Colors : uint32_t {
+    enum Colors : uint32_t
+    {
         BG,
         BG_END,
         DEFAULT_LABEL,
+        DEFAULT_MUTED_LABEL,
         DEFAULT_HIGHLIGHT_LABEL,
 
         LABEL_BG,
@@ -93,6 +95,6 @@ inline void BaconStyle::notifyStyleListeners()
     for (auto l : listeners)
         l->onStyleChanged();
 }
-}
+} // namespace baconpaul::rackplugs
 
 #endif // BACONPLUGS_RACK_HACK_STYLE_H

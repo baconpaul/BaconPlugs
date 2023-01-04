@@ -83,7 +83,7 @@ struct ContrastBNDEditorWidget : bp::BaconModuleWidget
         q.menuItemTheme.textSelectedColor = nvgRGB(dl, dl, dl);
         q.menuItemTheme.innerSelectedColor = nvgRGB(wl, wl, wl);
 
-        q.menuTheme.textColor = nvgRGB(0, 0, 20);
+        q.menuTheme.textColor = nvgRGB(40, 40, 0);
         q.menuTheme.innerColor = nvgRGB(dl, dl, dl);
         q.menuTheme.textSelectedColor = nvgRGB(dl * 0.9, dl * 0.9, dl);
 
@@ -103,7 +103,7 @@ struct ContrastBNDEditorWidget : bp::BaconModuleWidget
         q.menuItemTheme.textSelectedColor = nvgRGB(dl, dl, dl);
         q.menuItemTheme.innerSelectedColor = nvgRGB(wl, wl, wl);
 
-        q.menuTheme.textColor = nvgRGB(wl * 0.95, wl * 0.95, wl);
+        q.menuTheme.textColor = nvgRGB(245, 245, 210);
         q.menuTheme.innerColor = nvgRGB(dl, dl, dl);
         q.menuTheme.textSelectedColor = nvgRGB(dl, dl, 20);
 
@@ -119,7 +119,7 @@ struct ContrastBNDEditorWidget : bp::BaconModuleWidget
         if (c)
         {
             menu->addChild(new rack::ui::MenuSeparator);
-            menu->addChild(rack::createMenuLabel("Menu Items"));
+            menu->addChild(rack::createMenuLabel("Menu and Tooltip Contrast"));
             menu->addChild(rack::createMenuItem(
                 "Default", CHECKMARK(c->colorScheme == ContrastBNDEditor::DEFAULT),
                 [c]() { c->colorScheme = ContrastBNDEditor::ColorScheme::DEFAULT; }));
@@ -157,20 +157,61 @@ struct ContrastBNDEditorWidget : bp::BaconModuleWidget
                         hiDark();
                         break;
                     }
+
+                    if (bdw)
+                        bdw->dirty = true;
                 }
             }
         }
         Widget::step();
     }
+    BufferedDrawFunctionWidget *bdw{nullptr};
+    void drawLabel(NVGcontext *vg)
+    {
+        nvgSave(vg);
+        nvgRotate(vg, M_PI_2);
+
+        auto memFont =
+            InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+        auto labelColor = baconpaul::rackplugs::BaconStyle::get()->getColor(
+            baconpaul::rackplugs::BaconStyle::DEFAULT_MUTED_LABEL);
+
+        nvgBeginPath(vg);
+        nvgFontFaceId(vg, memFont);
+        nvgFontSize(vg, 18);
+        nvgFillColor(vg, labelColor);
+        nvgTextAlign(vg, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
+
+        auto label = std::string("Menu and ToolTip Contrast: ");
+        switch (lastScheme)
+        {
+        default:
+            label += "Rack Default";
+            break;
+        case ContrastBNDEditor::HICONTRAST_LIGHT:
+            label += "High Contrast Light";
+            break;
+        case ContrastBNDEditor::HICONTRAST_DARK:
+            label += "High Contrast Dark";
+            break;
+        }
+
+        nvgText(vg, 5, -box.size.x * 0.45, label.c_str(), nullptr);
+        nvgRestore(vg);
+    };
 };
 
 ContrastBNDEditorWidget::ContrastBNDEditorWidget(ContrastBNDEditor *model) : bp::BaconModuleWidget()
 {
     setModule(model);
-    box.size = Vec(SCREW_WIDTH * 4, RACK_HEIGHT);
+    box.size = Vec(SCREW_WIDTH * 2, RACK_HEIGHT);
 
-    BaconBackground *bg = new BaconBackground(box.size, "UI");
+    BaconBackground *bg = new BaconBackground(box.size, "Con");
     addChild(bg->wrappedInFramebuffer());
+
+    bdw = new BufferedDrawFunctionWidget(rack::Vec(0, 25), rack::Vec(box.size.x, box.size.y - 50),
+                                         [this](auto *vg) { drawLabel(vg); });
+    addChild(bdw);
 }
 
 Model *modelContrastBNDEditor =
