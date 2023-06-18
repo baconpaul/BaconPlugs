@@ -2,12 +2,21 @@
 #include <cstdio>
 #include <fstream>
 
+#include "rack.hpp"
+#include "patch.hpp"
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
 #define SCALE_LENGTH 12
 
 namespace bp = baconpaul::rackplugs;
+
+struct CPort : public rack::PJ301MPort
+{
+    void appendContextMenu(ui::Menu *menu) override {
+        std::cout << "AppendContextMenu Called" << std::endl;
+    }
+};
 
 struct LintBuddyTest
 {
@@ -179,6 +188,29 @@ struct GotAnyWhiteLists : LintBuddyTest
     }
 };
 
+struct MyPatch : LintBuddyTest
+{
+    std::string getName() override { return "MyPatch"; }
+    void run(rack::Module *m, std::vector<std::string> &warnings,
+             std::vector<std::string> &info) override
+    {
+        info.clear();
+        warnings.clear();
+        auto ctx = rack::contextGet();
+        rack::patch::Manager *pt = (ctx ? ctx->patch : nullptr);
+        if (pt)
+        {
+            info.push_back("Patch Path");
+            info.push_back("[" + pt->path + "]");
+
+        }
+        else
+        {
+            info.push_back("PT is NULL" );
+        }
+    }
+};
+
 struct LintBuddy : virtual bp::BaconModule
 {
     enum ParamIds
@@ -224,6 +256,11 @@ struct LintBuddy : virtual bp::BaconModule
     std::unique_ptr<LintBuddyTest> currentTest;
 
     void rerun() { updateCurrentTarget(currentTarget); }
+
+    void onExpanderChange(const ExpanderChangeEvent &e) override {
+        std::cout << "Expander Change " << e.side << " "
+                  << rightExpander.module << " " << leftExpander.module << std::endl;
+    }
 
     void updateCurrentTarget(Module *m)
     {
@@ -433,16 +470,16 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
     int xpospl = box.size.x - 24 - 9;
     Vec outP = Vec(xpospl, RACK_HEIGHT - 60);
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "lint");
-    addOutput(createOutput<PJ301MPort>(outP, module, LintBuddy::THE_OUT_PROBE));
+    addOutput(createOutput<CPort>(outP, module, LintBuddy::THE_OUT_PROBE));
 
     outP.x -= 34;
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "lint");
-    addInput(createInput<PJ301MPort>(outP, module, LintBuddy::THE_IN_PROBE));
+    addInput(createInput<CPort>(outP, module, LintBuddy::THE_IN_PROBE));
 
     rack::Rect butB;
     butB.pos.x = 10;
     butB.pos.y = outP.y - 2.5 - 17;
-    butB.size.x = 120;
+    butB.size.x = 140;
     butB.size.y = 22;
 
     auto cb = new CBButton(butB.pos, butB.size);
@@ -462,10 +499,13 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
         addTest<JSONToInfo>(men);
         addTest<WidgetPositions>(men);
         addTest<GotAnyWhiteLists>(men);
+        addTest<MyPatch>(men);
     };
     addChild(cb);
 
     butB.pos.y += 26;
+    butB.size.x /= 2;
+    butB.size.x -= 1;
     cb = new CBButton(butB.pos, butB.size);
     cb->getLabel = []() { return "Output To..."; };
     cb->onPressed = [this, m]() {
@@ -482,6 +522,21 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
         }));
     };
     addChild(cb);
+
+    butB.pos.x += butB.size.x + 1;
+    auto rb = new CBButton(butB.pos, butB.size);
+    rb->getLabel = []() { return "Run 100 times"; };
+    rb->onPressed = [this]() {
+        auto lbm = dynamic_cast<LintBuddy *>(module);
+        if (lbm)
+        {
+            std::cout << "Running 100x" << std::endl;
+            for (int i=0; i<100; ++i)
+                lbm->rerun();
+        }
+    };
+
+    addChild(rb);
 }
 
 Model *modelLintBuddy = createModel<LintBuddy, LintBuddyWidget>("LintBuddy");
