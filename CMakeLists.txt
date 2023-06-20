@@ -12,10 +12,10 @@ include(RackSDK.cmake)
 message(STATUS "BaconMusic for Rack Build Process" )
 message(STATUS "Installing into '${CMAKE_INSTALL_PREFIX}'")
 
-file(GLOB SOURCES src/*.cpp libs/midifile/src/*.cpp libs/open303-code/Source/DSPCode/*.cpp)
+file(GLOB SOURCES src/*.cpp libs/midifile/src/*.cpp libs/open303-code/Source/DSPCode/*.cpp libs/mda-copies/*.cpp)
 add_compile_options(-fvisibility=hidden -fvisibility-inlines-hidden)
 
-target_include_directories(${RACK_PLUGIN_LIB} PRIVATE src libs/midifile/include libs/open303-code/Source/DSPCode)
+target_include_directories(${RACK_PLUGIN_LIB} PRIVATE src libs/midifile/include libs/mda-copies libs/open303-code/Source/DSPCode)
 target_sources(${RACK_PLUGIN_LIB} PRIVATE
         ${SOURCES})
 

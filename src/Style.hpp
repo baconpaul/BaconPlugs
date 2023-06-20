@@ -68,7 +68,10 @@ struct BaconStyle
         LIGHT_BG,
 
         SLIDER_NOTCH,
-        SLIDER_SLOT
+        SLIDER_SLOT,
+
+        LED_TEXT_COLOR,
+        LED_BACKGROUND_COLOR
     };
 
     NVGcolor getColor(Colors c);

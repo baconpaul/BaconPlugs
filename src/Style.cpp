@@ -86,6 +86,12 @@ NVGcolor getColorLight(baconpaul::rackplugs::BaconStyle::Colors c)
 
     case BaconStyle::LIGHT_BG:
         return nvgRGB(200, 200, 220);
+
+
+    case BaconStyle::LED_TEXT_COLOR:
+        return nvgRGB(0x10, 0x10, 0x20);
+    case BaconStyle::LED_BACKGROUND_COLOR:
+        return nvgRGB(0xD0, 0xD0, 0xE0);
     }
     return nvgRGBA(255, 0, 0, 255);
 }
@@ -133,6 +139,11 @@ NVGcolor getColorDark(baconpaul::rackplugs::BaconStyle::Colors c)
 
     case BaconStyle::LIGHT_BG:
         return nvgRGB(20, 20, 30);
+
+    case BaconStyle::LED_TEXT_COLOR:
+        return nvgRGB(0xD0, 0xD0, 0xFF);
+    case BaconStyle::LED_BACKGROUND_COLOR:
+        return nvgRGB(20,20,30);
     }
     return nvgRGBA(255, 0, 0, 255);
 }

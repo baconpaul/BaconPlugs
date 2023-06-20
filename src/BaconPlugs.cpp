@@ -31,5 +31,7 @@ __attribute__((__visibility__("default"))) void init(rack::Plugin *p)
     p->addModel(modelLuckyHold);
     p->addModel(modelContrastBNDEditor);
 
+    p->addModel(modelSongQuencer);
+
     baconpaul::rackplugs::BaconStyle::get();
 }

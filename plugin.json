@@ -110,6 +110,12 @@
 			"name": "PolyGenerator",
 			"description": "Generate test polyphonic midi-like sequences",
 			"tags": [ "Utility", "Polyphonic" ]
+		},
+		{
+			"slug": "SongQuencer",
+			"name": "SongQuencer",
+			"description": "A Song Sequencer",
+			"tags": [ "Sequencer", "Polyphonic" ]
 		}
 	]
 }
