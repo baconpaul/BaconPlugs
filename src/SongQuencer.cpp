@@ -95,11 +95,39 @@ struct SongQuencer : virtual bp::BaconModule
         return rootJ;
     }
 
+    void dataFromJson(json_t* rootJ) override {
+        json_t* songJ = json_object_get(rootJ, "song");
+        for (int s=0; s<stepsPerPhrase; ++s)
+        {
+            auto ao = json_array_get(songJ, s);
+            if (ao)
+                song[s] = json_string_value(ao);
+        }
+        json_t* chordJ = json_object_get(rootJ, "chords");
+
+        for (int p=0; p<numPhrases; ++p)
+        {
+            auto po = json_array_get(chordJ, p);
+            if (!po)
+                continue;
+
+            for (int s = 0; s < stepsPerPhrase; ++s)
+            {
+                auto ao = json_array_get(po, s);
+                if (ao)
+                    chords[p][s] = json_string_value(ao);
+            }
+        }
+
+        updateCount ++;
+    }
+
     static constexpr int stepsPerPhrase{16}, numPhrases{6};
     std::array<std::array<std::string, stepsPerPhrase>, numPhrases> chords;
     std::array<std::string, stepsPerPhrase> song;
     std::atomic<bool> markStepsDirty{false};
 
+    std::atomic<int> updateCount{1};
     int intStep{0};
     static std::pair<int, int> phraseStepFromIntStep(int intStep) {
         return { intStep / stepsPerPhrase, intStep % stepsPerPhrase};
@@ -114,6 +142,8 @@ struct SQTextField : LedDisplayTextField
 {
     SongQuencer *module;
     int phrase{0}, pstep{0}, intStep{0};
+
+    int lUpdate{0};
 
     SQTextField()
     {
@@ -155,10 +185,14 @@ struct SQTextField : LedDisplayTextField
         LedDisplayTextField::step();
         if (module)
         {
-            if (phrase >= 0)
-                setText(module->chords[phrase][pstep]);
-            else
-                setText(module->song[pstep]);
+            if (lUpdate != module->updateCount)
+            {
+                if (phrase >= 0)
+                    setText(module->chords[phrase][pstep]);
+                else
+                    setText(module->song[pstep]);
+                lUpdate = module->updateCount;
+            }
         }
     }
 
