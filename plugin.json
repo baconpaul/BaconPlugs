@@ -112,6 +112,12 @@
 			"tags": [ "Utility", "Polyphonic" ]
 		},
 		{
+			"slug": "PolyArp",
+			"name": "PolyArp",
+			"description": "Polyphonic v/oct into Arp Mono with various strategies",
+			"tags": [ "Arpeggiator", "Polyphonic" ]
+		},
+		{
 			"slug": "SongQuencer",
 			"name": "SongQuencer",
 			"description": "A Song Sequencer",

@@ -187,10 +187,7 @@ struct SQTextField : LedDisplayTextField
         {
             if (lUpdate != module->updateCount)
             {
-                if (phrase >= 0)
-                    setText(module->chords[phrase][pstep]);
-                else
-                    setText(module->song[pstep]);
+                setText(getValue(module));
                 lUpdate = module->updateCount;
             }
         }
@@ -200,13 +197,25 @@ struct SQTextField : LedDisplayTextField
     {
         if (module)
         {
-            if( phrase >= 0)
-                module->chords[phrase][pstep] = getText();
-            else
-                module->song[pstep] = getText();
+            setValue(module, getText());
             module->markStepsDirty = true;
         }
     }
+
+    virtual std::string getValue(SongQuencer *) = 0;
+    virtual void setValue(SongQuencer *, const std::string &) = 0;
+};
+
+struct ChordTextField : SQTextField
+{
+    std::string getValue(SongQuencer *m) override { return  m->chords[phrase][pstep];}
+    void setValue(SongQuencer *m, const std::string &s) override { m->chords[phrase][pstep] = s;}
+};
+
+struct SongTextField : SQTextField
+{
+    std::string getValue(SongQuencer *m) override { return  m->song[pstep];}
+    void setValue(SongQuencer *m, const std::string &s) override { m->song[pstep] = s;}
 };
 
 struct SongQuencerWidget : bp::BaconModuleWidget
@@ -227,19 +236,17 @@ SongQuencerWidget::SongQuencerWidget(SongQuencer *m) : bp::BaconModuleWidget()
         int yp = 30;
         auto w = 43.0, h = 25.0, margin = 4.0;
 
-        for (int i = 0; i < SongQuencer::numPhrases + 1; ++i)
+        for (int i = 0; i < SongQuencer::numPhrases; ++i)
         {
             int xp = 5;
             std::string sec = "A";
             sec[0] = (char)('A' + i);
-            if (i == SongQuencer::numPhrases)
-                sec = "SNG";
             bg->addLabel(Vec(xp, yp + h / 2), sec.c_str(), 11, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE,
                          baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
             xp += 20;
             for (int j = 0; j < SongQuencer::stepsPerPhrase; ++j)
             {
-                auto sqw = createWidget<SQTextField>(rack::Vec(0, 0));
+                auto sqw = createWidget<ChordTextField>(rack::Vec(0, 0));
                 sqw->box.pos = rack::Vec(xp, yp);
                 sqw->box.size = rack::Vec(w, h);
                 sqw->phrase = i == SongQuencer::numPhrases ? -1 : i;
@@ -251,8 +258,28 @@ SongQuencerWidget::SongQuencerWidget(SongQuencer *m) : bp::BaconModuleWidget()
                 xp += w + margin;
             }
             yp += h + margin;
-            if (i == SongQuencer::numPhrases - 1)
-                yp += 2 * margin;
+        }
+        yp += 2 * margin;
+        {
+            int xp = 5;
+            std::string sec = "SNG";
+            bg->addLabel(Vec(xp, yp + h / 2), sec.c_str(), 11, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE,
+                         baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
+            xp += 20;
+            for (int j = 0; j < SongQuencer::stepsPerPhrase; ++j)
+            {
+                auto sqw = createWidget<SongTextField>(rack::Vec(0, 0));
+                sqw->box.pos = rack::Vec(xp, yp);
+                sqw->box.size = rack::Vec(w, h);
+                sqw->phrase = -1;
+                sqw->pstep = j;
+                sqw->multiline = false;
+                sqw->module = m;
+                sqw->init();
+                addChild(sqw);
+                xp += w + margin;
+            }
+            yp += h + margin;
         }
     }
     auto xp = 5;

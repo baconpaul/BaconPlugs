@@ -47,5 +47,6 @@ extern Model *modelLuckyHold;
 extern Model *modelContrastBNDEditor;
 
 extern Model *modelSongQuencer;
+extern Model *modelPolyArp;
 
 #endif
