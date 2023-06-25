@@ -24,7 +24,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
 {
     int lx, ly, ppl;
     std::vector<Rect> unscaledLoc;
-    int elementsByNum[16][7] = {
+    int elementsByNum[17][7] = {
         {1, 1, 1, 1, 1, 1, 0}, {0, 1, 1, 0, 0, 0, 0}, {1, 1, 0, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 0, 1},
         {0, 1, 1, 0, 0, 1, 1}, {1, 0, 1, 1, 0, 1, 1}, {1, 0, 1, 1, 1, 1, 1}, {1, 1, 1, 0, 0, 0, 0},
         {1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 0, 1, 1},
@@ -34,7 +34,9 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         {1, 0, 0, 1, 1, 1, 0}, // C
         {0, 1, 1, 1, 1, 0, 1}, // d
         {1, 0, 0, 1, 1, 1, 1}, // E
-        {1, 0, 0, 0, 1, 1, 1}  // F
+        {1, 0, 0, 0, 1, 1, 1},  // F
+
+        {0, 0, 0, 0, 0, 0, 1} // -
     };
 
     const static int sx = px * 6 + 2;
@@ -42,6 +44,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
     int pvalue{0};
 
     int decimalPos{0};
+    bool showNegSign{false};
     bool hexMode{false};
     bool noDisplay{false};
 
@@ -77,8 +80,17 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
 
     void step() override {
         float fvalue = 0;
+
         if (this->module)
             fvalue = this->module->lights[this->firstLightId].value;
+
+        bool neg{false};
+        if (fvalue < 0)
+        {
+            fvalue = -fvalue;
+            neg = true;
+        }
+
         int value = 1;
 
         if (hexMode)
@@ -89,6 +101,9 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         {
             value = int(fvalue / decimalPos) % 10;
         }
+
+        if (neg && showNegSign)
+            value = 16;
 
         if (value != pvalue)
         {
@@ -233,6 +248,8 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget
         for (int i = 0; i < digits; ++i)
         {
             auto cld = LtClass::create(Vec(i * LtClass::sx, 0), module, firstLightId, dp);
+            if (i == 0)
+                cld->showNegSign = true;
             addChild(cld);
             childLightWeakRefs[i] = cld;
             dp /= 10;
