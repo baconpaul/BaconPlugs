@@ -537,6 +537,8 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
     };
 
     addChild(rb);
+
+    std::cout << "Spaceship " << ((1 <=> 2) < 0) << " is cool" << std::endl;
 }
 
 Model *modelLintBuddy = createModel<LintBuddy, LintBuddyWidget>("LintBuddy");

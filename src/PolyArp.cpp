@@ -58,25 +58,26 @@ struct PolyArp : virtual bp::BaconModule
     dsp::SchmittTrigger onClock;
     void process(const ProcessArgs &args) override
     {
-        if (every == checkOnEvery)
-        {
-            every = 0;
-            outPoly = std::round(params[ARPCOUNT].getValue());
-
-            lights[ARPCOUNT_LIGHT].value = outPoly;
-            lights[OCTSTART_LIGHT].value = params[OCT_START].getValue();
-            lights[OCTEND_LIGHT].value = params[OCT_END].getValue();
-        }
-        else
-        {
-            every ++;
-        }
         outputs[POLY_VOCT_OUT].setChannels(outPoly);
         for (int i=0; i<numArps; ++i)
             outputs[MONO_VOCT_OUT + i].setChannels(1);
 
         if (onClock.process(inputs[CLOCK_IN].getVoltage()))
         {
+            if (every == checkOnEvery)
+            {
+                every = 0;
+                outPoly = std::round(params[ARPCOUNT].getValue());
+
+                lights[ARPCOUNT_LIGHT].value = outPoly;
+                lights[OCTSTART_LIGHT].value = params[OCT_START].getValue();
+                lights[OCTEND_LIGHT].value = params[OCT_END].getValue();
+            }
+            else
+            {
+                every ++;
+            }
+
             for (int i=0; i<numArps; ++i)
             {
                 dupChannel[i] = rand() % inputs[POLY_VOCT_IN].getChannels();
@@ -85,7 +86,7 @@ struct PolyArp : virtual bp::BaconModule
                 octOff[i] = rand() % (oe - os) + os;
             }
         }
-        for (int i=0;i<numArps;++i)
+        for (int i=0;i<outPoly;++i)
         {
             auto voltI = inputs[POLY_VOCT_IN].getVoltage(dupChannel[i]) + octOff[i];
             outputs[MONO_VOCT_OUT + i].setVoltage(voltI);
