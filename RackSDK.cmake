@@ -29,7 +29,7 @@ endif ()
 
 # Do not change the RACK_PLUGIN_LIB!
 if (${CMAKE_OSX_ARCHITECTURES} MATCHES "arm64")
-  set(RACK_PLUGIN_ARCH -arm64)
+  #set(RACK_PLUGIN_ARCH -arm64)
 endif ()
 set(RACK_PLUGIN_LIB plugin${RACK_PLUGIN_ARCH})
 

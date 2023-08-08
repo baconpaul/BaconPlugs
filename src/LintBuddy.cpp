@@ -11,13 +11,6 @@
 
 namespace bp = baconpaul::rackplugs;
 
-struct CPort : public rack::PJ301MPort
-{
-    void appendContextMenu(ui::Menu *menu) override {
-        std::cout << "AppendContextMenu Called" << std::endl;
-    }
-};
-
 struct LintBuddyTest
 {
     virtual ~LintBuddyTest() = default;
@@ -257,11 +250,6 @@ struct LintBuddy : virtual bp::BaconModule
 
     void rerun() { updateCurrentTarget(currentTarget); }
 
-    void onExpanderChange(const ExpanderChangeEvent &e) override {
-        std::cout << "Expander Change " << e.side << " "
-                  << rightExpander.module << " " << leftExpander.module << std::endl;
-    }
-
     void updateCurrentTarget(Module *m)
     {
         currentTarget = m;
@@ -470,11 +458,11 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
     int xpospl = box.size.x - 24 - 9;
     Vec outP = Vec(xpospl, RACK_HEIGHT - 60);
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "lint");
-    addOutput(createOutput<CPort>(outP, module, LintBuddy::THE_OUT_PROBE));
+    addOutput(createOutput<PJ301MPort>(outP, module, LintBuddy::THE_OUT_PROBE));
 
     outP.x -= 34;
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "lint");
-    addInput(createInput<CPort>(outP, module, LintBuddy::THE_IN_PROBE));
+    addInput(createInput<PJ301MPort>(outP, module, LintBuddy::THE_IN_PROBE));
 
     rack::Rect butB;
     butB.pos.x = 10;
