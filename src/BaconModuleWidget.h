@@ -24,14 +24,6 @@ struct BaconModuleWidget : rack::app::ModuleWidget, StyleParticipant
     }
 
     void appendContextMenu(ui::Menu *menu) override {
-#ifndef USING_CARDINAL_NOT_RACK
-        menu->addChild(new rack::ui::MenuSeparator);
-        auto st = BaconStyle::get();
-        menu->addChild(rack::createMenuItem("Light Mode", CHECKMARK(st->activeStyle == BaconStyle::LIGHT),
-                                            [](){BaconStyle::get()->setStyle(BaconStyle::LIGHT);}));
-        menu->addChild(rack::createMenuItem("Dark Mode", CHECKMARK(st->activeStyle == BaconStyle::DARK),
-                                            [](){BaconStyle::get()->setStyle(BaconStyle::DARK);}));
-#endif
         appendModuleSpecificContextMenu(menu);
     }
 
@@ -39,6 +31,24 @@ struct BaconModuleWidget : rack::app::ModuleWidget, StyleParticipant
     {
 
     }
+
+
+    bool preferDark{false};
+    void step() override
+    {
+#ifndef USING_CARDINAL_NOT_RACK
+        auto lpd = rack::settings::preferDarkPanels;
+        if (lpd != preferDark)
+        {
+            if (lpd)
+                BaconStyle::get()->setStyle(BaconStyle::DARK);
+            else
+                BaconStyle::get()->setStyle(BaconStyle::LIGHT);
+        }
+        preferDark = lpd;
+#endif
+    }
+
 };
 }
 
