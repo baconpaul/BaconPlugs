@@ -9,7 +9,7 @@ on:
   pull_request:
 
 env:
-  rack-sdk-version: 2.2.2
+  rack-sdk-version: 2.4.0
   rack-plugin-toolchain-dir: /home/build/rack-plugin-toolchain
 
 defaults:
@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [win, linux]
+        platform: [win, lin]
     steps:
       - uses: actions/checkout@v3
         with:
