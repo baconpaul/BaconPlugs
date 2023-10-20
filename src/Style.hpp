@@ -37,7 +37,6 @@ struct BaconStyle
     {
         activeStyle = s;
         notifyStyleListeners();
-        updateJSON();
     }
 
     friend struct StyleParticipant;
@@ -79,7 +78,6 @@ struct BaconStyle
     std::unordered_set<StyleParticipant *> listeners;
     void addStyleListener(StyleParticipant *l) { listeners.insert(l); }
     void removeStyleListener(StyleParticipant *l) { listeners.erase(l); }
-    void updateJSON();
     static std::shared_ptr<BaconStyle> stylePtr;
 };
 

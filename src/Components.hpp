@@ -81,13 +81,14 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
             fvalue = this->module->lights[this->firstLightId].value;
         int value = 1;
 
+        auto ifval = (int)std::round(fvalue);
         if (hexMode)
         {
-            value = (int)(fvalue) % 16;
+            value = ifval % 16;
         }
         else
         {
-            value = int(fvalue / decimalPos) % 10;
+            value = int(ifval / decimalPos) % 10;
         }
 
         if (value != pvalue)

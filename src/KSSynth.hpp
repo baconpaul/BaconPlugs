@@ -122,7 +122,7 @@ class KSSynth
         {
             for (int i = 0; i < burstLen; ++i)
             {
-                delay[i] = (float)rand() * 1.0 / RAND_MAX;
+                delay[i] = (float)rand() * 1.0 / (float)RAND_MAX;
                 delay[i] = delay[i] * 2.0 - 1.0;
             }
             break;
@@ -150,7 +150,7 @@ class KSSynth
             for (int i = 0; i < burstLen; ++i)
             {
                 delay[i] = (i * 1.0f / burstLen) - 0.5;
-                delay[i] += (float)rand() * 1.0f / RAND_MAX - 0.5;
+                delay[i] += (float)rand() * 1.0f / (float)RAND_MAX - 0.5;
             }
             break;
         }
