@@ -46,4 +46,6 @@ extern Model *modelLintBuddy;
 extern Model *modelLuckyHold;
 extern Model *modelContrastBNDEditor;
 
+extern Model *modelBaconTest;
+
 #endif

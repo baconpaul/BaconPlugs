@@ -111,6 +111,13 @@
 			"name": "PolyGenerator",
 			"description": "Generate test polyphonic midi-like sequences",
 			"tags": [ "Utility", "Polyphonic" ]
+		},
+		{
+			"slug": "BaconTest",
+			"name": "BaconTest",
+			"description": "BaconPaul's Test Widgets",
+			"tags": [  ],
+			"hidden": true
 		}
 	]
 }
