@@ -13,6 +13,7 @@ message(STATUS "BaconMusic for Rack Build Process" )
 message(STATUS "Installing into '${CMAKE_INSTALL_PREFIX}'")
 
 add_subdirectory(libs/sst/sst-basic-blocks)
+add_subdirectory(libs/sst/sst-rackhelpers)
 
 file(GLOB SOURCES src/*.cpp libs/midifile/src/*.cpp libs/open303-code/Source/DSPCode/*.cpp)
 add_compile_options(-fvisibility=hidden -fvisibility-inlines-hidden)
@@ -20,5 +21,8 @@ add_compile_options(-fvisibility=hidden -fvisibility-inlines-hidden)
 target_include_directories(${RACK_PLUGIN_LIB} PRIVATE src libs/midifile/include libs/open303-code/Source/DSPCode)
 target_sources(${RACK_PLUGIN_LIB} PRIVATE
         ${SOURCES})
-target_link_libraries(${RACK_PLUGIN_LIB} PRIVATE sst-basic-blocks)
+target_link_libraries(${RACK_PLUGIN_LIB}
+        PRIVATE
+        sst-basic-blocks
+        sst-rackhelpers)
 

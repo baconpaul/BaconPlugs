@@ -2,6 +2,9 @@
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
+#include "sst/rackhelpers/module_connector.h"
+#include "sst/rackhelpers/neighbor_connectable.h"
+
 namespace bp = baconpaul::rackplugs;
 /*
 ** ToDo:
@@ -9,7 +12,7 @@ namespace bp = baconpaul::rackplugs;
 **   Add a 7 segment display for step count
 */
 
-struct Bitulator : bp::BaconModule
+struct Bitulator : bp::BaconModule, sst::rackhelpers::module_connector::NeighborConnectable_V1
 {
     enum ParamIds
     {
@@ -105,6 +108,15 @@ struct Bitulator : bp::BaconModule
             outputs[CRUNCHED_OUTPUT].setVoltage(wd * res + (1.0 - wd) * vin, i);
         }
     }
+
+    std::optional<std::vector<labeledStereoPort_t>> getPrimaryInputs() override
+    {
+        return {{std::make_pair("Input", std::make_pair(SIGNAL_INPUT, -1))}};
+    }
+    virtual std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs()
+    {
+        return {{std::make_pair("Outputs", std::make_pair(CRUNCHED_OUTPUT, -1))}};
+    }
 };
 
 struct BitulatorWidget : bp::BaconModuleWidget
@@ -143,7 +155,7 @@ BitulatorWidget::BitulatorWidget(Bitulator *model)
     bg->addLabel(knobCtr.plus(Vec(8, 21)), "dist", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
     bg->addLabel(knobCtr.plus(Vec(-8, 21)), "clean", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
     knobPos.x = cr.x + rs.x - 3 - 24;
-    ;
+
     knobPos.y += diffY2c<RoundLargeBlackKnob, PJ301MPort>();
     addInput(createInput<PJ301MPort>(knobPos, module, Bitulator::MIX_CV));
 
@@ -161,7 +173,7 @@ BitulatorWidget::BitulatorWidget(Bitulator *model)
     bg->addLabel(knobCtr.plus(Vec(8, 21)), "smth", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
     bg->addLabel(knobCtr.plus(Vec(-8, 21)), "crnch", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
     knobPos.x = cr.x + rs.x - 3 - 24;
-    ;
+
     knobPos.y += diffY2c<RoundLargeBlackKnob, PJ301MPort>();
     addInput(createInput<PJ301MPort>(knobPos, module, Bitulator::BIT_CV));
 
@@ -179,7 +191,7 @@ BitulatorWidget::BitulatorWidget(Bitulator *model)
     bg->addLabel(knobCtr.plus(Vec(8, 21)), "11", 10, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
     bg->addLabel(knobCtr.plus(Vec(-8, 21)), "one", 10, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
     knobPos.x = cr.x + rs.x - 3 - 24;
-    ;
+
     knobPos.y += diffY2c<RoundLargeBlackKnob, PJ301MPort>();
     addInput(createInput<PJ301MPort>(knobPos, module, Bitulator::AMP_CV));
 
@@ -187,10 +199,16 @@ BitulatorWidget::BitulatorWidget(Bitulator *model)
     Vec outP = Vec(box.size.x - 24 - 10, RACK_HEIGHT - 15 - 43);
 
     bg->addPlugLabel(inP, BaconBackground::SIG_IN, "in");
-    addInput(createInput<PJ301MPort>(inP, module, Bitulator::SIGNAL_INPUT));
+    using mcPt = sst::rackhelpers::module_connector::PortConnectionMixin<PJ301MPort>;
+    auto inp = createInput<mcPt>(inP, module, Bitulator::SIGNAL_INPUT);
+    inp->connectAsInputFromMixmaster = true;
+    addInput(inp);
 
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "out");
-    addOutput(createOutput<PJ301MPort>(outP, module, Bitulator::CRUNCHED_OUTPUT));
+    auto out = createOutput<mcPt>(outP, module, Bitulator::CRUNCHED_OUTPUT);
+    out->connectAsOutputToMixmaster = true;
+    out->connectOutputToNeighbor = true;
+    addOutput(out);
 }
 
 Model *modelBitulator = createModel<Bitulator, BitulatorWidget>("Bitulator");

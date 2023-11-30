@@ -4,3 +4,6 @@
 [submodule "libs/sst/sst-basic-blocks"]
 	path = libs/sst/sst-basic-blocks
 	url = https://github.com/surge-synthesizer/sst-basic-blocks
+[submodule "libs/sst/sst-rackhelpers"]
+	path = libs/sst/sst-rackhelpers
+	url = https://github.com/surge-synthesizer/sst-rackhelpers
