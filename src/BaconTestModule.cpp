@@ -2,6 +2,9 @@
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
+#include "sst/basic-blocks/dsp/HilbertTransform.h"
+#include "sst/basic-blocks/dsp/QuadratureOscillators.h"
+
 namespace bp = baconpaul::rackplugs;
 
 struct BaconTest : bp::BaconModule
@@ -30,6 +33,10 @@ struct BaconTest : bp::BaconModule
         NUM_LIGHTS
     };
 
+    sst::basic_blocks::dsp::HilbertTransformMonoFloat hilbertMono;
+    sst::basic_blocks::dsp::HilbertTransformStereoSSE hilbert;
+    sst::basic_blocks::dsp::QuadratureOscillator<float> qo;
+
     BaconTest()
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -43,7 +50,43 @@ struct BaconTest : bp::BaconModule
         }
     }
 
-    void process(const ProcessArgs &args) override {}
+    double theSampleRate{1};
+    void onSampleRateChange(const SampleRateChangeEvent &e) override
+    {
+        qo.setRate(2.0 * M_PI * 50 * e.sampleTime);
+        hilbert.setSampleRate(e.sampleRate);
+        hilbertMono.setSampleRate(e.sampleRate);
+        Module::onSampleRateChange(e);
+    }
+    float lrt = -1.f;
+    float prior[2]{0.f, 0.f};
+    void process(const ProcessArgs &args) override {
+        auto iL = inputs[INPUT_0].getVoltage() / 5.0f;
+        auto iR = inputs[INPUT_0 + 1].getVoltage() / 5.0f;
+
+        qo.step();
+
+        if (params[PARAM_0].getValue() != lrt)
+        {
+            lrt = params[PARAM_0].getValue();
+            auto rf = lrt * 800 - 200;
+            qo.setRate(2.0 * M_PI * rf * args.sampleTime);
+        }
+        auto fb = params[PARAM_0 + 1].getValue();
+        iL = 0.8 * ( iL + fb * fb * fb * prior[0] );
+        iR = 0.8 * ( iR + fb * fb * fb * prior[1] );
+
+        auto [L, R] = hilbert.stepToPair(iL, iR);
+
+        auto [re, im] = L;
+
+        auto [reR, imR] = R;
+
+        prior[0] = (re * qo.v - im * qo.u);
+        prior[1] = (reR * qo.v - imR * qo.u);
+        outputs[OUTPUT_0+0].setVoltage(prior[0] * 5.f);
+        outputs[OUTPUT_0+1].setVoltage(prior[1] * 5.f);
+    }
 };
 
 struct BaconTestWidget : bp::BaconModuleWidget

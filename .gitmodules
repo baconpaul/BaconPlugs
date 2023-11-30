@@ -1,3 +1,6 @@
 [submodule "libs/midifile"]
 	path = libs/midifile
 	url = https://github.com/craigsapp/midifile.git
+[submodule "libs/sst/sst-basic-blocks"]
+	path = libs/sst/sst-basic-blocks
+	url = https://github.com/surge-synthesizer/sst-basic-blocks
