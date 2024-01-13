@@ -17,9 +17,9 @@ struct SampleDelayWidget : bp::BaconModuleWidget
 SampleDelayWidget::SampleDelayWidget(SD *module)
 {
     setModule(module);
-    box.size = Vec(SCREW_WIDTH * 5, RACK_HEIGHT);
+    box.size = Vec(SCREW_WIDTH * 3, RACK_HEIGHT);
 
-    BaconBackground *bg = new BaconBackground(box.size, "SampDelay");
+    BaconBackground *bg = new BaconBackground(box.size, "SmpDly");
     addChild(bg->wrappedInFramebuffer());
 
     int outy = 30;
@@ -32,10 +32,11 @@ SampleDelayWidget::SampleDelayWidget(SD *module)
     addInput(createInput<PJ301MPort>(ppos, module, SD::SIGNAL_IN));
 
     outy += 90 + gap + margin;
+    /*
     bg->addRoundedBorder(Vec(bg->cx() - 14 * 1.5 - margin, outy - margin),
                          Vec(14 * 3 + 2 * margin, 14 + SizeTable<RoundBlackSnapKnob>::Y +
                                                       2 * margin + 22 + margin + 2 * margin));
-
+    */
     bg->addLabel(Vec(bg->cx(), outy), "# samples", 11, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
     outy += 14;
     addParam(createParam<RoundBlackSnapKnob>(Vec(bg->cx(SizeTable<RoundBlackSnapKnob>::X), outy),

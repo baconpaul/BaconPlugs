@@ -5,10 +5,13 @@
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
+#include "sst/rackhelpers/module_connector.h"
+#include "sst/rackhelpers/neighbor_connectable.h"
 
 namespace bp = baconpaul::rackplugs;
 
-struct ChipWaves : virtual bp::BaconModule
+struct ChipWaves : virtual bp::BaconModule, sst::rackhelpers::module_connector::NeighborConnectable_V1
+
 {
     enum ParamIds
     {
@@ -103,6 +106,15 @@ struct ChipWaves : virtual bp::BaconModule
                 outputs[PULSE_OUTPUT].setVoltage(npulse[c]->step(), c);
         }
     }
+
+
+    std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs() override
+    {
+        return {{
+            std::make_pair("Triangle", std::make_pair(TRI_OUTPUT, -1)),
+            std::make_pair("PULSE", std::make_pair(PULSE_OUTPUT, -1))
+        }};
+    }
 };
 
 struct ChipWavesWidget : bp::BaconModuleWidget
@@ -118,13 +130,21 @@ ChipWavesWidget::ChipWavesWidget(ChipWaves *module)
     BaconBackground *bg = new BaconBackground(box.size, "ChipWaves");
     addChild(bg->wrappedInFramebuffer());
 
+    using mcPt = sst::rackhelpers::module_connector::PortConnectionMixin<PJ301MPort>;
+
     Vec outP = Vec(bg->cx(24) + 22, RACK_HEIGHT - 15 - 43);
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "pulse");
-    addOutput(createOutput<PJ301MPort>(outP, module, ChipWaves::PULSE_OUTPUT));
+    auto pls = createOutput<mcPt>(outP, module, ChipWaves::PULSE_OUTPUT);
+    pls->connectAsOutputToMixmaster = true;
+    pls->connectOutputToNeighbor = true;
+    addOutput(pls);
 
     Vec outT = Vec(bg->cx(24) - 22, RACK_HEIGHT - 15 - 43);
     bg->addPlugLabel(outT, BaconBackground::SIG_OUT, "tri");
-    addOutput(createOutput<PJ301MPort>(outT, module, ChipWaves::TRI_OUTPUT));
+    auto tri = createOutput<mcPt>(outT, module, ChipWaves::TRI_OUTPUT);
+    tri->connectAsOutputToMixmaster = true;
+    tri->connectOutputToNeighbor = true;
+    addOutput(tri);
 
     Vec fcv = Vec(bg->cx(24), 140);
     bg->addPlugLabel(fcv, BaconBackground::SIG_IN, "v/o");

@@ -4,9 +4,13 @@
 #include "BaconModuleWidget.h"
 
 
+
+#include "sst/rackhelpers/module_connector.h"
+#include "sst/rackhelpers/neighbor_connectable.h"
+
 namespace bp = baconpaul::rackplugs;
 
-struct ChipNoise : virtual bp::BaconModule
+struct ChipNoise : virtual bp::BaconModule, sst::rackhelpers::module_connector::NeighborConnectable_V1
 {
     enum ParamIds
     {
@@ -112,6 +116,14 @@ struct ChipNoise : virtual bp::BaconModule
 
         outputs[NOISE_OUTPUT].setVoltage(noise->step());
     }
+
+
+    std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs() override
+    {
+        return {{
+            std::make_pair("Noise", std::make_pair(NOISE_OUTPUT, -1))
+        }};
+    }
 };
 
 struct ChipNoiseWidget : bp::BaconModuleWidget
@@ -165,7 +177,12 @@ ChipNoiseWidget::ChipNoiseWidget(ChipNoise *module)
     // Output port
     Vec outP = Vec(bg->cx(24), RACK_HEIGHT - 15 - 43);
     bg->addPlugLabel(outP, BaconBackground::SIG_OUT, "out");
-    addOutput(createOutput<PJ301MPort>(outP, module, ChipNoise::NOISE_OUTPUT));
+    using mcPt = sst::rackhelpers::module_connector::PortConnectionMixin<PJ301MPort>;
+
+    auto out = createOutput<mcPt>(outP, module, ChipNoise::NOISE_OUTPUT);
+    out->connectOutputToNeighbor = true;
+    out->connectAsOutputToMixmaster = true;
+    addOutput(out);
 }
 
 Model *modelChipNoise = createModel<ChipNoise, ChipNoiseWidget>("ChipNoise");

@@ -183,7 +183,14 @@ void BaconBackground::draw(const DrawArgs &args)
     {
         nvgBeginPath(args.vg);
         nvgFontFaceId(args.vg, memFont);
-        nvgFontSize(args.vg, 14);
+        if (box.size.x == 3 * SCREW_WIDTH)
+        {
+            nvgFontSize(args.vg, 12);
+        }
+        else
+        {
+            nvgFontSize(args.vg, 14);
+        }
         nvgFillColor(args.vg, labelColor);
         nvgStrokeColor(args.vg, labelColor);
         nvgTextAlign(args.vg, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
