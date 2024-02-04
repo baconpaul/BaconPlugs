@@ -11,14 +11,15 @@ struct PolyGeneratorWidget : baconpaul::rackplugs::BaconModuleWidget
     int memFont = -1;
     void drawBG(NVGcontext *vg)
     {
-        memFont = InternalFontMgr::get(vg,baconpaul::rackplugs::BaconStyle::get()->fontName());
+        memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
         for (int i = 0; i < 4; ++i)
         {
             nvgBeginPath(vg);
             nvgFontFaceId(vg, memFont);
             nvgFontSize(vg, 14);
-            nvgFillColor(vg, baconpaul::rackplugs::BaconStyle::get()->getColor(baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL));
+            nvgFillColor(vg, baconpaul::rackplugs::BaconStyle::get()->getColor(
+                                 baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL));
             nvgTextAlign(vg, NVG_ALIGN_TOP | NVG_ALIGN_LEFT);
             nvgText(vg, 7, y0 + i * dy, labels[i].c_str(), NULL);
         }

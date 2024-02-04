@@ -22,12 +22,11 @@ struct BufferedDrawFunctionWidget : virtual FramebufferWidget /* widget::Widget*
     struct InternalBDW : Widget
     {
         drawfn_t drawf;
-        InternalBDW(Rect box_, drawfn_t draw_) :  drawf(draw_) { box = box_; }
+        InternalBDW(Rect box_, drawfn_t draw_) : drawf(draw_) { box = box_; }
         void draw(const DrawArgs &args) override { drawf(args.vg); }
     };
 
-    BufferedDrawFunctionWidget(Vec pos, Vec sz,drawfn_t draw_)
-        : drawf(draw_)
+    BufferedDrawFunctionWidget(Vec pos, Vec sz, drawfn_t draw_) : drawf(draw_)
     {
         box.pos = pos;
         box.size = sz;
@@ -35,7 +34,7 @@ struct BufferedDrawFunctionWidget : virtual FramebufferWidget /* widget::Widget*
         InternalBDW *kid = new InternalBDW(kidBox, drawf);
         addChild(kid);
 #if DEBUG_MEM
-        memDebugger["bdw"] ++;
+        memDebugger["bdw"]++;
         std::cout << "CTOR >> Outstanding BDWs = " << memDebugger["bdw"] << std::endl;
 #endif
     }
@@ -43,12 +42,11 @@ struct BufferedDrawFunctionWidget : virtual FramebufferWidget /* widget::Widget*
 #if DEBUG_MEM
     ~BufferedDrawFunctionWidget() override
     {
-        memDebugger["bdw"] --;
+        memDebugger["bdw"]--;
         std::cout << "DTOR << Outstanding BDWs = " << memDebugger["bdw"] << std::endl;
     }
 #endif
 };
-
 
 struct BufferedDrawFunctionWidgetOnLayer : BufferedDrawFunctionWidget
 {

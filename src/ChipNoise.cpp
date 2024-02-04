@@ -3,14 +3,13 @@
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
-
-
 #include "sst/rackhelpers/module_connector.h"
 #include "sst/rackhelpers/neighbor_connectable.h"
 
 namespace bp = baconpaul::rackplugs;
 
-struct ChipNoise : virtual bp::BaconModule, sst::rackhelpers::module_connector::NeighborConnectable_V1
+struct ChipNoise : virtual bp::BaconModule,
+                   sst::rackhelpers::module_connector::NeighborConnectable_V1
 {
     enum ParamIds
     {
@@ -117,12 +116,9 @@ struct ChipNoise : virtual bp::BaconModule, sst::rackhelpers::module_connector::
         outputs[NOISE_OUTPUT].setVoltage(noise->step());
     }
 
-
     std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs() override
     {
-        return {{
-            std::make_pair("Noise", std::make_pair(NOISE_OUTPUT, -1))
-        }};
+        return {{std::make_pair("Noise", std::make_pair(NOISE_OUTPUT, -1))}};
     }
 };
 

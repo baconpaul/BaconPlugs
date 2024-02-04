@@ -30,6 +30,7 @@ __attribute__((__visibility__("default"))) void init(rack::Plugin *p)
     p->addModel(modelLintBuddy);
     p->addModel(modelLuckyHold);
     p->addModel(modelContrastBNDEditor);
+    p->addModel(modelPatchNameDisplay);
 
     p->addModel(modelBaconTest);
 

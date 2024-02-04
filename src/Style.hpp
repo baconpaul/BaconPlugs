@@ -33,10 +33,20 @@ struct BaconStyle
         LIGHT
     };
     Style activeStyle{LIGHT};
-    void setStyle(Style s)
+    void setStyle()
     {
-        activeStyle = s;
-        notifyStyleListeners();
+        auto rs = rack::settings::preferDarkPanels;
+
+        if (rs && activeStyle == LIGHT)
+        {
+            activeStyle = DARK;
+            notifyStyleListeners();
+        }
+        else if (!rs && activeStyle == DARK)
+        {
+            activeStyle = LIGHT;
+            notifyStyleListeners();
+        }
     }
 
     friend struct StyleParticipant;

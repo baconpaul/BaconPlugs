@@ -8,8 +8,6 @@
 
 namespace bp = baconpaul::rackplugs;
 
-
-
 struct LuckyHold : virtual bp::BaconModule
 {
     enum ParamIds
@@ -50,7 +48,7 @@ struct LuckyHold : virtual bp::BaconModule
     std::default_random_engine gen;
     std::uniform_real_distribution<float> ud;
 
-    LuckyHold() : bp::BaconModule(), ud(0,1)
+    LuckyHold() : bp::BaconModule(), ud(0, 1)
     {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
@@ -60,7 +58,7 @@ struct LuckyHold : virtual bp::BaconModule
         configParam(CHANCE, -1, 1, 0, "A (-1) or B (1) chance?", "%", 0, 100);
         configParam(RNG_SCALE, 0, 10, 10, "Random CV Scale", "V");
         configParam(RNG_OFFSET, -5, 5, 0, "Random CV Center", "V");
-        configSwitch(LATCH, 0, 1, 1, "Latch vs Passthrough", { "Passthrough", "Latch" } );
+        configSwitch(LATCH, 0, 1, 1, "Latch vs Passthrough", {"Passthrough", "Latch"});
 
         configInput(CLOCK_IN, "Clock");
         configInput(CHANCE_CV, "Chance");
@@ -72,7 +70,7 @@ struct LuckyHold : virtual bp::BaconModule
         configBypass(CLOCK_IN, A_CLOCK);
         configBypass(CLOCK_IN, B_CLOCK);
 
-        for (int i=0; i<MAX_POLY; ++i)
+        for (int i = 0; i < MAX_POLY; ++i)
         {
             aGate[i] = false;
             bGate[i] = false;
@@ -81,7 +79,6 @@ struct LuckyHold : virtual bp::BaconModule
             rU[i] = 0.f;
         }
     }
-
 
     int nChan{0};
     rack::dsp::SchmittTrigger inTrig;
@@ -94,7 +91,7 @@ struct LuckyHold : virtual bp::BaconModule
         {
             nChan = pc;
             lights[POLY_LIGHT].value = nChan;
-            for (int i=0; i<MAX_POLY; ++i)
+            for (int i = 0; i < MAX_POLY; ++i)
             {
                 lights[GATE_0 + i].value = 0;
             }
@@ -162,21 +159,17 @@ struct ABLights : rack::TransparentWidget, baconpaul::rackplugs::StyleParticipan
     float cSize{0}, xc0, yc0, dx, dy;
     void setup()
     {
-        bdw = new BufferedDrawFunctionWidget(rack::Vec(0,0), box.size,
-                                             [this](auto v) {
-                                                 drawBG(v);
-                                             });
+        bdw = new BufferedDrawFunctionWidget(rack::Vec(0, 0), box.size,
+                                             [this](auto v) { drawBG(v); });
         addChild(bdw);
 
-        bdwLight = new BufferedDrawFunctionWidgetOnLayer(rack::Vec(0,0), box.size,
-                                             [this](auto v) {
-                                                 drawLight(v);
-                                             });
+        bdwLight = new BufferedDrawFunctionWidgetOnLayer(rack::Vec(0, 0), box.size,
+                                                         [this](auto v) { drawLight(v); });
         addChild(bdwLight);
-        for (int i=0; i<MAX_POLY; ++i)
+        for (int i = 0; i < MAX_POLY; ++i)
             vals[i] = 0.f;
 
-        cSize = std::min(box.size.x / 17.f, box.size.y / 4.f ) * 0.45;
+        cSize = std::min(box.size.x / 17.f, box.size.y / 4.f) * 0.45;
         dx = box.size.x / 16.f;
         xc0 = dx * 0.5;
 
@@ -185,10 +178,11 @@ struct ABLights : rack::TransparentWidget, baconpaul::rackplugs::StyleParticipan
     }
 
     float vals[MAX_POLY];
-    void step() override {
+    void step() override
+    {
         if (module)
         {
-            for (int i=0; i<MAX_POLY; ++i)
+            for (int i = 0; i < MAX_POLY; ++i)
             {
                 if (vals[i] != module->lights[LuckyHold::GATE_0 + i].value)
                 {
@@ -201,28 +195,31 @@ struct ABLights : rack::TransparentWidget, baconpaul::rackplugs::StyleParticipan
         rack::TransparentWidget::step();
     }
 
-    void drawBG(NVGcontext *vg) {
+    void drawBG(NVGcontext *vg)
+    {
         auto style = baconpaul::rackplugs::BaconStyle::get();
 
         int nChan = MAX_POLY;
         if (module)
             nChan = module->nChan;
-        for (int i=0; i<MAX_POLY; ++i)
+        for (int i = 0; i < MAX_POLY; ++i)
         {
             nvgBeginPath(vg);
-            nvgStrokeColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+            nvgStrokeColor(vg,
+                           style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
             nvgMoveTo(vg, xc0 + i * dx, yc0 + cSize);
             nvgLineTo(vg, xc0 + i * dx, yc0 + 2 * dy - cSize);
             nvgStrokeWidth(vg, 0.5);
             nvgStroke(vg);
-            for (int j=0; j<3; ++j)
+            for (int j = 0; j < 3; ++j)
             {
-                if (j==1)
+                if (j == 1)
                     continue;
                 nvgBeginPath(vg);
                 nvgEllipse(vg, xc0 + dx * i, yc0 + dy * j, cSize, cSize);
                 nvgFillColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::LIGHT_BG));
-                nvgStrokeColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+                nvgStrokeColor(
+                    vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
                 if (i < nChan)
                     nvgFill(vg);
                 nvgStrokeWidth(vg, 0.5);
@@ -230,20 +227,24 @@ struct ABLights : rack::TransparentWidget, baconpaul::rackplugs::StyleParticipan
             }
         }
     }
-    void drawLight(NVGcontext *vg) {
+    void drawLight(NVGcontext *vg)
+    {
         auto style = baconpaul::rackplugs::BaconStyle::get();
-        for (int i=0; i<MAX_POLY; ++i)
+        for (int i = 0; i < MAX_POLY; ++i)
         {
             if (vals[i] == 0)
                 continue;
 
-            int j=1;
-            if (vals[i] > 0) j = 0;
-            if (vals[i] < 0) j = 2;
+            int j = 1;
+            if (vals[i] > 0)
+                j = 0;
+            if (vals[i] < 0)
+                j = 2;
             nvgBeginPath(vg);
             nvgEllipse(vg, xc0 + dx * i, yc0 + dy * j, cSize, cSize);
             nvgFillColor(vg, SCHEME_BLUE);
-            nvgStrokeColor(vg, style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
+            nvgStrokeColor(vg,
+                           style->getColor(baconpaul::rackplugs::BaconStyle::SECTION_RULE_LINE));
             nvgFill(vg);
             nvgStrokeWidth(vg, 0.5);
             nvgStroke(vg);
@@ -276,11 +277,10 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
         bg->addRoundedBorder(rack::Vec(5, yp), rack::Vec(box.size.x - 10, h));
         bg->addLabel(rack::Vec(8, yp + h * 0.5), "Poly", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
         addParam(createParamCentered<RoundBlackKnob>(Vec(60, yp + h * 0.5), module, M::POLY_COUNT));
-        auto msg = MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(rack::Vec(90, yp + h * 0.5), module,
-                                                                                    M::POLY_LIGHT);
+        auto msg = MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(rack::Vec(90, yp + h * 0.5),
+                                                                        module, M::POLY_LIGHT);
         msg->box.pos.y -= msg->box.size.y * 0.5;
         addChild(msg);
-
     }
 
     // Chance Knob CV In and Switch
@@ -290,13 +290,12 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
         bg->addLabel(rack::Vec(8, yp + h * 0.5), "Chance", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
         addParam(createParamCentered<RoundBlackKnob>(Vec(60, yp + h * 0.5), module, M::CHANCE));
 
-        addInput(createInputCentered<PJ301MPort>(rack::Vec(90, yp + h * 0.5),
-                                                 module,
-                                                 M::CHANCE_CV));
+        addInput(
+            createInputCentered<PJ301MPort>(rack::Vec(90, yp + h * 0.5), module, M::CHANCE_CV));
 
         addParam(createParamCentered<CKSS>(rack::Vec(115, yp + h * 0.5 + 3), module, M::LATCH));
-        bg->addLabel(rack::Vec(115, yp + h * 0.5 - 9), "latch", 8, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
-
+        bg->addLabel(rack::Vec(115, yp + h * 0.5 - 9), "latch", 8,
+                     NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
     }
 
     // Scale and Offset Knobs
@@ -305,10 +304,14 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
         bg->addRoundedBorder(rack::Vec(5, yp), rack::Vec(box.size.x - 10, h));
         bg->addLabel(rack::Vec(8, yp + h * 0.5), "Rand CV", 12, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
 
-        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(65, yp + h * 0.5 - 3), module, M::RNG_SCALE));
-        bg->addLabel(rack::Vec(65, yp + h * 0.5 + 10), "scale", 8, NVG_ALIGN_TOP | NVG_ALIGN_CENTER);
-        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(105, yp + h * 0.5 - 3), module, M::RNG_OFFSET));
-        bg->addLabel(rack::Vec(105, yp + h * 0.5 + 10), "center", 8, NVG_ALIGN_TOP | NVG_ALIGN_CENTER);
+        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(65, yp + h * 0.5 - 3), module,
+                                                          M::RNG_SCALE));
+        bg->addLabel(rack::Vec(65, yp + h * 0.5 + 10), "scale", 8,
+                     NVG_ALIGN_TOP | NVG_ALIGN_CENTER);
+        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(105, yp + h * 0.5 - 3), module,
+                                                          M::RNG_OFFSET));
+        bg->addLabel(rack::Vec(105, yp + h * 0.5 + 10), "center", 8,
+                     NVG_ALIGN_TOP | NVG_ALIGN_CENTER);
     }
 
     auto lt = new ABLights;
@@ -319,38 +322,38 @@ LuckyHoldWidget::LuckyHoldWidget(LuckyHold *m) : bp::BaconModuleWidget()
     addChild(lt);
 
     std::vector<std::string> labels{"A", "B", "Every"};
-    for (int i=0; i<3; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         auto h = 144 - i * 38;
         bg->addRoundedBorder(Vec(5, RACK_HEIGHT - (h + 30)), Vec(box.size.x - 10, 35),
                              baconpaul::rackplugs::BaconStyle::HIGHLIGHT_BG);
-        bg->addLabel(Vec(20, RACK_HEIGHT - (h+12)), labels[i].c_str(), 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
+        bg->addLabel(Vec(20, RACK_HEIGHT - (h + 12)), labels[i].c_str(), 11,
+                     NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
         bg->addLabel(Vec(20, RACK_HEIGHT - h), "gate", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
         addOutput(
-            createOutput<PJ301MPort>(Vec(35, RACK_HEIGHT - (h+24)), module, M::A_CLOCK + i * 2));
+            createOutput<PJ301MPort>(Vec(35, RACK_HEIGHT - (h + 24)), module, M::A_CLOCK + i * 2));
 
-        bg->addLabel(Vec(80, RACK_HEIGHT - (h+12)), labels[i].c_str(), 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
+        bg->addLabel(Vec(80, RACK_HEIGHT - (h + 12)), labels[i].c_str(), 11,
+                     NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
         bg->addLabel(Vec(80, RACK_HEIGHT - h), "CV", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_HIGHLIGHT_LABEL);
         addOutput(
-            createOutput<PJ301MPort>(Vec(95, RACK_HEIGHT - (h+24)), module, M::A_RNG + i * 2));
-
+            createOutput<PJ301MPort>(Vec(95, RACK_HEIGHT - (h + 24)), module, M::A_RNG + i * 2));
     }
 
     {
         auto h = 30;
         bg->addRoundedBorder(Vec(5, RACK_HEIGHT - (h + 30)), Vec(70, 35),
                              baconpaul::rackplugs::BaconStyle::INPUT_BG);
-        bg->addLabel(Vec(20, RACK_HEIGHT - (h+12)), "Clock", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
+        bg->addLabel(Vec(20, RACK_HEIGHT - (h + 12)), "Clock", 11,
+                     NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
         bg->addLabel(Vec(20, RACK_HEIGHT - h), "in", 11, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM,
                      baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
-        addInput(
-            createInput<PJ301MPort>(Vec(43, RACK_HEIGHT - (h+24)), module, M::CLOCK_IN));
-
+        addInput(createInput<PJ301MPort>(Vec(43, RACK_HEIGHT - (h + 24)), module, M::CLOCK_IN));
     }
 }
 

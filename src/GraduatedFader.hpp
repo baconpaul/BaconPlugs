@@ -23,15 +23,16 @@ template <int H> struct GraduatedFader : app::SliderKnob, baconpaul::rackplugs::
         fb = new widget::FramebufferWidget();
         addChild(fb);
 
-        notches = new BufferedDrawFunctionWidget(
-            Vec(0, 0), box.size, [this](auto vg) { drawBackground(vg);});
+        notches = new BufferedDrawFunctionWidget(Vec(0, 0), box.size,
+                                                 [this](auto vg) { drawBackground(vg); });
         fb->addChild(notches);
 
-        shadow = new BufferedDrawFunctionWidget(
-            Vec(0, 0), Vec(20, 41), [this](auto vg) {drawHandleShadow(vg);});
+        shadow = new BufferedDrawFunctionWidget(Vec(0, 0), Vec(20, 41),
+                                                [this](auto vg) { drawHandleShadow(vg); });
         fb->addChild(shadow);
 
-        handle = new BufferedDrawFunctionWidget(Vec(0, 0), Vec(20, 41), [this](auto vg) {drawHandle(vg);});
+        handle = new BufferedDrawFunctionWidget(Vec(0, 0), Vec(20, 41),
+                                                [this](auto vg) { drawHandle(vg); });
         fb->addChild(handle);
     }
 
@@ -97,7 +98,6 @@ template <int H> struct GraduatedFader : app::SliderKnob, baconpaul::rackplugs::
         int slideHeight = H - slider_height;
         int slideBump = 5;
         int slotWidth = 1;
-
 
         float dx = (1.0 * slideHeight) / nStrokes;
 

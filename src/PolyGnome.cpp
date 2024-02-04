@@ -8,7 +8,6 @@
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
-
 namespace bp = baconpaul::rackplugs;
 
 struct PolyGnomeWidget : bp::BaconModuleWidget
@@ -51,18 +50,16 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module)
     addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 3>::create(Vec(7 + 30, kPos + 2), module,
                                                                   M::BPM_LIGHT));
 
-
     outP.x = 12;
     outP.y = 108;
     addParam(createParamCentered<CKSS>(outP, module, M::RUN_PARAM));
     outP.y -= 4;
     auto lp = outP;
     lp.y -= 8;
-    bg->addLabel(lp, "run", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);;
+    bg->addLabel(lp, "run", 11, NVG_ALIGN_BOTTOM | NVG_ALIGN_CENTER);
+    ;
     lp.y -= 15;
-    addChild(createLightCentered<SmallLight<BlueLight>>(
-        lp, module, M::RUNNING_LIGHT));
-
+    addChild(createLightCentered<SmallLight<BlueLight>>(lp, module, M::RUNNING_LIGHT));
 
     outP.x += 23;
 
@@ -83,11 +80,10 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module)
 
     srp.y -= 10;
     srp.x += 18;
-    auto srlt = MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(srp, module,
-                                                                  M::SELF_RESET_LIGHT);
+    auto srlt =
+        MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(srp, module, M::SELF_RESET_LIGHT);
     srlt->blankZero = true;
     addChild(srlt);
-
 
     outP.x = 93 + 37;
     bg->addPlugLabel(outP, BaconBackground::SIG_IN, "bpm");
@@ -100,9 +96,8 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module)
     addInput(createInput<PJ301MPort>(outP, module, M::RESET_INPUT));
     outP.x += 37;
 
-
     int bh = 41;
-    std::vector<int> startX{15,43,82,110, 146, 176, 206};
+    std::vector<int> startX{15, 43, 82, 110, 146, 176, 206};
 
     auto lb = 154;
     bg->addLabel(rack::Vec(startX[0], lb), "N beats...", 11, NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM);
@@ -118,27 +113,20 @@ PolyGnomeWidget::PolyGnomeWidget(PolyGnomeWidget::M *module)
         Vec outP = Vec(box.size.x - 51, ypos);
         bg->addRoundedBorder(Vec(4, outP.y - 4), Vec(box.size.x - 8, bh - 5));
 
-        auto pv = [&](int i)
-        {
-            return rack::Vec(startX[i], ypos + 2);
-        };
+        auto pv = [&](int i) { return rack::Vec(startX[i], ypos + 2); };
         // knob light knob light port port port
-        addParam(createParam<RoundSmallBlackKnob>(pv(0), module,
-                                                  M::CLOCK_NUMERATOR_0 + (i - 1)));
+        addParam(createParam<RoundSmallBlackKnob>(pv(0), module, M::CLOCK_NUMERATOR_0 + (i - 1)));
         addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(
             pv(1), module, M::LIGHT_DENOMINATOR_1 + (i - 1)));
 
-        addParam(createParam<RoundSmallBlackKnob>(pv(2), module,
-                                                  M::CLOCK_DENOMINATOR_0 + (i - 1)));
+        addParam(createParam<RoundSmallBlackKnob>(pv(2), module, M::CLOCK_DENOMINATOR_0 + (i - 1)));
         addChild(MultiDigitSevenSegmentLight<BlueLight, 2, 2>::create(
-           pv(3), module, M::LIGHT_NUMERATOR_1 + (i - 1)));
+            pv(3), module, M::LIGHT_NUMERATOR_1 + (i - 1)));
 
-        addParam(createParam<RoundSmallBlackKnob>(pv(4), module,
-                                                  M::CLOCK_PULSE_WIDTH_0 + (i - 1)));
+        addParam(createParam<RoundSmallBlackKnob>(pv(4), module, M::CLOCK_PULSE_WIDTH_0 + (i - 1)));
 
         addOutput(createOutput<PJ301MPort>(pv(5), module, M::CLOCK_GATE_0 + i));
         addOutput(createOutput<PJ301MPort>(pv(6), module, M::CLOCK_CV_LEVEL_0 + i));
-
     }
 }
 

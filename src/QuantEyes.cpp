@@ -6,7 +6,6 @@
 
 #define SCALE_LENGTH 12
 
-
 namespace bp = baconpaul::rackplugs;
 
 struct QuantEyes : virtual bp::BaconModule
@@ -49,14 +48,14 @@ struct QuantEyes : virtual bp::BaconModule
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(ROOT_STEP, 0, 12, 0, "The root in 1/12 of a volt");
         for (int i = 0; i < SCALE_LENGTH; ++i)
-            configParam(SCALE_PARAM + i, 0, 1, 0, "Allow Scale Tone " + std::to_string(i+1));
+            configParam(SCALE_PARAM + i, 0, 1, 0, "Allow Scale Tone " + std::to_string(i + 1));
         for (int i = 0; i < SCALE_LENGTH; ++i)
             scaleState[i] = 1;
 
         configInput(CV_INPUT, "V/Oct Input");
         configOutput(QUANTIZED_OUT, "Quantized Output");
         configOutput(CHANGE_TRIG_OUT, "Trigger on Change");
-        for (int i=0; i<16; ++i)
+        for (int i = 0; i < 16; ++i)
         {
             priorOut[i] = 0;
             trigOut[i] = 0;
@@ -139,7 +138,7 @@ struct QuantEyes : virtual bp::BaconModule
                 if (trigOut[i])
                 {
                     outputs[CHANGE_TRIG_OUT].setVoltage(10.0, i);
-                    trigOut[i] --;
+                    trigOut[i]--;
                 }
                 else
                 {
@@ -276,8 +275,7 @@ void QuantEyesWidget::appendModuleSpecificContextMenu(Menu *menu)
     QuantEyes *qe = dynamic_cast<QuantEyes *>(module);
 
     auto addScale = [menu, qe](const char *name, QuantEyesScaleItem::scale_t scale) {
-        QuantEyesScaleItem *scaleItem =
-            createMenuItem<QuantEyesScaleItem>(name);
+        QuantEyesScaleItem *scaleItem = createMenuItem<QuantEyesScaleItem>(name);
         scaleItem->quanteyes = qe;
         scaleItem->setScale(scale);
         menu->addChild(scaleItem);

@@ -5,7 +5,6 @@
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
-
 namespace bp = baconpaul::rackplugs;
 
 struct SampleDelayWidget : bp::BaconModuleWidget

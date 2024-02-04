@@ -23,30 +23,16 @@ struct BaconModuleWidget : rack::app::ModuleWidget, StyleParticipant
             dirtyFB(c);
     }
 
-    void appendContextMenu(ui::Menu *menu) override {
-        appendModuleSpecificContextMenu(menu);
-    }
+    void appendContextMenu(ui::Menu *menu) override { appendModuleSpecificContextMenu(menu); }
 
-    virtual void appendModuleSpecificContextMenu(Menu *)
-    {
-
-    }
-
+    virtual void appendModuleSpecificContextMenu(Menu *) {}
 
     void step() override
     {
-#ifndef USING_CARDINAL_NOT_RACK
-        auto lpd = rack::settings::preferDarkPanels;
-        if (lpd)
-            BaconStyle::get()->setStyle(BaconStyle::DARK);
-        else
-            BaconStyle::get()->setStyle(BaconStyle::LIGHT);
-#endif
-
+        BaconStyle::get()->setStyle();
         ModuleWidget::step();
     }
-
 };
-}
+} // namespace baconpaul::rackplugs
 
 #endif // BACONPLUGS_RACK_HACK_BACONMODULEWIDGET_H

@@ -64,17 +64,20 @@ template <typename TBase> struct PolyGnome : virtual TBase
         TBase::configParam(CLOCK_PARAM, -2.0, 2.0, 0.0, "Clock tempo", " bpm", 2.f, 120.f);
         for (int i = 0; i < NUM_CLOCKS; ++i)
         {
-            auto d = TBase::configParam(CLOCK_DENOMINATOR_0 + i, 1, 32, 1, "Denominator " + std::to_string(i+1));
+            auto d = TBase::configParam(CLOCK_DENOMINATOR_0 + i, 1, 32, 1,
+                                        "Denominator " + std::to_string(i + 1));
             d->snapEnabled = true;
-            auto n = TBase::configParam(CLOCK_NUMERATOR_0 + i, 1, 32, 1, "Numerator " + std::to_string(i+1) );
+            auto n = TBase::configParam(CLOCK_NUMERATOR_0 + i, 1, 32, 1,
+                                        "Numerator " + std::to_string(i + 1));
             n->snapEnabled = true;
-            TBase::configParam(CLOCK_PULSE_WIDTH_0 + i, 0, 1, 0.5, "Pulse Width " + std::to_string(i+1));
+            TBase::configParam(CLOCK_PULSE_WIDTH_0 + i, 0, 1, 0.5,
+                               "Pulse Width " + std::to_string(i + 1));
         }
-        for (int i=0; i<NUM_CLOCKS + 1; ++i)
+        for (int i = 0; i < NUM_CLOCKS + 1; ++i)
             priorGates[i] = false;
-        TBase::configSwitch(RUN_PARAM, 0, 1, 1, "Run", { "Stop", "Run" });
-        TBase::configSwitch(RESET_PARAM, 0, 1, 1, "Reset", { "Off", "Reset" });
-        auto sre = TBase::configParam(SELF_RESET_EVERY, 0, 64, 0, "Self Reset Every" );
+        TBase::configSwitch(RUN_PARAM, 0, 1, 1, "Run", {"Stop", "Run"});
+        TBase::configSwitch(RESET_PARAM, 0, 1, 1, "Reset", {"Off", "Reset"});
+        auto sre = TBase::configParam(SELF_RESET_EVERY, 0, 64, 0, "Self Reset Every");
 
         TBase::configInput(RUN_INPUT, "Run");
         TBase::configInput(RESET_INPUT, "Reset");
@@ -88,10 +91,10 @@ template <typename TBase> struct PolyGnome : virtual TBase
         TBase::configBypass(RUN_INPUT, RUN_OUTPUT);
         TBase::configBypass(RESET_INPUT, RESET_OUTPUT);
         TBase::configBypass(BPM_INPUT, CLOCK_CV_LEVEL_0);
-        for (int i=0; i<NUM_CLOCKS; ++i)
+        for (int i = 0; i < NUM_CLOCKS; ++i)
         {
-            TBase::configOutput(CLOCK_GATE_0 + i + 1, "Clock " + std::to_string(i+1) + " Gate");
-            TBase::configOutput(CLOCK_CV_LEVEL_0 + i + 1, "BPM " + std::to_string(i+1) + " CV");
+            TBase::configOutput(CLOCK_GATE_0 + i + 1, "Clock " + std::to_string(i + 1) + " Gate");
+            TBase::configOutput(CLOCK_CV_LEVEL_0 + i + 1, "BPM " + std::to_string(i + 1) + " CV");
         }
         sre->snapEnabled = true;
     }
@@ -148,7 +151,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
             }
         }
 
-        if (useGates && ! wasRunning)
+        if (useGates && !wasRunning)
         {
             wasRunning = true;
             doReset = true;
@@ -178,7 +181,6 @@ template <typename TBase> struct PolyGnome : virtual TBase
         {
             wasResetting = false;
         }
-
 
         for (int i = 0; i < NUM_CLOCKS; ++i)
         {
@@ -257,7 +259,7 @@ template <typename TBase> struct PolyGnome : virtual TBase
 
             if (gateIn && !priorGates[i] && i == 0)
             {
-                since_reset ++;
+                since_reset++;
             }
 
             priorGates[i] = gateIn;

@@ -17,7 +17,6 @@
 #include "GraduatedFader.hpp"
 #include "Style.hpp"
 
-
 using namespace rack;
 
 template <typename T, int px = 4> struct SevenSegmentLight : T
@@ -66,16 +65,17 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         unscaledLoc.push_back(Rect(Vec(1, 2), Vec(1, 3)));
         unscaledLoc.push_back(Rect(Vec(2, 5), Vec(3, 1)));
 
-        buffer = new BufferedDrawFunctionWidget(
-            Vec(0, 0), this->box.size, [this](auto vg) { drawBackgroundBox(vg);});
+        buffer = new BufferedDrawFunctionWidget(Vec(0, 0), this->box.size,
+                                                [this](auto vg) { drawBackgroundBox(vg); });
         this->addChild(buffer);
 
-        bufferLight = new BufferedDrawFunctionWidgetOnLayer(
-            Vec(0, 0), this->box.size, [this](auto vg) { drawSegments(vg);});
+        bufferLight = new BufferedDrawFunctionWidgetOnLayer(Vec(0, 0), this->box.size,
+                                                            [this](auto vg) { drawSegments(vg); });
         this->addChild(bufferLight);
     }
 
-    void step() override {
+    void step() override
+    {
         float fvalue = 0;
         if (this->module)
             fvalue = this->module->lights[this->firstLightId].value;
@@ -94,7 +94,7 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         if (value != pvalue)
         {
             buffer->dirty = true;
-            bufferLight->dirty =true;
+            bufferLight->dirty = true;
         }
 
         pvalue = value;
@@ -103,10 +103,11 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
     void setDirty()
     {
         buffer->dirty = true;
-        bufferLight->dirty =true;
+        bufferLight->dirty = true;
     }
 
-    void draw(const typename T::DrawArgs &args) override {
+    void draw(const typename T::DrawArgs &args) override
+    {
         if (buffer)
         {
             buffer->draw(args);
@@ -200,8 +201,6 @@ template <typename T, int px = 4> struct SevenSegmentLight : T
         o->hexMode = true;
         return o;
     }
-
-
 };
 
 template <typename colorClass, int px, int digits>
@@ -215,7 +214,7 @@ struct MultiDigitSevenSegmentLight : ModuleLightWidget
         this->box.size = Vec(digits * LtClass::sx, LtClass::sy);
     }
 
-    std::array<LtClass  *, digits> childLightWeakRefs;
+    std::array<LtClass *, digits> childLightWeakRefs;
     static MultiDigitSevenSegmentLight<colorClass, px, digits> *create(Vec pos, Module *module,
                                                                        int firstLightId)
     {
@@ -303,9 +302,11 @@ struct BaconBackground : virtual TransparentWidget, baconpaul::rackplugs::StyleP
     {
         return addLabel(pos, lab, px, align, baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     }
-    BaconBackground *addLabel(Vec pos, const char *lab, int px, int align, baconpaul::rackplugs::BaconStyle::Colors col);
+    BaconBackground *addLabel(Vec pos, const char *lab, int px, int align,
+                              baconpaul::rackplugs::BaconStyle::Colors col);
 
-    BaconBackground *addLambdaLabel(Vec pos, std::function<std::string(void)> val, int px, int align, baconpaul::rackplugs::BaconStyle::Colors col);
+    BaconBackground *addLambdaLabel(Vec pos, std::function<std::string(void)> val, int px,
+                                    int align, baconpaul::rackplugs::BaconStyle::Colors col);
 
     BaconBackground *addPlugLabel(Vec plugPos, LabelStyle s, const char *ilabel)
     {
@@ -313,7 +314,8 @@ struct BaconBackground : virtual TransparentWidget, baconpaul::rackplugs::StyleP
     }
     BaconBackground *addPlugLabel(Vec plugPos, LabelAt l, LabelStyle s, const char *ilabel);
     BaconBackground *addRoundedBorder(Vec pos, Vec sz);
-    BaconBackground *addRoundedBorder(Vec pos, Vec sz, baconpaul::rackplugs::BaconStyle::Colors fill);
+    BaconBackground *addRoundedBorder(Vec pos, Vec sz,
+                                      baconpaul::rackplugs::BaconStyle::Colors fill);
     BaconBackground *addRoundedBorder(Vec pos, Vec sz, NVGcolor fill)
     {
         std::cout << "ERROR" << std::endl;
@@ -404,8 +406,8 @@ template <int NSteps, typename ColorModel> struct NStepDraggableLEDWidget : publ
         dragging = false;
         lastDragPos = Vec(-1, -1);
 
-        buffer = new BufferedDrawFunctionWidget(
-            Vec(0, 0), this->box.size, [this](auto vg) { drawSegments(vg); });
+        buffer = new BufferedDrawFunctionWidget(Vec(0, 0), this->box.size,
+                                                [this](auto vg) { drawSegments(vg); });
         addChild(buffer);
     }
 
@@ -578,11 +580,11 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
         padSize = 1;
         box.size = Vec(charCount * (5 * ledSize + padSize) + 2 * padSize,
                        7 * ledSize + 4.5 * padSize); // 5 x 7 data structure
-        buffer = new BufferedDrawFunctionWidget(
-            Vec(0, 0), this->box.size, [this](auto vg) {drawBackground(vg);});
+        buffer = new BufferedDrawFunctionWidget(Vec(0, 0), this->box.size,
+                                                [this](auto vg) { drawBackground(vg); });
         addChild(buffer);
-        bufferLight = new BufferedDrawFunctionWidgetOnLayer(
-            Vec(0, 0), this->box.size, [this](auto vg) {drawText(vg);});
+        bufferLight = new BufferedDrawFunctionWidgetOnLayer(Vec(0, 0), this->box.size,
+                                                            [this](auto vg) { drawText(vg); });
         addChild(bufferLight);
 
         INFO("BaconMusic loading DMP json: %s",
@@ -634,7 +636,8 @@ struct DotMatrixLightTextWidget : public widget::Widget // Thanks http://scruss.
     stringGetter getfn;
     Module *module;
 
-    void step() override {
+    void step() override
+    {
         if (dirtyfn)
         {
             if (this->module && dirtyfn(this->module))
@@ -751,7 +754,6 @@ struct InternalFontMgr
     }
 };
 
-
 // FIXME - double buffer this
 struct DynamicLabel : virtual TransparentWidget, baconpaul::rackplugs::StyleParticipant
 {
@@ -769,7 +771,8 @@ struct DynamicLabel : virtual TransparentWidget, baconpaul::rackplugs::StylePart
 
     void draw(const DrawArgs &args) override
     {
-        auto memFont = InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+        auto memFont =
+            InternalFontMgr::get(args.vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
         auto col = baconpaul::rackplugs::BaconStyle::get()->getColor(color);
         nvgBeginPath(args.vg);
@@ -781,22 +784,21 @@ struct DynamicLabel : virtual TransparentWidget, baconpaul::rackplugs::StylePart
         nvgText(args.vg, 0, 0, label.c_str(), nullptr);
     }
 
-    void onStyleChanged() override
-    {}
+    void onStyleChanged() override {}
 };
 
-
-struct CBButton : rack::Widget,  baconpaul::rackplugs::StyleParticipant
+struct CBButton : rack::Widget, baconpaul::rackplugs::StyleParticipant
 {
-    std::function<std::string()> getLabel = [](){return "Label";};
-    std::function<void()> onPressed = [](){ std::cout << "Pressed; No Callback" << std::endl;};
+    std::function<std::string()> getLabel = []() {  return "Label"; };
+    std::function<void()> onPressed = []() { std::cout << "Pressed; No Callback" << std::endl; };
     BufferedDrawFunctionWidget *bdw{nullptr};
     std::string label{""};
     CBButton(const rack::Vec &pos, const rack::Vec &sz)
     {
         box.pos = pos;
         box.size = sz;
-        bdw = new BufferedDrawFunctionWidget(rack::Vec(0,0), sz, [this](auto v) { this->drawB(v);});
+        bdw =
+            new BufferedDrawFunctionWidget(rack::Vec(0, 0), sz, [this](auto v) { this->drawB(v); });
         addChild(bdw);
     }
     void onButton(const ButtonEvent &e) override
@@ -826,7 +828,8 @@ struct CBButton : rack::Widget,  baconpaul::rackplugs::StyleParticipant
 
         auto labelColor = style->getColor(baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
         nvgBeginPath(vg);
-        nvgRoundedRect(vg, 0, 0, box.size.x, box.size.y, baconpaul::rackplugs::StyleConstants::rectRadius);
+        nvgRoundedRect(vg, 0, 0, box.size.x, box.size.y,
+                       baconpaul::rackplugs::StyleConstants::rectRadius);
         NVGpaint vgr = nvgLinearGradient(vg, 0, 0, 0, box.size.y, labelBg, labelBgEnd);
         nvgFillPaint(vg, vgr);
         nvgFill(vg);
@@ -834,7 +837,8 @@ struct CBButton : rack::Widget,  baconpaul::rackplugs::StyleParticipant
         nvgStrokeWidth(vg, 1);
         nvgStroke(vg);
 
-        auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
+        auto memFont =
+            InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->fontName());
 
         nvgBeginPath(vg);
         nvgFontFaceId(vg, memFont);
@@ -843,9 +847,7 @@ struct CBButton : rack::Widget,  baconpaul::rackplugs::StyleParticipant
         nvgTextAlign(vg, NVG_ALIGN_MIDDLE | NVG_ALIGN_CENTER);
         nvgText(vg, box.size.x * 0.5, box.size.y * 0.5, label.c_str(), nullptr);
     }
-    void onStyleChanged() override {
-        bdw->dirty = true;
-    }
+    void onStyleChanged() override { bdw->dirty = true; }
 };
 
 struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleParticipant
@@ -864,13 +866,15 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
         void draw(const DrawArgs &args) override
         {
             auto vg = args.vg;
-            auto memFont = InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
+            auto memFont =
+                InternalFontMgr::get(vg, baconpaul::rackplugs::BaconStyle::get()->monoFontName());
 
             int y = 3;
-            for (auto i=0U; i<that->data.size(); ++i)
+            for (auto i = 0U; i < that->data.size(); ++i)
             {
                 auto d = that->data[i];
-                if (y > args.clipBox.pos.y - rowHeight && y < args.clipBox.pos.y + box.size.y + 2 * rowHeight)
+                if (y > args.clipBox.pos.y - rowHeight &&
+                    y < args.clipBox.pos.y + box.size.y + 2 * rowHeight)
                 {
                     nvgBeginPath(vg);
                     nvgFontFaceId(vg, memFont);
@@ -886,21 +890,21 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
 
     ScrollableStringList(const rack::Vec &pos, const rack::Vec &size,
                          std::function<std::vector<std::string>()> getF,
-                         std::function<bool()> dirtyF) :
-    getList(std::move(getF)), isListDirty(std::move(dirtyF)) {
+                         std::function<bool()> dirtyF)
+        : getList(std::move(getF)), isListDirty(std::move(dirtyF))
+    {
         box.pos = pos;
         box.size = size;
-        bg = new BufferedDrawFunctionWidget(rack::Vec(0,0), size,
-                                            [this](auto v) { drawBG(v);});
+        bg = new BufferedDrawFunctionWidget(rack::Vec(0, 0), size, [this](auto v) { drawBG(v); });
         addChild(bg);
 
         sw = new rack::ui::ScrollWidget;
-        sw->box.pos = rack::Vec(0,0);
+        sw->box.pos = rack::Vec(0, 0);
         sw->box.size = size;
         addChild(sw);
         list = new ListRender;
-        list->box.pos = rack::Vec(0,0);
-        list->box.size = rack::Vec(1000,1000);
+        list->box.pos = rack::Vec(0, 0);
+        list->box.size = rack::Vec(1000, 1000);
         list->that = this;
 
         sw->container->addChild(list);
@@ -910,8 +914,8 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
     {
         nvgBeginPath(vg);
         nvgRect(vg, 0, 0, box.size.x, box.size.y);
-        nvgFillColor(vg, nvgRGB(0,0,0));
-        nvgStrokeColor(vg, nvgRGB(200,200,220));
+        nvgFillColor(vg, nvgRGB(0, 0, 0));
+        nvgStrokeColor(vg, nvgRGB(200, 200, 220));
         nvgFill(vg);
         nvgStrokeWidth(vg, 0.7);
         nvgStroke(vg);
@@ -924,14 +928,16 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
     {
         if (isListDirty())
         {
-            if (h0 < 0) h0 = box.size.y;
-            if (w0 < 0) w0 = box.size.x;
+            if (h0 < 0)
+                h0 = box.size.y;
+            if (w0 < 0)
+                w0 = box.size.x;
 
             data = getList();
 
             auto h = std::max(h0, (int)(data.size() + 1) * rowHeight);
             auto w = w0;
-            for (const auto & d : data)
+            for (const auto &d : data)
             {
                 w = std::max((int)d.size() * 8, w);
             }
@@ -942,14 +948,9 @@ struct ScrollableStringList : virtual OpaqueWidget, baconpaul::rackplugs::StyleP
         OpaqueWidget::step();
     }
 
-    void onStyleChanged() override
-    {
-        bg->dirty = true;
-    }
+    void onStyleChanged() override { bg->dirty = true; }
 };
 
-
 #include "SizeTable.hpp"
-
 
 #endif

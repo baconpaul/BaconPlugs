@@ -13,8 +13,7 @@ namespace baconpaul::rackplugs
 {
 struct BaconModule : rack::engine::Module
 {
-
 };
-}
+} // namespace baconpaul::rackplugs
 
 #endif // BACONPLUGS_RACK_HACK_BACONMODULE_H

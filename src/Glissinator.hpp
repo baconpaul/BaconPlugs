@@ -58,7 +58,6 @@ template <typename TBase> struct Glissinator : public TBase
     {
         float glist_sec = params[GLISS_TIME].getValue();
 
-
         int nChan = inputs[SOURCE_INPUT].getChannels();
         outputs[SLID_OUTPUT].setChannels(nChan);
         outputs[GLISSING_GATE].setChannels(nChan);
@@ -66,7 +65,8 @@ template <typename TBase> struct Glissinator : public TBase
 
         for (int i = 0; i < nChan; ++i)
         {
-            auto cglist = std::clamp(glist_sec + inputs[GLISS_CV_INPUT].getVoltage(i) * 0.2f, 0.f, 1.f);
+            auto cglist =
+                std::clamp(glist_sec + inputs[GLISS_CV_INPUT].getVoltage(i) * 0.2f, 0.f, 1.f);
             int shift_time = args.sampleRate * cglist;
             if (shift_time < 10)
                 shift_time = 10;

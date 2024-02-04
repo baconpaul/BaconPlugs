@@ -60,32 +60,17 @@ struct BaconTest : bp::BaconModule
     }
     float lrt = -1.f;
     float prior[2]{0.f, 0.f};
-    void process(const ProcessArgs &args) override {
-        auto iL = inputs[INPUT_0].getVoltage() / 5.0f;
-        auto iR = inputs[INPUT_0 + 1].getVoltage() / 5.0f;
-
-        qo.step();
-
-        if (params[PARAM_0].getValue() != lrt)
+    void process(const ProcessArgs &args) override
+    {
+        auto v = inputs[INPUT_0].getVoltage();
+        if (v > 2)
         {
-            lrt = params[PARAM_0].getValue();
-            auto rf = lrt * 800 - 200;
-            qo.setRate(2.0 * M_PI * rf * args.sampleTime);
+            getModel()->hidden = false;
         }
-        auto fb = params[PARAM_0 + 1].getValue();
-        iL = 0.8 * ( iL + fb * fb * fb * prior[0] );
-        iR = 0.8 * ( iR + fb * fb * fb * prior[1] );
-
-        auto [L, R] = hilbert.stepToPair(iL, iR);
-
-        auto [re, im] = L;
-
-        auto [reR, imR] = R;
-
-        prior[0] = (re * qo.v - im * qo.u);
-        prior[1] = (reR * qo.v - imR * qo.u);
-        outputs[OUTPUT_0+0].setVoltage(prior[0] * 5.f);
-        outputs[OUTPUT_0+1].setVoltage(prior[1] * 5.f);
+        else
+        {
+            getModel()->hidden = true;
+        }
     }
 };
 
@@ -97,7 +82,8 @@ struct BaconTestWidget : bp::BaconModuleWidget
 struct PolyWidget : public rack::Widget
 {
     int64_t dc{0};
-    void draw(const DrawArgs &args) override {
+    void draw(const DrawArgs &args) override
+    {
         auto s = box.size;
 
         auto vg = args.vg;
@@ -105,8 +91,8 @@ struct PolyWidget : public rack::Widget
         auto dcm = dc % (int)(s.x - 40);
 
         nvgBeginPath(vg);
-        nvgFillColor(vg, nvgRGB(255,0,0));
-        nvgRect(vg, dcm, dcm, 40 , 40);
+        nvgFillColor(vg, nvgRGB(255, 0, 0));
+        nvgRect(vg, dcm, dcm, 40, 40);
         nvgFill(vg);
 
         typedef std::vector<std::pair<float, float>> poly_t;
@@ -125,6 +111,8 @@ struct PolyWidget : public rack::Widget
             polys.push_back(p);
             auto idx = nsides - 3;
             colm[p] = nvgRGB((255 - dcm * 20) * (idx < 5), idx * 15, dcm * 20);
+            if (idx == 3 && dcm > 20)
+                colm[p] = nvgRGB(255, 255, 0);
         }
 
         int idx = 0;
@@ -132,15 +120,16 @@ struct PolyWidget : public rack::Widget
         {
             auto first{true};
             nvgBeginPath(vg);
-            for (const auto &[x,y] : poly)
+            float xdcm = (dcm + std::sin(dc * (0.4 + idx * 0.03)) * (idx * 4));
+            for (const auto &[x, y] : poly)
             {
                 if (first)
                 {
-                    nvgMoveTo(vg, 15 * x + dcm, 15 * y + dcm + 40 + idx * 18);
+                    nvgMoveTo(vg, 15 * x + xdcm, 15 * y + dcm + 40 + idx * 18);
                 }
                 else
                 {
-                    nvgLineTo(vg, 15 * x + dcm, 15 * y + dcm + 40 + idx * 18);
+                    nvgLineTo(vg, 15 * x + xdcm, 15 * y + dcm + 40 + idx * 18);
                 }
                 first = false;
             }
@@ -148,9 +137,9 @@ struct PolyWidget : public rack::Widget
             // nvgFillColor(vg, nvgRGB((255 - dcm * 20) * (idx < 5), idx * 15, dcm * 20));
             nvgFillColor(vg, colm[poly]);
             nvgFill(vg);
-            nvgStrokeColor(vg, nvgRGB(0,0,50));
+            nvgStrokeColor(vg, nvgRGB(0, 0, 50));
             nvgStroke(vg);
-            idx ++;
+            idx++;
         }
 
         dc++;

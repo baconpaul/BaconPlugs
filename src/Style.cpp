@@ -9,16 +9,7 @@ namespace baconpaul::rackplugs
 {
 std::shared_ptr<BaconStyle> BaconStyle::stylePtr{nullptr};
 
-BaconStyle::BaconStyle()
-{
-#ifndef USING_CARDINAL_NOT_RACK
-    auto lpd = rack::settings::preferDarkPanels;
-    if (lpd)
-        setStyle(BaconStyle::DARK);
-    else
-        setStyle(BaconStyle::LIGHT);
-#endif
-}
+BaconStyle::BaconStyle() { setStyle(); }
 
 NVGcolor getColorLight(baconpaul::rackplugs::BaconStyle::Colors c)
 {

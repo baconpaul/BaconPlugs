@@ -6,7 +6,6 @@
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
-
 struct PPlayer
 {
     struct pnote

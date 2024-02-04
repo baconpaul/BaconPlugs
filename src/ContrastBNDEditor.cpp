@@ -7,7 +7,6 @@
 #include "blendish.h"
 #include "blendish.h"
 
-
 #define SCALE_LENGTH 12
 
 namespace bp = baconpaul::rackplugs;
@@ -164,7 +163,7 @@ struct ContrastBNDEditorWidget : bp::BaconModuleWidget
                 }
             }
         }
-        Widget::step();
+        bp::BaconModuleWidget::step();
     }
     BufferedDrawFunctionWidget *bdw{nullptr};
     void drawLabel(NVGcontext *vg)

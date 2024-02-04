@@ -10,7 +10,8 @@
 
 namespace bp = baconpaul::rackplugs;
 
-struct ChipWaves : virtual bp::BaconModule, sst::rackhelpers::module_connector::NeighborConnectable_V1
+struct ChipWaves : virtual bp::BaconModule,
+                   sst::rackhelpers::module_connector::NeighborConnectable_V1
 
 {
     enum ParamIds
@@ -107,13 +108,10 @@ struct ChipWaves : virtual bp::BaconModule, sst::rackhelpers::module_connector::
         }
     }
 
-
     std::optional<std::vector<labeledStereoPort_t>> getPrimaryOutputs() override
     {
-        return {{
-            std::make_pair("Triangle", std::make_pair(TRI_OUTPUT, -1)),
-            std::make_pair("PULSE", std::make_pair(PULSE_OUTPUT, -1))
-        }};
+        return {{std::make_pair("Triangle", std::make_pair(TRI_OUTPUT, -1)),
+                 std::make_pair("PULSE", std::make_pair(PULSE_OUTPUT, -1))}};
     }
 };
 

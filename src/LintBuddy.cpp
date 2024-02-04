@@ -195,11 +195,10 @@ struct MyPatch : LintBuddyTest
         {
             info.push_back("Patch Path");
             info.push_back("[" + pt->path + "]");
-
         }
         else
         {
-            info.push_back("PT is NULL" );
+            info.push_back("PT is NULL");
         }
     }
 };
@@ -519,7 +518,7 @@ LintBuddyWidget::LintBuddyWidget(LintBuddy *m) : bp::BaconModuleWidget()
         if (lbm)
         {
             std::cout << "Running 100x" << std::endl;
-            for (int i=0; i<100; ++i)
+            for (int i = 0; i < 100; ++i)
                 lbm->rerun();
         }
     };

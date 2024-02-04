@@ -324,7 +324,8 @@ KarplusStrongPolyWidget::KarplusStrongPolyWidget(KarplusStrongPoly *module) : Mo
 
     auto cl = [&](std::string lab, float ys) {
         bg->addLabel(Vec(obuf + margin, outy + ys / 2), lab.c_str(), 13,
-                     NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT, baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
+                     NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT,
+                     baconpaul::rackplugs::BaconStyle::DEFAULT_LABEL);
     };
 
     yh = SizeTable<PJ301MPort>::Y;

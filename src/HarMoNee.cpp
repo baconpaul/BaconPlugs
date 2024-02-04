@@ -2,7 +2,6 @@
 #include "BaconModule.hpp"
 #include "BaconModuleWidget.h"
 
-
 namespace bp = baconpaul::rackplugs;
 
 struct HarMoNee : bp::BaconModule
@@ -76,7 +75,7 @@ struct HarMoNee : bp::BaconModule
             {
                 v = 0;
             }
-            configParam(i, 0, 1, v, "Offset by " + std::string(labels[i-HALF_STEP]));
+            configParam(i, 0, 1, v, "Offset by " + std::string(labels[i - HALF_STEP]));
         }
 
         for (int i = 0; i < OCTAVE; ++i)
