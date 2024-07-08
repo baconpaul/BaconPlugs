@@ -126,6 +126,12 @@
 			"description": "BaconPaul's Test Widgets",
 			"tags": [  ],
 			"hidden": true
+		},
+		{
+			"slug": "PleaseQuit",
+			"name": "PleaseQuit",
+			"description": "Send me a trigger to quit rack",
+			"tags": ["Utility"]
 		}
 	]
 }

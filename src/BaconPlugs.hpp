@@ -49,4 +49,6 @@ extern Model *modelPatchNameDisplay;
 
 extern Model *modelBaconTest;
 
+extern Model *modelPleaseQuit;
+
 #endif
