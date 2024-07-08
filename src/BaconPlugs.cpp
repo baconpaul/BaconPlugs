@@ -33,6 +33,7 @@ __attribute__((__visibility__("default"))) void init(rack::Plugin *p)
     p->addModel(modelPatchNameDisplay);
 
     p->addModel(modelBaconTest);
+    p->addModel(modelPleaseQuit);
 
     baconpaul::rackplugs::BaconStyle::get();
 }
